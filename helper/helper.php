@@ -18,17 +18,20 @@ class helper
 {
 	protected ext_manager $extension_manager;
 	protected FastImageSize $imagesize;
+	protected string $root_path;
 
 	/**
 	 * Constructor
 	 *
 	 * @param ext_manager $extension_manager
 	 * @param FastImageSize $imagesize
+	 * @param string $root_path
 	 */
-	public function __construct(ext_manager $extension_manager, FastImageSize $imagesize)
+	public function __construct(ext_manager $extension_manager, FastImageSize $imagesize, string $root_path)
 	{
 		$this->extension_manager = $extension_manager;
 		$this->imagesize = $imagesize;
+		$this->root_path = $root_path;
 	}
 
 	/**
@@ -92,7 +95,7 @@ class helper
 		// Use array_reduce instead of foreach for better performance
 		return array_reduce($images, function ($carry, $image) use ($use_path)
 		{
-			$image_info = $this->imagesize->getImageSize($image);
+			$image_info = $this->imagesize->getImageSize($this->root_path . $image);
 
 			if ($image_info === false)
 			{
