@@ -130,7 +130,7 @@ class main_listener implements EventSubscriberInterface
 			$images = $finder
 				->set_extensions([])
 				->suffix(".png")
-				->core_path(ext::NEW_ICON_DIR . '/')
+				->core_path(ext::PWA_ICON_DIR . '/')
 				->find();
 		}
 
