@@ -1,0 +1,26 @@
+{
+    "name": "mattf/pwakit",
+    "type": "phpbb-extension",
+    "description": "Implement progressive web app stuff",
+    "version": "1.0.0-dev",
+    "license": "GPL-2.0-only",
+    "authors": [
+        {
+            "name": "Matt Friedman",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "composer/installers": "~1.0"
+    },
+    "require-dev": {
+        "phing/phing": "~2.4"
+    },
+    "extra": {
+        "display-name": "Progressive Web App Kit",
+        "soft-require": {
+            "phpbb/phpbb": ">=4.0.0@dev,<4.1.0@dev"
+        }
+    }
+}

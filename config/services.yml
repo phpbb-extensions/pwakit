@@ -1,0 +1,9 @@
+services:
+    mattf.pwakit.listener:
+        class: mattf\pwakit\event\main_listener
+        arguments:
+            - '@ext.manager'
+            - '@upload_imagesize'
+            - '@template'
+        tags:
+            - { name: event.listener }
