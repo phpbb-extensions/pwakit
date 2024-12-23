@@ -10,30 +10,28 @@
 
 namespace mattf\pwakit\event;
 
-use FastImageSize\FastImageSize;
-use mattf\pwakit\ext;
+use mattf\pwakit\helper\helper;
 use phpbb\event\data;
-use phpbb\extension\manager as ext_manager;
 use phpbb\template\template;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class main_listener implements EventSubscriberInterface
 {
-	protected ext_manager $extension_manager;
-	protected FastImageSize $imagesize;
+	/** @var helper $pwa_helper */
+	protected helper $pwa_helper;
+
+	/** @var template $template */
 	protected template $template;
 
 	/**
 	 * Constructor
 	 *
-	 * @param ext_manager $extension_manager
-	 * @param FastImageSize $imagesize
+	 * @param helper $helper
 	 * @param template $template
 	 */
-	public function __construct(ext_manager $extension_manager, FastImageSize $imagesize, template $template)
+	public function __construct(helper $helper, template $template)
 	{
-		$this->extension_manager = $extension_manager;
-		$this->imagesize = $imagesize;
+		$this->pwa_helper = $helper;
 		$this->template = $template;
 	}
 
@@ -55,7 +53,10 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function touch_icons(): void
 	{
-		$this->template->assign_var('U_TOUCH_ICONS', array_column($this->get_icons(), 'src'));
+		$this->template->assign_var(
+			'U_TOUCH_ICONS',
+			array_column($this->pwa_helper->get_icons(), 'src')
+		);
 	}
 
 	/**
@@ -66,74 +67,13 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function manifest_icons(data $event): void
 	{
-		$icons = $this->get_icons();
+		$icons = $this->pwa_helper->get_icons($event['board_path']);
+
 		if (empty($icons))
 		{
 			return;
 		}
 
-		$icons = array_map(static function($icon) use ($event) {
-			$icon['src'] = $event['board_path'] . $icon['src'];
-			return $icon;
-		}, $icons);
-
 		$event->update_subarray('manifest', 'icons', $icons);
-	}
-
-	/**
-	 * Get an array of icons
-	 *
-	 * @return array Array of icons
-	 */
-	protected function get_icons(): array
-	{
-		static $icons = [];
-
-		if (!empty($icons))
-		{
-			return $icons;
-		}
-
-		$images = $this->get_images();
-		$icons = [];
-
-		foreach ($images as $image)
-		{
-			$image_info = $this->imagesize->getImageSize($image);
-			if ($image_info === false)
-			{
-				continue;
-			}
-
-			$icons[] = [
-				'src'   => $image,
-				'sizes' => $image_info['width'] . 'x' . $image_info['height'],
-				'type'  => 'image/png'
-			];
-		}
-
-		return $icons;
-	}
-
-	/**
-	 * Get an array of all image paths from our site icons folder
-	 *
-	 * @return array Array of found image paths
-	 */
-	protected function get_images(): array
-	{
-		static $images = null;
-
-		if ($images === null)
-		{
-			$finder = $this->extension_manager->get_finder();
-			$images = $finder
-				->set_extensions([])
-				->suffix(".png")
-				->core_path(ext::PWA_ICON_DIR . '/')
-				->find();
-		}
-
-		return array_keys($images);
 	}
 }

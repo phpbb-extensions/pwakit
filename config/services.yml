@@ -2,8 +2,13 @@ services:
     mattf.pwakit.listener:
         class: mattf\pwakit\event\main_listener
         arguments:
-            - '@ext.manager'
-            - '@upload_imagesize'
+            - '@mattf.pwakit.helper'
             - '@template'
         tags:
             - { name: event.listener }
+
+    mattf.pwakit.helper:
+        class: mattf\pwakit\helper\helper
+        arguments:
+            - '@ext.manager'
+            - '@upload_imagesize'
