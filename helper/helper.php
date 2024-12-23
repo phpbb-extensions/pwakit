@@ -50,25 +50,7 @@ class helper
 		}
 
 		$images = $this->get_images();
-
-		// Use array_reduce instead of foreach for better performance
-		$icons = array_reduce($images, function($icon_ary, $image) use ($use_path)
-		{
-			$image_info = $this->imagesize->getImageSize($image);
-
-			if ($image_info === false)
-			{
-				return $icon_ary;
-			}
-
-			$icon_ary[] = [
-				'src'   => $use_path ? $use_path . $image : $image,
-				'sizes' => $image_info['width'] . 'x' . $image_info['height'],
-				'type'  => 'image/png'
-			];
-
-			return $icon_ary;
-		}, []);
+		$icons = $this->prepare_icons($images, $use_path);
 
 		// Cache the result
 		$cached_icons[$cache_key] = $icons;
@@ -96,5 +78,34 @@ class helper
 		}
 
 		return array_keys($images);
+	}
+
+	/**
+	 * Prepare icons array
+	 *
+	 * @param array $images Array of found image paths
+	 * @param string $use_path Optional path to use for icons, for example ./
+	 * @return array Array of icons
+	 */
+	private function prepare_icons(array $images, string $use_path): array
+	{
+		// Use array_reduce instead of foreach for better performance
+		return array_reduce($images, function ($carry, $image) use ($use_path)
+		{
+			$image_info = $this->imagesize->getImageSize($image);
+
+			if ($image_info === false)
+			{
+				return $carry;
+			}
+
+			$carry[] = [
+				'src' => $use_path ? $use_path . $image : $image,
+				'sizes' => $image_info['width'] . 'x' . $image_info['height'],
+				'type' => 'image/png'
+			];
+
+			return $carry;
+		}, []);
 	}
 }

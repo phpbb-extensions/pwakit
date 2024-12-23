@@ -1,6 +1,6 @@
 {% for touchIcon in U_TOUCH_ICONS %}
 	{%- if loop.first -%}
 		<!-- App icon for iOS, a fallback to icons defined in the manifest -->
-	{% endif %}
+	{% endif -%}
 	<link rel="apple-touch-icon" href="{{ ROOT_PATH ~ touchIcon }}">
 {% endfor %}
