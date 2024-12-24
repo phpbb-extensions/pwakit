@@ -73,7 +73,7 @@ class pwa_acp_module
 		if ($mode === 'settings')
 		{
 			$this->language->add_lang('acp/board');
-			//$this->language->add_lang('acp_pwa', 'mattf/pwakit');
+			$this->language->add_lang('acp_pwa', 'mattf/pwakit');
 
 			$this->tpl_name = 'acp_pwakit';
 			$this->page_title = 'ACP_PWA_KIT_SETTINGS';
