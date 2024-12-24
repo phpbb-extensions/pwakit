@@ -102,10 +102,33 @@ class pwa_acp_module
 			'PWA_KIT_ICONS'		=> $this->helper->get_icons($this->phpbb_root_path),
 			'U_ACTION'			=> $this->u_action,
 		]);
+
+		$this->display_errors();
 	}
 
-	public function save_settings()
+	public function save_settings(): void
 	{
+		$config_array = [
+			'pwa_bg_color'		=> $this->request->variable('pwa_bg_color', ''),
+			'pwa_theme_color'	=> $this->request->variable('pwa_theme_color', ''),
+		];
+
+		foreach ($config_array as $config_value)
+		{
+			$this->validate_hex_color($config_value);
+		}
+
+		if ($this->display_errors())
+		{
+			return;
+		}
+
+		foreach ($config_array as $config_name => $config_value)
+		{
+			$this->config->set($config_name, $config_value);
+		}
+
+		trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action), E_USER_NOTICE);
 	}
 
 	/**
@@ -123,5 +146,26 @@ class pwa_acp_module
 		]);
 
 		return $has_errors;
+	}
+
+	/**
+	 * Validate HTML color hex codes
+	 *
+	 * @param string $code
+	 * @return void
+	 */
+	protected function validate_hex_color(string $code): void
+	{
+		$test = false;
+
+		if (!empty($code))
+		{
+			$test = (bool) preg_match('/^#([0-9A-F]{3}){1,2}$/i', trim($code));
+		}
+
+		if ($test === false)
+		{
+			$this->errors[] = $this->language->lang('ACP_PWA_INVALID_COLOR', $code);
+		}
 	}
 }

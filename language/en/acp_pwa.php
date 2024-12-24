@@ -43,9 +43,10 @@ $lang = array_merge($lang, [
 	'ACP_PWA_KIT_SHORT_NAME_EXPLAIN'=> 'Used to specify a short name for your web application, which may be used when the full name is too long for the available space. This can be configured in General -> Board Settings.',
 	'ACP_PWA_KIT_PRESENTATION'		=> 'Presentation',
 	'ACP_PWA_THEME_COLOR'			=> 'Theme colour (optional)',
-	'ACP_PWA_THEME_COLOR_EXPLAIN'	=> 'Used to specify the default color for your web application’s user interface. This color may be applied to various browser UI elements, such as the toolbar, address bar, and status bar.',
+	'ACP_PWA_THEME_COLOR_EXPLAIN'	=> 'Used to specify the default colour for your web application’s user interface. This colour may be applied to various browser UI elements, such as the toolbar, address bar, and status bar.',
 	'ACP_PWA_BG_COLOR'				=> 'Background colour (optional)',
-	'ACP_PWA_BG_COLOR_EXPLAIN'		=> 'Used to specify an initial background color for your web application. This color appears in the application window before your application’s stylesheets have loaded.',
+	'ACP_PWA_BG_COLOR_EXPLAIN'		=> 'Used to specify an initial background colour for your web application. This colour appears in the application window before your application’s stylesheets have loaded.',
 	'ACP_PWA_KIT_ICONS'				=> 'Web application icons',
 	'ACP_PWA_KIT_ICONS_EXPLAIN'		=> 'PNG image files that represent your web application. Multiple sizes are preferred for compatibility with various devices. Upload images to <samp>images/site_icons</samp>.',
+	'ACP_PWA_INVALID_COLOR'			=> 'The color code “<samp>%s</samp>” is not a valid hex code.',
 ]);
