@@ -35,6 +35,8 @@ class m1_initial extends migration
 	public function update_data(): array
 	{
 		return [
+			['config.add', ['pwa_bg_color', '']],
+			['config.add', ['pwa_theme_color', '']],
 			['module.add', [
 				'acp',
 				'ACP_CAT_DOT_MODS',
