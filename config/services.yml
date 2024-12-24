@@ -2,6 +2,7 @@ services:
     mattf.pwakit.listener:
         class: mattf\pwakit\event\main_listener
         arguments:
+            - '@config'
             - '@mattf.pwakit.helper'
             - '@template'
         tags:

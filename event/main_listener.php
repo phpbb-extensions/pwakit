@@ -11,12 +11,16 @@
 namespace mattf\pwakit\event;
 
 use mattf\pwakit\helper\helper;
+use phpbb\config\config;
 use phpbb\event\data;
 use phpbb\template\template;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class main_listener implements EventSubscriberInterface
 {
+	/** @var config $config */
+	protected config $config;
+
 	/** @var helper $pwa_helper */
 	protected helper $pwa_helper;
 
@@ -26,11 +30,13 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * Constructor
 	 *
+	 * @param config $config
 	 * @param helper $helper
 	 * @param template $template
 	 */
-	public function __construct(helper $helper, template $template)
+	public function __construct(config $config, helper $helper, template $template)
 	{
+		$this->config = $config;
 		$this->pwa_helper = $helper;
 		$this->template = $template;
 	}
@@ -41,31 +47,32 @@ class main_listener implements EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			'core.page_header'		=> 'touch_icons',
-			'core.modify_manifest'	=> 'manifest_icons',
+			'core.page_header'		=> 'header_updates',
+			'core.modify_manifest'	=> 'manifest_updates',
 		];
 	}
 
 	/**
-	 * Add touch icons to a template var
+	 * Add header variables to the page header
 	 *
 	 * @return void
 	 */
-	public function touch_icons(): void
+	public function header_updates(): void
 	{
-		$this->template->assign_var(
-			'U_TOUCH_ICONS',
-			array_column($this->pwa_helper->get_icons(), 'src')
-		);
+		$this->template->assign_vars([
+			'PWA_THEME_COLOR'	=> $this->config['pwa_theme_color'],
+			'PWA_BG_COLOR'		=> $this->config['pwa_bg_color'],
+			'U_TOUCH_ICONS' 	=> array_column($this->pwa_helper->get_icons(), 'src'),
+		]);
 	}
 
 	/**
-	 * Add icons to the manifest
+	 * Add members to the manifest
 	 *
 	 * @param data $event
 	 * @return void
 	 */
-	public function manifest_icons(data $event): void
+	public function manifest_updates(data $event): void
 	{
 		$icons = $this->pwa_helper->get_icons($event['board_path']);
 

@@ -97,7 +97,9 @@ class pwa_acp_module
 		$this->template->assign_vars([
 			'SITE_NAME'			=> $this->config['sitename'],
 			'SITE_NAME_SHORT'	=> $this->config['sitename_short'],
-			'PWA_KIT_ICONS'		=>  $this->helper->get_icons($this->phpbb_root_path),
+			'PWA_BG_COLOR'		=> $this->config['pwa_bg_color'],
+			'PWA_THEME_COLOR'	=> $this->config['pwa_theme_color'],
+			'PWA_KIT_ICONS'		=> $this->helper->get_icons($this->phpbb_root_path),
 			'U_ACTION'			=> $this->u_action,
 		]);
 	}
