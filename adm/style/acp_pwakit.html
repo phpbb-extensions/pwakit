@@ -1,0 +1,54 @@
+{% INCLUDE 'overall_header.html' %}
+
+<a id="maincontent"></a>
+
+<h1>{{ lang('ACP_PWA_KIT_SETTINGS') }}</h1>
+
+<p>{{ lang('ACP_PWA_KIT_SETTINGS_EXPLAIN') }}</p>
+
+{% if S_ERROR %}
+<div class="errorbox">
+	<h3>{{ lang('WARNING') }}</h3>
+	<p>{{ ERROR_MSG }}</p>
+</div>
+{% endif %}
+
+<form id="acp_pwakit" method="post" action="{{ U_ACTION }}">
+	<fieldset>
+		<legend>{{ lang('ACP_PWA_KIT_PRESENTATION') }}</legend>
+		<dl>
+			<dt><label for="sitename">{{ lang('SITE_NAME') ~ lang('COLON') }}</label></dt>
+			<dd><input type="text" id="sitename" name="sitename" size="40" value="{{ SITE_NAME }}"></dd>
+		</dl>
+		<dl>
+			<dt><label for="sitename_short">{{ lang('SITE_NAME_SHORT') ~ lang('COLON') }}</label><br><span>{{ lang('SITE_NAME_SHORT_EXPLAIN') }}</span></dt>
+			<dd><input type="text" id="sitename_short" name="sitename_short" size="40" value="{{ SITE_NAME_SHORT }}"></dd>
+		</dl>
+		<dl>
+			<dt><label for="pwa_theme_color">{{ lang('PWA_THEME_COLOR') ~ lang('COLON') }}</label><br><span>{{ lang('PWA_THEME_COLOR_EXPLAIN') }}</span></dt>
+			<dd><input type="text" id="pwa_theme_color" name="pwa_theme_color" size="40" value="{{ PWA_THEME_COLOR }}"></dd>
+		</dl>
+		<dl>
+			<dt><label for="pwa_bg_color">{{ lang('PWA_BG_COLOR') ~ lang('COLON') }}</label><br><span>{{ lang('PWA_BG_COLOR_EXPLAIN') }}</span></dt>
+			<dd><input type="text" id="pwa_bg_color" name="pwa_bg_color" size="40" value="{{ PWA_BG_COLOR }}"></dd>
+		</dl>
+		<dl>
+			<dt><label>{{ lang('ACP_PWA_KIT_TOUCH_ICONS') ~ lang('COLON') }}</label></dt>
+			<dd>
+				{% for icon in PWA_KIT_ICONS %}
+					<p>
+						<img src="{{ icon.src }}" alt="Web App Manifest Icon"><br>{{ icon.sizes }}<br>{{ icon.type }}
+					</p>
+				{% endfor %}
+			</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}">&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}">
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+</form>
+
+{% INCLUDE 'overall_footer.html' %}

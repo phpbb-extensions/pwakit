@@ -38,5 +38,7 @@ if (empty($lang) || !is_array($lang))
 //
 
 $lang = array_merge($lang, [
-	'LOG_PWA_DIR_FAIL'	=> '<strong>Progressive Web App extension could not create the icon directory. You must manually add the <samp>site_icons</samp> directory to phpBB’s <samp>images</samp></strong><br>» %1$s » %2$s',
+	'ACP_PWA_KIT_TITLE'		=> 'Progressive Web App',
+	'ACP_PWA_KIT_SETTINGS'	=> 'Manifest Settings',
+	'LOG_PWA_DIR_FAIL'		=> '<strong>Progressive Web App extension could not create the icon directory. You must manually add the <samp>site_icons</samp> directory to phpBB’s <samp>images</samp></strong><br>» %1$s » %2$s',
 ]);
