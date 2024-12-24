@@ -11,6 +11,9 @@
 /**
  * DO NOT CHANGE
  */
+
+use mattf\pwakit\ext;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -38,7 +41,7 @@ if (empty($lang) || !is_array($lang))
 //
 
 $lang = array_merge($lang, [
-	'ACP_PWA_KIT_SETTINGS_EXPLAIN'	=> 'Here you can manage the members of your Web Application Manifest. You can also preview the touch icons found in <samp>images/site_icons</samp>.',
+	'ACP_PWA_KIT_SETTINGS_EXPLAIN'	=> 'Here you can manage the members of your Web Application Manifest. You can also preview the touch icons found in <samp>' . ext::PWA_ICON_DIR . '</samp>.',
 	'ACP_PWA_KIT_SITE_NAME_EXPLAIN'	=> 'Used to specify the full name of your web application. This can be configured in General -> Board Settings.',
 	'ACP_PWA_KIT_SHORT_NAME_EXPLAIN'=> 'Used to specify a short name for your web application, which may be used when the full name is too long for the available space. This can be configured in General -> Board Settings.',
 	'ACP_PWA_KIT_PRESENTATION'		=> 'Presentation',
@@ -47,6 +50,6 @@ $lang = array_merge($lang, [
 	'ACP_PWA_BG_COLOR'				=> 'Background colour (optional)',
 	'ACP_PWA_BG_COLOR_EXPLAIN'		=> 'Used to specify an initial background colour for your web application. This colour appears in the application window before your application’s stylesheets have loaded.',
 	'ACP_PWA_KIT_ICONS'				=> 'Web application icons',
-	'ACP_PWA_KIT_ICONS_EXPLAIN'		=> 'PNG image files that represent your web application. Multiple sizes are preferred for compatibility with various devices. Upload images to <samp>images/site_icons</samp>.',
+	'ACP_PWA_KIT_ICONS_EXPLAIN'		=> 'PNG image files that represent your web application. Multiple sizes are preferred for compatibility with various devices. Upload images to <samp>' . ext::PWA_ICON_DIR . '</samp>.',
 	'ACP_PWA_INVALID_COLOR'			=> 'The color code “<samp>%s</samp>” is not a valid hex code.',
 ]);
