@@ -12,51 +12,59 @@ namespace mattf\pwakit\helper;
 
 use FastImageSize\FastImageSize;
 use mattf\pwakit\ext;
+use phpbb\cache\driver\driver_interface as cache;
 use phpbb\extension\manager as ext_manager;
 
 class helper
 {
+	/** @var cache */
+	protected cache $cache;
+
+	/** @var ext_manager */
 	protected ext_manager $extension_manager;
+
+	/** @var FastImageSize */
 	protected FastImageSize $imagesize;
+
+	/** @var string */
 	protected string $root_path;
 
 	/**
 	 * Constructor
 	 *
+	 * @param cache $cache
 	 * @param ext_manager $extension_manager
 	 * @param FastImageSize $imagesize
 	 * @param string $root_path
 	 */
-	public function __construct(ext_manager $extension_manager, FastImageSize $imagesize, string $root_path)
+	public function __construct(cache $cache, ext_manager $extension_manager, FastImageSize $imagesize, string $root_path)
 	{
+		$this->cache = $cache;
 		$this->extension_manager = $extension_manager;
 		$this->imagesize = $imagesize;
 		$this->root_path = $root_path;
 	}
 
 	/**
-	 * Get an array of icons
+	 * Get an array of icons (icons are cached for an hour))
 	 *
 	 * @param string $use_path Optional path to use for icons, for example ./
 	 * @return array Array of icons
 	 */
 	public function get_icons(string $use_path = ''): array
 	{
-		static $cached_icons = [];
-
 		// Use the path as cache key to store different versions
 		$cache_key = md5($use_path);
 
-		if (isset($cached_icons[$cache_key]))
+		$icons = $this->cache->get('pwakit_icons_' . $cache_key);
+
+		if ($icons === false)
 		{
-			return $cached_icons[$cache_key];
+			$images = $this->get_images();
+			$icons = $this->prepare_icons($images, $use_path);
+
+			$this->cache->put('pwakit_icons_' . $cache_key, $icons, 3600);
 		}
-
-		$images = $this->get_images();
-		$icons = $this->prepare_icons($images, $use_path);
-
-		// Cache the result
-		$cached_icons[$cache_key] = $icons;
 
 		return $icons;
 	}
