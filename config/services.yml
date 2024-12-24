@@ -10,6 +10,7 @@ services:
     mattf.pwakit.helper:
         class: mattf\pwakit\helper\helper
         arguments:
+            - '@cache.driver'
             - '@ext.manager'
             - '@upload_imagesize'
             - '%core.root_path%'
