@@ -87,8 +87,9 @@ class pwa_acp_module
 
 			$submit = $this->request->is_set_post('submit');
 			$upload = $this->request->is_set_post('upload');
+			$resync = $this->request->is_set_post('resync');
 
-			if ($submit || $upload)
+			if ($submit || $upload || $resync)
 			{
 				if (!check_form_key($form_key))
 				{
@@ -98,6 +99,10 @@ class pwa_acp_module
 				if ($upload)
 				{
 					$this->upload();
+				}
+				else if ($resync)
+				{
+					$this->helper->reset_icons($this->phpbb_root_path);
 				}
 				else
 				{
