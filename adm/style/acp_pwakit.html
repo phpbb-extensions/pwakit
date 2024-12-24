@@ -56,7 +56,7 @@
 			<dd>
 				{% for icon in PWA_KIT_ICONS %}
 					<p>
-						<img src="{{ icon.src }}" alt="Web App Manifest Icon"><br>{{ icon.sizes }}<br>{{ icon.type }}
+						<img src="{{ icon.src }}" alt="Web App Manifest Icon"><br>{{ icon.src|split('/')|last }}<br>{{ icon.sizes }}
 					</p>
 				{% endfor %}
 			</dd>
