@@ -70,6 +70,19 @@ class helper
 	}
 
 	/**
+	 * Reset icons by clearing any cache of icons
+	 *
+	 * @param string $use_path
+	 * @return void
+	 */
+	public function reset_icons(string $use_path = ''): void
+	{
+		$cache_key = md5($use_path);
+
+		$this->cache->destroy('pwakit_icons_' . $cache_key);
+	}
+
+	/**
 	 * Get an array of all image paths from our site icons folder
 	 *
 	 * @return array Array of found image paths

@@ -1,0 +1,29 @@
+.pwakit-button {
+	font-family: system-ui, sans-serif;
+	font-size: 13px;
+	vertical-align: middle;
+	background: #e3e3e3;
+	background: linear-gradient(to bottom, #e3e3e3 0%, #f7f7f7 100%);
+	border: solid 1px #afafaf;
+	box-shadow: inset 1px 1px 2px #ffffff;
+	margin: 2px 0;
+	padding: 3px 8px;
+}
+
+.pwakit-button:link {
+	color: #000000;
+}
+
+.pwakit-button:link:hover {
+	text-decoration: none;
+}
+
+.pwakit-button:hover {
+	border-color: #bc2a4d;
+	color: #bc2a4d;
+	cursor: pointer;
+}
+
+.pwakit-button:active {
+	background: #c3c3c3;
+}

@@ -12,7 +12,9 @@ namespace mattf\pwakit\acp;
 
 use Exception;
 use mattf\pwakit\helper\helper;
+use mattf\pwakit\helper\upload;
 use phpbb\config\config;
+use phpbb\exception\runtime_exception;
 use phpbb\language\language;
 use phpbb\request\request;
 use phpbb\template\template;
@@ -49,6 +51,9 @@ class pwa_acp_module
 	/** @var array $errors */
 	protected array $errors = [];
 
+	/** @var upload */
+	protected mixed $uploader;
+
 	/**
 	 * Main ACP module
 	 *
@@ -62,6 +67,7 @@ class pwa_acp_module
 
 		$this->config = $phpbb_container->get('config');
 		$this->helper = $phpbb_container->get('mattf.pwakit.helper');
+		$this->uploader = $phpbb_container->get('mattf.pwakit.upload');
 		$this->language = $phpbb_container->get('language');
 		$this->request = $phpbb_container->get('request');
 		$this->template = $phpbb_container->get('template');
@@ -74,18 +80,29 @@ class pwa_acp_module
 		{
 			$this->language->add_lang('acp/board');
 			$this->language->add_lang('acp_pwa', 'mattf/pwakit');
+			$this->language->add_lang('posting'); // Used by banner_upload() file errors
 
 			$this->tpl_name = 'acp_pwakit';
 			$this->page_title = 'ACP_PWA_KIT_SETTINGS';
 
-			if ($this->request->is_set_post('submit'))
+			$submit = $this->request->is_set_post('submit');
+			$upload = $this->request->is_set_post('upload');
+
+			if ($submit || $upload)
 			{
 				if (!check_form_key($form_key))
 				{
 					trigger_error($this->language->lang('FORM_INVALID'), E_USER_WARNING);
 				}
 
-				$this->save_settings();
+				if ($upload)
+				{
+					$this->upload();
+				}
+				else
+				{
+					$this->save_settings();
+				}
 			}
 
 			$this->display_settings();
@@ -167,5 +184,31 @@ class pwa_acp_module
 		{
 			$this->errors[] = $this->language->lang('ACP_PWA_INVALID_COLOR', $code);
 		}
+	}
+
+	/**
+	 * Upload image and return updated ad code or <img> of new banner when using ajax.
+	 */
+	public function upload(): void
+	{
+		try
+		{
+			$this->uploader->upload();
+		}
+		catch (runtime_exception $e)
+		{
+			$this->uploader->remove();
+
+			$this->errors[] = $this->language->lang($e->getMessage());
+		}
+
+		if ($this->display_errors())
+		{
+			return;
+		}
+
+		$this->helper->reset_icons($this->phpbb_root_path);
+
+		trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action), E_USER_NOTICE);
 	}
 }

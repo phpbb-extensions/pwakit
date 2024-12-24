@@ -1,4 +1,5 @@
 {% INCLUDE 'overall_header.html' %}
+{% INCLUDECSS '@mattf_pwakit/acp.css' %}
 
 <a id="maincontent"></a>
 
@@ -13,7 +14,7 @@
 </div>
 {% endif %}
 
-<form id="acp_pwakit" method="post" action="{{ U_ACTION }}">
+<form id="acp_pwakit" method="post" action="{{ U_ACTION }}" enctype="multipart/form-data">
 	<fieldset>
 		<legend>{{ lang('ACP_PWA_KIT_PRESENTATION') }}</legend>
 		<dl>
@@ -32,6 +33,23 @@
 			<dt><label for="pwa_bg_color">{{ lang('ACP_PWA_BG_COLOR') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_BG_COLOR_EXPLAIN') }}</span></dt>
 			<dd><input type="text" id="pwa_bg_color" name="pwa_bg_color" size="20" value="{{ PWA_BG_COLOR }}"></dd>
 		</dl>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}">&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}">
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('ACP_PWA_KIT_PRESENTATION') }}</legend>
+		<dl>
+			<dt><label for="pwa_upload">{{ lang('ACP_PWA_IMG_UPLOAD') ~ lang('COLON') }}</label><br /><span>{{ lang('ACP_PWA_IMG_UPLOAD_EXPLAIN') }}</span></dt>
+			<dd>
+				<input type="file" accept="image/*" class="inputbox autowidth" id="pwa_upload" name="pwa_upload" />
+				<button class="button2 pwakit-button" id="upload" name="upload">{{ Icon('font', 'upload', lang('PWA_IMG_UPLOAD_BTN')) }}</button>
+			</dd>
+		</dl>
 		<dl>
 			<dt><label>{{ lang('ACP_PWA_KIT_ICONS') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_KIT_ICONS_EXPLAIN') }}</span></dt>
 			<dd>
@@ -42,12 +60,6 @@
 				{% endfor %}
 			</dd>
 		</dl>
-	</fieldset>
-
-	<fieldset class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}">&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}">
-		{{ S_FORM_TOKEN }}
 	</fieldset>
 </form>
 

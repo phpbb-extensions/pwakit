@@ -15,3 +15,9 @@ services:
             - '@ext.manager'
             - '@upload_imagesize'
             - '%core.root_path%'
+
+    mattf.pwakit.upload:
+        class: mattf\pwakit\helper\upload
+        arguments:
+            - '@files.upload'
+            - '@filesystem'
