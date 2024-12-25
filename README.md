@@ -4,7 +4,8 @@ Under development...
 
 ## To Do
 
-- Uploader for PNGs from filespec to filespec_storage
+- Find images using db tracking instead of finder, change resync to update tracking of files
+- Ability to delete images from acp
 - Support multiple styles for color assignments
 - tests
 
