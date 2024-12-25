@@ -6,6 +6,7 @@ Under development...
 
 - Uploader for PNGs from filespec to filespec_storage
 - Support multiple styles for color assignments
+- tests
 
 ## License
 
