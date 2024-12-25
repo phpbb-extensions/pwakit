@@ -121,6 +121,7 @@ class pwa_acp_module
 			'SITE_NAME_SHORT'	=> $this->config['sitename_short'],
 			'PWA_BG_COLOR'		=> $this->config['pwa_bg_color'],
 			'PWA_THEME_COLOR'	=> $this->config['pwa_theme_color'],
+			'PWA_IMAGES_DIR'	=> $this->config->offsetGet('storage\\phpbb_pwakit\\config\\path'),
 			'PWA_KIT_ICONS'		=> $this->helper->get_icons($this->phpbb_root_path),
 			'U_ACTION'			=> $this->u_action,
 		]);
