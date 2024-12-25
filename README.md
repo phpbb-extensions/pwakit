@@ -11,5 +11,3 @@ Under development...
 ## License
 
 [GNU General Public License v2](license.txt)
-
-© 2024 - Matt Friedman

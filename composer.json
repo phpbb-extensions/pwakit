@@ -1,13 +1,25 @@
 {
     "name": "phpbb/pwakit",
     "type": "phpbb-extension",
-    "description": "Implement progressive web app stuff",
+    "description": "This phpBB extension adds customisable Progressive Web App (PWA) features to enhance your forum’s branding and functionality.",
     "version": "1.0.0-dev",
     "license": "GPL-2.0-only",
     "authors": [
         {
+            "name": "Marc Alexander",
+            "email": "admin@m-a-styles.de",
+            "homepage": "https://www.m-a-styles.de",
+            "role": "Extensions Team Consultant"
+        },
+        {
             "name": "Matt Friedman",
-            "role": "Developer"
+            "homepage": "https://imattpro.github.io",
+            "role": "Extensions Development Team Lead"
+        },
+        {
+            "name": "Ruslan Uzdenov",
+            "homepage": "https://www.phpbbguru.net",
+            "role": "Extensions Development Team"
         }
     ],
     "require": {
