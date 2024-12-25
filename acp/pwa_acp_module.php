@@ -80,7 +80,7 @@ class pwa_acp_module
 		{
 			$this->language->add_lang('acp/board');
 			$this->language->add_lang('acp_pwa', 'phpbb/pwakit');
-			$this->language->add_lang('posting'); // Used by banner_upload() file errors
+			$this->language->add_lang('posting'); // Used by upload() file errors
 
 			$this->tpl_name = 'acp_pwakit';
 			$this->page_title = 'ACP_PWA_KIT_SETTINGS';
@@ -192,7 +192,7 @@ class pwa_acp_module
 	}
 
 	/**
-	 * Upload image and return updated ad code or <img> of new banner when using ajax.
+	 * Upload image
 	 */
 	public function upload(): void
 	{

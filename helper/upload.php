@@ -45,7 +45,7 @@ class upload
 	}
 
 	/**
-	 * Handle banner upload
+	 * Handle upload
 	 *
 	 * @throws	runtime_exception
 	 * @return	string	Filename
