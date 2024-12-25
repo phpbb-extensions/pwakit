@@ -3,7 +3,7 @@
  *
  * Progressive Web App Kit. An extension for the phpBB Forum Software package.
  *
- * @copyright (c) 2024
+ * @copyright (c) 2024 phpBB Limited <https://www.phpbb.com>
  * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
@@ -57,5 +57,5 @@ $lang = array_merge($lang, [
 	'ACP_PWA_IMG_UPLOAD_EXPLAIN'	=> 'Upload PNG images to <samp>' . ext::PWA_ICON_DIR . '</samp>.',
 	'PWA_IMG_RESYNC_BTN'			=> 'Resync',
 	'PWA_IMG_UPLOAD_BTN'			=> 'Upload',
-	'ACP_PWA_INVALID_COLOR'			=> 'The color code “<samp>%s</samp>” is not a valid hex code.',
+	'ACP_PWA_INVALID_COLOR'			=> 'The colour code “<samp>%s</samp>” is not a valid hex code.',
 ]);
