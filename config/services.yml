@@ -20,4 +20,15 @@ services:
         class: phpbb\pwakit\helper\upload
         arguments:
             - '@files.upload'
-            - '@filesystem'
+            - '@phpbb.pwakit.storage'
+
+    phpbb.pwakit.storage:
+        class: phpbb\storage\storage
+        arguments:
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@storage.adapter.factory'
+            - 'phpbb_pwakit'
+            - '%tables.storage%'
+        tags:
+            - { name: storage }
