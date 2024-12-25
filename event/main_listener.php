@@ -8,11 +8,11 @@
  *
  */
 
-namespace mattf\pwakit\event;
+namespace phpbb\pwakit\event;
 
-use mattf\pwakit\helper\helper;
 use phpbb\config\config;
 use phpbb\event\data;
+use phpbb\pwakit\helper\helper;
 use phpbb\template\template;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 

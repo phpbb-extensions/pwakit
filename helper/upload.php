@@ -8,13 +8,13 @@
  *
  */
 
-namespace mattf\pwakit\helper;
+namespace phpbb\pwakit\helper;
 
-use mattf\pwakit\ext;
 use phpbb\exception\runtime_exception;
 use phpbb\files\filespec;
 use phpbb\files\upload as files_upload;
 use phpbb\filesystem\filesystem_interface;
+use phpbb\pwakit\ext;
 
 class upload
 {

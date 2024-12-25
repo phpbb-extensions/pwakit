@@ -8,19 +8,19 @@
  *
  */
 
-namespace mattf\pwakit\acp;
+namespace phpbb\pwakit\acp;
 
 class pwa_acp_info
 {
 	public function module(): array
 	{
 		return [
-			'filename'	=> '\mattf\pwakit\acp\pwa_acp_module',
+			'filename'	=> '\phpbb\pwakit\acp\pwa_acp_module',
 			'title'		=> 'ACP_PWA_KIT_TITLE',
 			'modes'		=> [
 				'settings'	=> [
 					'title' => 'ACP_PWA_KIT_SETTINGS',
-					'auth' => 'ext_mattf/pwakit && acl_a_board',
+					'auth' => 'ext_phpbb/pwakit && acl_a_board',
 					'cat' => ['ACP_PWA_KIT_TITLE']
 				],
 			],

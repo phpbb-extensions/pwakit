@@ -8,14 +8,14 @@
  *
  */
 
-namespace mattf\pwakit\acp;
+namespace phpbb\pwakit\acp;
 
 use Exception;
-use mattf\pwakit\helper\helper;
-use mattf\pwakit\helper\upload;
 use phpbb\config\config;
 use phpbb\exception\runtime_exception;
 use phpbb\language\language;
+use phpbb\pwakit\helper\helper;
+use phpbb\pwakit\helper\upload;
 use phpbb\request\request;
 use phpbb\template\template;
 
@@ -66,8 +66,8 @@ class pwa_acp_module
 		global $phpbb_container;
 
 		$this->config = $phpbb_container->get('config');
-		$this->helper = $phpbb_container->get('mattf.pwakit.helper');
-		$this->uploader = $phpbb_container->get('mattf.pwakit.upload');
+		$this->helper = $phpbb_container->get('phpbb.pwakit.helper');
+		$this->uploader = $phpbb_container->get('phpbb.pwakit.upload');
 		$this->language = $phpbb_container->get('language');
 		$this->request = $phpbb_container->get('request');
 		$this->template = $phpbb_container->get('template');
@@ -79,7 +79,7 @@ class pwa_acp_module
 		if ($mode === 'settings')
 		{
 			$this->language->add_lang('acp/board');
-			$this->language->add_lang('acp_pwa', 'mattf/pwakit');
+			$this->language->add_lang('acp_pwa', 'phpbb/pwakit');
 			$this->language->add_lang('posting'); // Used by banner_upload() file errors
 
 			$this->tpl_name = 'acp_pwakit';

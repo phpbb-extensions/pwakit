@@ -8,7 +8,7 @@
  *
  */
 
-namespace mattf\pwakit;
+namespace phpbb\pwakit;
 
 use phpbb\extension\base;
 use phpbb\filesystem\exception\filesystem_exception;

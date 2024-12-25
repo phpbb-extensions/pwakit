@@ -12,7 +12,7 @@
  * DO NOT CHANGE
  */
 
-use mattf\pwakit\ext;
+use phpbb\pwakit\ext;
 
 if (!defined('IN_PHPBB'))
 {

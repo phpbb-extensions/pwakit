@@ -8,7 +8,7 @@
  *
  */
 
-namespace mattf\pwakit\migrations;
+namespace phpbb\pwakit\migrations;
 
 use phpbb\db\migration\migration;
 
@@ -46,7 +46,7 @@ class m1_initial extends migration
 				'acp',
 				'ACP_PWA_KIT_TITLE',
 				[
-					'module_basename'	=> '\mattf\pwakit\acp\pwa_acp_module',
+					'module_basename'	=> '\phpbb\pwakit\acp\pwa_acp_module',
 					'modes'				=> ['settings'],
 				],
 			]],

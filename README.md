@@ -1,6 +1,11 @@
 # Progressive Web App Kit extension for phpBB
 
-Implement progressive web app stuff in phpBB 4
+Under development...
+
+## To Do
+
+- Uploader for PNGs from filespec to filespec_storage
+- Support multiple styles for color assignments
 
 ## License
 

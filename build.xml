@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Progressive Web App Build Script" description="Builds an extension.zip from a git repository" default="all">
-	<property name="vendor-name" value="mattf" />
+	<property name="vendor-name" value="phpbb" />
 	<property name="extension-name" value="pwakit" />
 	<!--
 	Only set this to "true" if you have dependencies in the composer.json,
@@ -11,7 +11,7 @@
 	<target name="clean-package">
 		<!--
 		Remove some unnecessary files/directories
-		${dir}/ is the folder of your extension, e.g. ext/mattf/pwakit/
+		${dir}/ is the folder of your extension, e.g. ext/phpbb/pwakit/
 		-->
 		<delete dir="${dir}/.github" />
 		<delete dir="${dir}/tests" />

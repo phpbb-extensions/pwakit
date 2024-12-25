@@ -8,12 +8,12 @@
  *
  */
 
-namespace mattf\pwakit\helper;
+namespace phpbb\pwakit\helper;
 
 use FastImageSize\FastImageSize;
-use mattf\pwakit\ext;
 use phpbb\cache\driver\driver_interface as cache;
 use phpbb\extension\manager as ext_manager;
+use phpbb\pwakit\ext;
 
 class helper
 {

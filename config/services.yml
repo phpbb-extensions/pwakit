@@ -1,23 +1,23 @@
 services:
-    mattf.pwakit.listener:
-        class: mattf\pwakit\event\main_listener
+    phpbb.pwakit.listener:
+        class: phpbb\pwakit\event\main_listener
         arguments:
             - '@config'
-            - '@mattf.pwakit.helper'
+            - '@phpbb.pwakit.helper'
             - '@template'
         tags:
             - { name: event.listener }
 
-    mattf.pwakit.helper:
-        class: mattf\pwakit\helper\helper
+    phpbb.pwakit.helper:
+        class: phpbb\pwakit\helper\helper
         arguments:
             - '@cache.driver'
             - '@ext.manager'
             - '@upload_imagesize'
             - '%core.root_path%'
 
-    mattf.pwakit.upload:
-        class: mattf\pwakit\helper\upload
+    phpbb.pwakit.upload:
+        class: phpbb\pwakit\helper\upload
         arguments:
             - '@files.upload'
             - '@filesystem'

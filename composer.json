@@ -1,5 +1,5 @@
 {
-    "name": "mattf/pwakit",
+    "name": "phpbb/pwakit",
     "type": "phpbb-extension",
     "description": "Implement progressive web app stuff",
     "version": "1.0.0-dev",
