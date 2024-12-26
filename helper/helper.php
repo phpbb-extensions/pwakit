@@ -13,7 +13,7 @@ namespace phpbb\pwakit\helper;
 use FastImageSize\FastImageSize;
 use phpbb\cache\driver\driver_interface as cache;
 use phpbb\extension\manager as ext_manager;
-use phpbb\pwakit\ext;
+use phpbb\storage\helper as storage_helper;
 
 class helper
 {
@@ -29,19 +29,24 @@ class helper
 	/** @var string */
 	protected string $root_path;
 
+	/** @var storage_helper */
+	protected storage_helper $storage;
+
 	/**
 	 * Constructor
 	 *
 	 * @param cache $cache
 	 * @param ext_manager $extension_manager
 	 * @param FastImageSize $imagesize
+	 * @param storage_helper $storage
 	 * @param string $root_path
 	 */
-	public function __construct(cache $cache, ext_manager $extension_manager, FastImageSize $imagesize, string $root_path)
+	public function __construct(cache $cache, ext_manager $extension_manager, FastImageSize $imagesize, storage_helper $storage, string $root_path)
 	{
 		$this->cache = $cache;
 		$this->extension_manager = $extension_manager;
 		$this->imagesize = $imagesize;
+		$this->storage = $storage;
 		$this->root_path = $root_path;
 	}
 
@@ -97,7 +102,7 @@ class helper
 			$images = $finder
 				->set_extensions([])
 				->suffix(".png")
-				->core_path(ext::PWA_ICON_DIR . '/')
+				->core_path($this->storage->get_current_definition('phpbb_pwakit', 'path') . '/')
 				->find();
 		}
 

@@ -11,41 +11,35 @@
 namespace phpbb\pwakit\helper;
 
 use phpbb\exception\runtime_exception;
-use phpbb\files\filespec;
+use phpbb\files\filespec_storage;
 use phpbb\files\upload as files_upload;
-use phpbb\filesystem\filesystem_interface;
-use phpbb\pwakit\ext;
+use phpbb\storage\storage;
 
 class upload
 {
 	/** @var files_upload */
 	protected files_upload $files_upload;
 
-	/** @var filesystem_interface */
-	protected filesystem_interface $filesystem;
+	/** @var storage */
+	protected storage $storage;
 
-	/** @var filespec */
-	protected filespec $file;
+	/** @var filespec_storage */
+	protected filespec_storage $file;
 
 	/**
 	 * Constructor
 	 *
-	 * @param files_upload 			$files_upload	Files upload object
-	 * @param filesystem_interface	$filesystem		Filesystem object
+	 * @param files_upload $files_upload Files upload object
+	 * @param storage $storage Storage object
 	 */
-	public function __construct(files_upload $files_upload, filesystem_interface $filesystem)
+	public function __construct(files_upload $files_upload, storage $storage)
 	{
 		$this->files_upload = $files_upload;
-		$this->filesystem = $filesystem;
-	}
-
-	public function set_file($file): void
-	{
-		$this->file = $file;
+		$this->storage = $storage;
 	}
 
 	/**
-	 * Handle banner upload
+	 * Handle upload
 	 *
 	 * @throws	runtime_exception
 	 * @return	string	Filename
@@ -57,11 +51,11 @@ class upload
 		$this->files_upload->set_allowed_extensions(['png']);
 
 		// Upload file
-		$this->set_file($this->files_upload->handle_upload('files.types.form', 'pwa_upload'));
+		$this->file = $this->files_upload->handle_upload('files.types.form_storage', 'pwa_upload');
 		$this->file->clean_filename('real');
 
 		// Move file to proper location
-		if (!$this->file->move_file(ext::PWA_ICON_DIR))
+		if (!$this->file->move_file($this->storage, true))
 		{
 			$this->file->set_error('FILE_MOVE_UNSUCCESSFUL');
 		}
@@ -79,6 +73,6 @@ class upload
 	 */
 	public function remove(): void
 	{
-		$this->file->remove();
+		$this->file->remove($this->storage);
 	}
 }

@@ -12,8 +12,6 @@
  * DO NOT CHANGE
  */
 
-use phpbb\pwakit\ext;
-
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -41,7 +39,7 @@ if (empty($lang) || !is_array($lang))
 //
 
 $lang = array_merge($lang, [
-	'ACP_PWA_KIT_SETTINGS_EXPLAIN'	=> 'Here you can manage the members of your Web Application Manifest. You can also preview the touch icons found in <samp>' . ext::PWA_ICON_DIR . '</samp>.',
+	'ACP_PWA_KIT_SETTINGS_EXPLAIN'	=> 'Here you can manage the members of your Web Application Manifest. You can also preview the touch icons found in <samp>%s</samp>.',
 	'ACP_PWA_KIT_SITE_NAME_EXPLAIN'	=> 'Used to specify the full name of your web application. This can be configured in General -> Board Settings.',
 	'ACP_PWA_KIT_SHORT_NAME_EXPLAIN'=> 'Used to specify a short name for your web application, which may be used when the full name is too long for the available space. This can be configured in General -> Board Settings.',
 	'ACP_PWA_KIT_LEGEND_IDENTITY'	=> 'Identity &amp; Presentation',
@@ -54,7 +52,7 @@ $lang = array_merge($lang, [
 	'ACP_PWA_KIT_ICONS_EXPLAIN'		=> 'PNG image files that represent your web application. Multiple sizes are preferred for compatibility with various devices.',
 	'ACP_PWA_KIT_ICONS_ALT'			=> 'Web App Manifest Icon',
 	'ACP_PWA_IMG_UPLOAD'			=> 'Upload web application icons',
-	'ACP_PWA_IMG_UPLOAD_EXPLAIN'	=> 'Upload PNG images to <samp>' . ext::PWA_ICON_DIR . '</samp>.',
+	'ACP_PWA_IMG_UPLOAD_EXPLAIN'	=> 'Upload PNG images to <samp>%s</samp>.',
 	'PWA_IMG_RESYNC_BTN'			=> 'Resync',
 	'PWA_IMG_UPLOAD_BTN'			=> 'Upload',
 	'ACP_PWA_INVALID_COLOR'			=> 'The colour code “<samp>%s</samp>” is not a valid hex code.',
