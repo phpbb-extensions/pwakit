@@ -51,6 +51,7 @@ $lang = array_merge($lang, [
 	'ACP_PWA_KIT_ICONS'				=> 'Web application icons',
 	'ACP_PWA_KIT_ICONS_EXPLAIN'		=> 'PNG image files that represent your web application. Multiple sizes are preferred for compatibility with various devices.',
 	'ACP_PWA_KIT_ICONS_ALT'			=> 'Web App Manifest Icon',
+	'ACP_PWA_KIT_NO_ICONS'			=> 'No icons are available. Click <strong>Upload</strong> to add new icons or click <strong>Resync</strong> to find existing icons that were previously uploaded.',
 	'ACP_PWA_IMG_UPLOAD'			=> 'Upload web application icons',
 	'ACP_PWA_IMG_UPLOAD_EXPLAIN'	=> 'Upload PNG images to <samp>%s</samp>.',
 	'PWA_IMG_RESYNC_BTN'			=> 'Resync',
