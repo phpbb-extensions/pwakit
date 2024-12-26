@@ -11,9 +11,9 @@ services:
     phpbb.pwakit.helper:
         class: phpbb\pwakit\helper\helper
         arguments:
-            - '@cache.driver'
             - '@ext.manager'
             - '@upload_imagesize'
+            - '@phpbb.pwakit.storage'
             - '@storage.helper'
             - '%core.root_path%'
 
@@ -24,7 +24,7 @@ services:
             - '@phpbb.pwakit.storage'
 
     phpbb.pwakit.storage:
-        class: phpbb\storage\storage
+        class: phpbb\pwakit\storage\storage
         arguments:
             - '@dbal.conn'
             - '@cache.driver'

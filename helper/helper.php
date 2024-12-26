@@ -11,80 +11,120 @@
 namespace phpbb\pwakit\helper;
 
 use FastImageSize\FastImageSize;
-use phpbb\cache\driver\driver_interface as cache;
 use phpbb\extension\manager as ext_manager;
+use phpbb\pwakit\storage\storage;
+use phpbb\storage\exception\storage_exception;
 use phpbb\storage\helper as storage_helper;
 
 class helper
 {
-	/** @var cache */
-	protected cache $cache;
-
 	/** @var ext_manager */
 	protected ext_manager $extension_manager;
 
 	/** @var FastImageSize */
 	protected FastImageSize $imagesize;
 
-	/** @var string */
-	protected string $root_path;
+	/** @var storage */
+	protected storage $storage;
 
 	/** @var storage_helper */
-	protected storage_helper $storage;
+	protected storage_helper $storage_helper;
+
+	/** @var string */
+	protected string $root_path;
 
 	/**
 	 * Constructor
 	 *
-	 * @param cache $cache
 	 * @param ext_manager $extension_manager
 	 * @param FastImageSize $imagesize
-	 * @param storage_helper $storage
+	 * @param storage $storage
+	 * @param storage_helper $storage_helper
 	 * @param string $root_path
 	 */
-	public function __construct(cache $cache, ext_manager $extension_manager, FastImageSize $imagesize, storage_helper $storage, string $root_path)
+	public function __construct(ext_manager $extension_manager, FastImageSize $imagesize, storage $storage, storage_helper $storage_helper, string $root_path)
 	{
-		$this->cache = $cache;
 		$this->extension_manager = $extension_manager;
 		$this->imagesize = $imagesize;
 		$this->storage = $storage;
+		$this->storage_helper = $storage_helper;
 		$this->root_path = $root_path;
 	}
 
 	/**
-	 * Get an array of icons (icons are cached for an hour))
+	 * Get an array of icons (icons are cached for an hour)
 	 *
 	 * @param string $use_path Optional path to use for icons, for example ./
 	 * @return array Array of icons
 	 */
 	public function get_icons(string $use_path = ''): array
 	{
-		// Use the path as cache key to store different versions
-		$cache_key = md5($use_path);
-
-		$icons = $this->cache->get('pwakit_icons_' . $cache_key);
-
-		if ($icons === false)
-		{
-			$images = $this->get_images();
-			$icons = $this->prepare_icons($images, $use_path);
-
-			$this->cache->put('pwakit_icons_' . $cache_key, $icons, 3600);
-		}
-
-		return $icons;
+		$images = $this->get_stored_images();
+		return $this->prepare_icons($images, $use_path);
 	}
 
 	/**
-	 * Reset icons by clearing any cache of icons
+	 * Reset icons by ensuring all uploaded icons are tracked in the storage table
 	 *
-	 * @param string $use_path
 	 * @return void
 	 */
-	public function reset_icons(string $use_path = ''): void
+	public function reset_icons(): void
 	{
-		$cache_key = md5($use_path);
+		$path = $this->storage_helper->get_current_definition('phpbb_pwakit', 'path') . '/';
 
-		$this->cache->destroy('pwakit_icons_' . $cache_key);
+		// Get both arrays at once and pre-process paths
+		$untracked_files = array_map(static function($file) use ($path) {
+			return str_replace($path, '', $file);
+		}, $this->get_images());
+
+		$tracked_files = array_map(static function($file) use ($path) {
+			return str_replace($path, '', $file);
+		}, $this->get_stored_images());
+
+		// Process tracking changes
+		$files_to_track = array_diff($untracked_files, $tracked_files);
+		$files_to_untrack = array_diff($tracked_files, $untracked_files);
+
+		// Batch process tracking operations
+		foreach ($files_to_track as $file)
+		{
+			try
+			{
+				$this->storage->track_file($file);
+			}
+			catch (storage_exception)
+			{
+				// If file doesn't exist, don't track it
+			}
+		}
+
+		foreach ($files_to_untrack as $file)
+		{
+			$this->storage->untrack_file($file);
+		}
+	}
+
+
+	/**
+	 * Get an array of all image paths from the storage table
+	 *
+	 * @return array Array of found image paths
+	 */
+	protected function get_stored_images(): array
+	{
+		$path = $this->storage_helper->get_current_definition('phpbb_pwakit', 'path');
+		$images = $this->storage->get_tracked_files();
+
+		$result = [];
+		foreach ($images as $image)
+		{
+			if (stripos(strrev($image), 'gnp.') === 0)
+			{
+				$result[] = $path . '/' . $image;
+			}
+		}
+
+		return $result;
 	}
 
 	/**
@@ -102,7 +142,7 @@ class helper
 			$images = $finder
 				->set_extensions([])
 				->suffix(".png")
-				->core_path($this->storage->get_current_definition('phpbb_pwakit', 'path') . '/')
+				->core_path($this->storage_helper->get_current_definition('phpbb_pwakit', 'path') . '/')
 				->find();
 		}
 
