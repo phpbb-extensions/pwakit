@@ -58,6 +58,8 @@
 					<p>
 						<img src="{{ icon.src }}" alt="{{ lang('ACP_PWA_KIT_ICONS_ALT') }}"><br>{{ icon.src|split('/')|last }}<br>{{ icon.sizes }}
 					</p>
+				{% else %}
+					{{ lang('ACP_PWA_KIT_NO_ICONS') }}
 				{% endfor %}
 			</dd>
 		</dl>

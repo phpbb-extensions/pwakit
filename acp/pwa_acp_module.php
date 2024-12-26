@@ -102,7 +102,7 @@ class pwa_acp_module
 				}
 				else if ($resync)
 				{
-					$this->helper->reset_icons($this->phpbb_root_path);
+					$this->helper->reset_icons();
 				}
 				else
 				{
@@ -212,8 +212,6 @@ class pwa_acp_module
 		{
 			return;
 		}
-
-		$this->helper->reset_icons($this->phpbb_root_path);
 
 		trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action), E_USER_NOTICE);
 	}
