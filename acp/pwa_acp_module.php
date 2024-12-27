@@ -11,13 +11,7 @@
 namespace phpbb\pwakit\acp;
 
 use Exception;
-use phpbb\config\config;
-use phpbb\exception\runtime_exception;
-use phpbb\language\language;
-use phpbb\pwakit\helper\helper;
-use phpbb\pwakit\helper\upload;
-use phpbb\request\request;
-use phpbb\template\template;
+use phpbb\pwakit\controller\admin_controller;
 
 class pwa_acp_module
 {
@@ -30,30 +24,6 @@ class pwa_acp_module
 	/** @var string $u_action */
 	public string $u_action;
 
-	/** @var config $config */
-	protected config $config;
-
-	/** @var helper $helper */
-	protected helper $helper;
-
-	/** @var language $language */
-	protected language $language;
-
-	/** @var request $request */
-	protected request $request;
-
-	/** @var template $template */
-	protected template $template;
-
-	/** @var string $phpbb_root_path */
-	protected string $phpbb_root_path;
-
-	/** @var array $errors */
-	protected array $errors = [];
-
-	/** @var upload */
-	protected mixed $uploader;
-
 	/**
 	 * Main ACP module
 	 *
@@ -65,154 +35,15 @@ class pwa_acp_module
 	{
 		global $phpbb_container;
 
-		$this->config = $phpbb_container->get('config');
-		$this->helper = $phpbb_container->get('phpbb.pwakit.helper');
-		$this->uploader = $phpbb_container->get('phpbb.pwakit.upload');
-		$this->language = $phpbb_container->get('language');
-		$this->request = $phpbb_container->get('request');
-		$this->template = $phpbb_container->get('template');
-		$this->phpbb_root_path = $phpbb_container->getParameter('core.root_path');
+		/** @var admin_controller $admin_controller */
+		$admin_controller = $phpbb_container->get('phpbb.pwakit.admin.controller');
 
-		$form_key = 'acp_pwakit';
-		add_form_key($form_key);
+		// Make the $u_action url available in the admin controller
+		$admin_controller->set_page_url($this->u_action);
 
-		if ($mode === 'settings')
-		{
-			$this->language->add_lang('acp/board');
-			$this->language->add_lang('acp_pwa', 'phpbb/pwakit');
-			$this->language->add_lang('posting'); // Used by upload() file errors
+		$this->tpl_name = 'acp_pwakit';
+		$this->page_title = 'ACP_PWA_KIT_SETTINGS';
 
-			$this->tpl_name = 'acp_pwakit';
-			$this->page_title = 'ACP_PWA_KIT_SETTINGS';
-
-			$submit = $this->request->is_set_post('submit');
-			$upload = $this->request->is_set_post('upload');
-			$resync = $this->request->is_set_post('resync');
-
-			if ($submit || $upload || $resync)
-			{
-				if (!check_form_key($form_key))
-				{
-					trigger_error($this->language->lang('FORM_INVALID'), E_USER_WARNING);
-				}
-
-				if ($upload)
-				{
-					$this->upload();
-				}
-				else if ($resync)
-				{
-					$this->helper->resync_icons();
-				}
-				else
-				{
-					$this->save_settings();
-				}
-			}
-
-			$this->display_settings();
-		}
-	}
-
-	public function display_settings(): void
-	{
-		$this->template->assign_vars([
-			'SITE_NAME'			=> $this->config->offsetGet('sitename'),
-			'SITE_NAME_SHORT'	=> $this->config->offsetGet('sitename_short'),
-			'PWA_BG_COLOR'		=> $this->config->offsetGet('pwa_bg_color'),
-			'PWA_THEME_COLOR'	=> $this->config->offsetGet('pwa_theme_color'),
-			'PWA_IMAGES_DIR'	=> $this->config->offsetGet('storage\\phpbb_pwakit\\config\\path'),
-			'PWA_KIT_ICONS'		=> $this->helper->get_icons($this->phpbb_root_path),
-			'U_ACTION'			=> $this->u_action,
-		]);
-
-		$this->display_errors();
-	}
-
-	public function save_settings(): void
-	{
-		$config_array = [
-			'pwa_bg_color'		=> $this->request->variable('pwa_bg_color', ''),
-			'pwa_theme_color'	=> $this->request->variable('pwa_theme_color', ''),
-		];
-
-		foreach ($config_array as $config_value)
-		{
-			$this->validate_hex_color($config_value);
-		}
-
-		if ($this->display_errors())
-		{
-			return;
-		}
-
-		foreach ($config_array as $config_name => $config_value)
-		{
-			$this->config->set($config_name, $config_value);
-		}
-
-		trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action), E_USER_NOTICE);
-	}
-
-	/**
-	 * Display any errors
-	 *
-	 * @return bool
-	 */
-	public function display_errors(): bool
-	{
-		$has_errors = (bool) count($this->errors);
-
-		$this->template->assign_vars([
-			'S_ERROR'	=> $has_errors,
-			'ERROR_MSG'	=> $has_errors ? implode('<br>', $this->errors) : '',
-		]);
-
-		return $has_errors;
-	}
-
-	/**
-	 * Validate HTML color hex codes
-	 *
-	 * @param string $code
-	 * @return void
-	 */
-	protected function validate_hex_color(string $code): void
-	{
-		$test = false;
-
-		if (!empty($code))
-		{
-			$test = (bool) preg_match('/^#([0-9A-F]{3}){1,2}$/i', trim($code));
-		}
-
-		if ($test === false)
-		{
-			$this->errors[] = $this->language->lang('ACP_PWA_INVALID_COLOR', $code);
-		}
-	}
-
-	/**
-	 * Upload image
-	 */
-	public function upload(): void
-	{
-		try
-		{
-			$this->uploader->upload();
-		}
-		catch (runtime_exception $e)
-		{
-			$this->uploader->remove();
-
-			$this->errors[] = $this->language->lang($e->getMessage());
-		}
-
-		if ($this->display_errors())
-		{
-			return;
-		}
-
-		trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action), E_USER_NOTICE);
+		$admin_controller->main($mode);
 	}
 }

@@ -104,7 +104,6 @@ class helper
 		}
 	}
 
-
 	/**
 	 * Get an array of all image paths from the storage table
 	 *
