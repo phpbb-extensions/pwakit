@@ -102,7 +102,7 @@ class pwa_acp_module
 				}
 				else if ($resync)
 				{
-					$this->helper->reset_icons();
+					$this->helper->resync_icons();
 				}
 				else
 				{
