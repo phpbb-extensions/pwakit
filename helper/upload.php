@@ -70,6 +70,7 @@ class upload
 
 	/**
 	 * Remove file from the filesystem
+	 * @return void
 	 */
 	public function remove(): void
 	{
