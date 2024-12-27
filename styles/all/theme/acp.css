@@ -27,3 +27,8 @@
 .pwakit-button:active {
 	background: #c3c3c3;
 }
+
+input[type="color"] {
+	border: none;
+	cursor: pointer;
+}

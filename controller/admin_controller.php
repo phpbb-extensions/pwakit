@@ -21,12 +21,6 @@ use phpbb\template\template;
 
 class admin_controller
 {
-	/** @var string $page_title */
-	public string $page_title;
-
-	/** @var string $tpl_name */
-	public string $tpl_name;
-
 	/** @var string $u_action */
 	public string $u_action;
 
@@ -45,20 +39,31 @@ class admin_controller
 	/** @var template $template */
 	protected template $template;
 
+	/** @var upload */
+	protected upload $upload;
+
 	/** @var string $phpbb_root_path */
 	protected string $phpbb_root_path;
 
 	/** @var array $errors */
 	protected array $errors = [];
 
-	/** @var upload */
-	protected mixed $uploader;
-
-	public function __construct(config $config, language $language, request $request, template $template, helper $helper, upload $uploader, $phpbb_root_path)
+	/**
+	 * Constructor
+	 *
+	 * @param config $config
+	 * @param language $language
+	 * @param request $request
+	 * @param template $template
+	 * @param helper $helper
+	 * @param upload $upload
+	 * @param $phpbb_root_path
+	 */
+	public function __construct(config $config, language $language, request $request, template $template, helper $helper, upload $upload, $phpbb_root_path)
 	{
 		$this->config = $config;
 		$this->helper = $helper;
-		$this->uploader = $uploader;
+		$this->upload = $upload;
 		$this->language = $language;
 		$this->request = $request;
 		$this->template = $template;
@@ -73,7 +78,7 @@ class admin_controller
 	 * Set page url
 	 *
 	 * @param string $u_action	Custom form action
-	 * @return	void
+	 * @return void
 	 */
 	public function set_page_url(string $u_action): void
 	{
@@ -84,6 +89,7 @@ class admin_controller
 	 * Main ACP module
 	 *
 	 * @param string $mode
+	 * @return void
 	 */
 	public function main(string $mode = ''): void
 	{
@@ -103,16 +109,18 @@ class admin_controller
 		{
 			if (!check_form_key($form_key))
 			{
-				trigger_error($this->language->lang('FORM_INVALID'), E_USER_WARNING);
+				$this->error($this->language->lang('FORM_INVALID'));
 			}
 
 			if ($upload)
 			{
 				$this->upload();
-			} else if ($resync)
+			}
+			else if ($resync)
 			{
 				$this->helper->resync_icons();
-			} else
+			}
+			else
 			{
 				$this->save_settings();
 			}
@@ -121,6 +129,11 @@ class admin_controller
 		$this->display_settings();
 	}
 
+	/**
+	 * Display settings
+	 *
+	 * @return void
+	 */
 	public function display_settings(): void
 	{
 		$this->template->assign_vars([
@@ -136,6 +149,11 @@ class admin_controller
 		$this->display_errors();
 	}
 
+	/**
+	 * Save settings
+	 *
+	 * @return void
+	 */
 	public function save_settings(): void
 	{
 		$config_array = [
@@ -158,7 +176,7 @@ class admin_controller
 			$this->config->set($config_name, $config_value);
 		}
 
-		trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action), E_USER_NOTICE);
+		$this->success('CONFIG_UPDATED');
 	}
 
 	/**
@@ -203,16 +221,18 @@ class admin_controller
 
 	/**
 	 * Upload image
+	 *
+	 * @return void
 	 */
 	public function upload(): void
 	{
 		try
 		{
-			$this->uploader->upload();
+			$this->upload->upload();
 		}
 		catch (runtime_exception $e)
 		{
-			$this->uploader->remove();
+			$this->upload->remove();
 
 			$this->errors[] = $this->language->lang($e->getMessage());
 		}
@@ -222,6 +242,28 @@ class admin_controller
 			return;
 		}
 
-		trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action), E_USER_NOTICE);
+		$this->success('CONFIG_UPDATED');
+	}
+
+	/**
+	 * Trigger success message
+	 *
+	 * @param string $msg Message lang key
+	 * @return void
+	 */
+	protected function success(string $msg): void
+	{
+		trigger_error($this->language->lang($msg) . adm_back_link($this->u_action));
+	}
+
+	/**
+	 * Trigger error message
+	 *
+	 * @param string $msg Message lang key
+	 * @return void
+	 */
+	protected function error(string $msg): void
+	{
+		trigger_error($this->language->lang($msg) . adm_back_link($this->u_action), E_USER_WARNING);
 	}
 }
