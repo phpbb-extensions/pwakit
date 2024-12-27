@@ -48,6 +48,17 @@ class admin_controller
 	/** @var array $errors */
 	protected array $errors = [];
 
+	/**
+	 * Constructor
+	 *
+	 * @param config $config
+	 * @param language $language
+	 * @param request $request
+	 * @param template $template
+	 * @param helper $helper
+	 * @param upload $upload
+	 * @param $phpbb_root_path
+	 */
 	public function __construct(config $config, language $language, request $request, template $template, helper $helper, upload $upload, $phpbb_root_path)
 	{
 		$this->config = $config;
@@ -67,7 +78,7 @@ class admin_controller
 	 * Set page url
 	 *
 	 * @param string $u_action	Custom form action
-	 * @return	void
+	 * @return void
 	 */
 	public function set_page_url(string $u_action): void
 	{
@@ -78,6 +89,7 @@ class admin_controller
 	 * Main ACP module
 	 *
 	 * @param string $mode
+	 * @return void
 	 */
 	public function main(string $mode = ''): void
 	{
@@ -117,6 +129,11 @@ class admin_controller
 		$this->display_settings();
 	}
 
+	/**
+	 * Display settings
+	 *
+	 * @return void
+	 */
 	public function display_settings(): void
 	{
 		$this->template->assign_vars([
@@ -204,6 +221,8 @@ class admin_controller
 
 	/**
 	 * Upload image
+	 *
+	 * @return void
 	 */
 	public function upload(): void
 	{
@@ -230,6 +249,7 @@ class admin_controller
 	 * Trigger success message
 	 *
 	 * @param string $msg Message lang key
+	 * @return void
 	 */
 	protected function success(string $msg): void
 	{
@@ -240,6 +260,7 @@ class admin_controller
 	 * Trigger error message
 	 *
 	 * @param string $msg Message lang key
+	 * @return void
 	 */
 	protected function error(string $msg): void
 	{
