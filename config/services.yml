@@ -33,3 +33,16 @@ services:
             - '%tables.storage%'
         tags:
             - { name: storage }
+
+    phpbb.pwakit.admin.controller:
+        class: phpbb\pwakit\controller\admin_controller
+        arguments:
+            - '@config'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@phpbb.pwakit.helper'
+            - '@phpbb.pwakit.upload'
+            - '%core.root_path%'
+        tags:
+            - { name: storage }

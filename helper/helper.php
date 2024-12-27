@@ -64,11 +64,11 @@ class helper
 	}
 
 	/**
-	 * Reset icons by ensuring all uploaded icons are tracked in the storage table
+	 * Resync icons by ensuring all uploaded icons are tracked in the storage table
 	 *
 	 * @return void
 	 */
-	public function reset_icons(): void
+	public function resync_icons(): void
 	{
 		$path = $this->storage_helper->get_current_definition('phpbb_pwakit', 'path') . '/';
 
@@ -103,7 +103,6 @@ class helper
 			$this->storage->untrack_file($file);
 		}
 	}
-
 
 	/**
 	 * Get an array of all image paths from the storage table
