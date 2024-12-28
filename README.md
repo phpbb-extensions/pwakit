@@ -2,6 +2,8 @@
 
 Under development...
 
+[![Build Status](https://github.com/phpbb-extensions/pwakit/workflows/Tests/badge.svg)](https://github.com/phpbb-extensions/pwakit/actions)
+
 ## To Do
 
 - [x] Track existing images during install?
