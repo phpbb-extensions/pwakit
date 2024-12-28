@@ -13,14 +13,14 @@ namespace phpbb\pwakit\storage;
 class storage extends \phpbb\storage\storage
 {
 	/**
-	 * Gets tracked files in the storage table for phpbb_pwakit stuff
+	 * Gets tracked files in the storage table
 	 *
 	 * @return array
 	 */
 	public function get_tracked_files(): array
 	{
 		$sql = 'SELECT file_path FROM ' . $this->storage_table . "
-			WHERE storage = 'phpbb_pwakit'
+			WHERE storage = '" . $this->db->sql_escape($this->get_name()) . "'
 			ORDER BY file_path";
 		$result = $this->db->sql_query($sql);
 		$files = $this->db->sql_fetchrowset($result);

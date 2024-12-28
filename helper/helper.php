@@ -52,7 +52,17 @@ class helper
 	}
 
 	/**
-	 * Get an array of icons (icons are cached for an hour)
+	 * Get the storage path for the current storage definition
+	 *
+	 * @return string
+	 */
+	public function get_storage_path(): string
+	{
+		return $this->storage_helper->get_current_definition($this->storage->get_name(), 'path');
+	}
+
+	/**
+	 * Get an array of icons
 	 *
 	 * @param string $use_path Optional path to use for icons, for example ./
 	 * @return array Array of icons
@@ -70,7 +80,7 @@ class helper
 	 */
 	public function resync_icons(): void
 	{
-		$path = $this->storage_helper->get_current_definition('phpbb_pwakit', 'path') . '/';
+		$path = $this->get_storage_path() . '/';
 
 		// Get both arrays at once and pre-process paths
 		$untracked_files = array_map(static function($file) use ($path) {
@@ -111,7 +121,7 @@ class helper
 	 */
 	protected function get_stored_images(): array
 	{
-		$path = $this->storage_helper->get_current_definition('phpbb_pwakit', 'path');
+		$path = $this->get_storage_path();
 		$images = $this->storage->get_tracked_files();
 
 		$result = [];
@@ -140,8 +150,8 @@ class helper
 			$finder = $this->extension_manager->get_finder();
 			$images = $finder
 				->set_extensions([])
-				->suffix(".png")
-				->core_path($this->storage_helper->get_current_definition('phpbb_pwakit', 'path') . '/')
+				->suffix('.png')
+				->core_path($this->get_storage_path() . '/')
 				->find();
 		}
 

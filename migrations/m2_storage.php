@@ -74,8 +74,6 @@ class m2_storage extends container_aware_migration
 			$this->tables['storage']
 		);
 
-		$path = $this->phpbb_root_path . ext::PWA_ICON_DIR . '/';
-
 		// Get all files at once
 		$files = $extension_manager->get_finder()
 			->set_extensions([])
@@ -83,12 +81,13 @@ class m2_storage extends container_aware_migration
 			->core_path(ext::PWA_ICON_DIR . '/')
 			->get_files();
 
-		$files_to_track = array_map(static function($image) use ($path) {
-			return str_replace($path, '', $image);
+		// Extract just the file names
+		$files = array_map(static function($image) {
+			return basename($image);
 		}, $files);
 
 		// Track each file
-		foreach ($files_to_track as $file)
+		foreach ($files as $file)
 		{
 			try
 			{
