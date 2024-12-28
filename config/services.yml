@@ -44,5 +44,3 @@ services:
             - '@phpbb.pwakit.helper'
             - '@phpbb.pwakit.upload'
             - '%core.root_path%'
-        tags:
-            - { name: storage }

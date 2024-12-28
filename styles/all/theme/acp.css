@@ -29,6 +29,9 @@
 }
 
 input[type="color"] {
-	border: none;
+	background-color: transparent;
+	border: solid 1px #d3d3d3;
+	border-radius: 2px;
+	padding: 0;
 	cursor: pointer;
 }
