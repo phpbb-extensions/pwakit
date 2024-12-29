@@ -21,6 +21,9 @@ use phpbb\template\template;
 
 class admin_controller
 {
+	/** @var string $id */
+	public string $id;
+
 	/** @var string $u_action */
 	public string $u_action;
 
@@ -88,11 +91,14 @@ class admin_controller
 	/**
 	 * Main ACP module
 	 *
+	 * @param string $id
 	 * @param string $mode
 	 * @return void
 	 */
-	public function main(string $mode = ''): void
+	public function main(string $id, string $mode = ''): void
 	{
+		$this->id = $id;
+
 		if ($mode !==  'settings')
 		{
 			return;
@@ -274,6 +280,7 @@ class admin_controller
 		else
 		{
 			confirm_box(false, 'ACP_PWA_IMG_DELETE', build_hidden_fields(array(
+				'i'			=> $this->id,
 				'mode'		=> 'settings',
 				'delete'	=> $path,
 				'action'	=> $this->u_action,

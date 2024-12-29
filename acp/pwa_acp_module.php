@@ -44,6 +44,6 @@ class pwa_acp_module
 		$this->tpl_name = 'acp_pwakit';
 		$this->page_title = 'ACP_PWA_KIT_SETTINGS';
 
-		$admin_controller->main($mode);
+		$admin_controller->main($id, $mode);
 	}
 }
