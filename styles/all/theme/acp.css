@@ -43,12 +43,13 @@ input[type="color"] {
 
 .delete-icon {
 	font-size: 7px;
-	background-color: transparent;
+	background-color: #ffffff;
 	border: none;
+	border-radius: 0 0 0 50%;
 	color: #8b0000;
 	position: absolute;
-	top: 5px;
-	right: 5px;
+	top: 0;
+	right: 0;
 	display: none;
 	cursor: pointer;
 }

@@ -59,7 +59,7 @@
 					{% set iconName = icon.src|split('/')|last %}
 					<p style="position: relative;">
 						<span class="image-container">
-							<img src="{{ icon.src }}" alt="{{ lang('ACP_PWA_KIT_ICONS_ALT') }}">
+							<img src="{{ icon.src }}" alt="{{ iconName|e("html") }}">
 							<button class="delete-icon" id="delete" name="delete" value="{{ iconName }}" title="{{ lang('ACP_PWA_IMG_DELETE') }}">
 								<span class="fa-stack fa-2x">
 									{{ Icon('font', 'circle', '', true, 'fa-stack-2x fa-inverse') }}

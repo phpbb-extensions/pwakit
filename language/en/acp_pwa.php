@@ -50,7 +50,6 @@ $lang = array_merge($lang, [
 	'ACP_PWA_BG_COLOR_EXPLAIN'		=> 'Used to specify an initial background colour for your web application. This colour appears in the application window before your application’s stylesheets have loaded.',
 	'ACP_PWA_KIT_ICONS'				=> 'Web application icons',
 	'ACP_PWA_KIT_ICONS_EXPLAIN'		=> 'PNG image files that represent your web application. Multiple sizes are preferred for compatibility with various devices.',
-	'ACP_PWA_KIT_ICONS_ALT'			=> 'Web App Manifest Icon',
 	'ACP_PWA_KIT_NO_ICONS'			=> 'No icons are available. Click <strong>Upload</strong> to add new icons or click <strong>Resync</strong> to find existing icons that were previously uploaded.',
 	'ACP_PWA_IMG_UPLOAD'			=> 'Upload web application icons',
 	'ACP_PWA_IMG_UPLOAD_EXPLAIN'	=> 'Upload PNG images to <samp>%s</samp>.',
