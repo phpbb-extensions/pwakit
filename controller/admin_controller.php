@@ -149,7 +149,7 @@ class admin_controller
 	{
 		$this->template->assign_vars([
 			'SITE_NAME'			=> $this->config->offsetGet('sitename'),
-			'SITE_NAME_SHORT'	=> $this->config->offsetGet('sitename_short'),
+			'SITE_NAME_SHORT'	=> $this->config->offsetGet('sitename_short') ?: $this->trim_name($this->config->offsetGet('sitename'), 0, 12),
 			'PWA_BG_COLOR'		=> $this->config->offsetGet('pwa_bg_color'),
 			'PWA_THEME_COLOR'	=> $this->config->offsetGet('pwa_theme_color'),
 			'PWA_IMAGES_DIR'	=> $this->helper->get_storage_path(),
@@ -286,6 +286,30 @@ class admin_controller
 				'action'	=> $this->u_action,
 			)));
 		}
+	}
+
+	/**
+	 * Trim name, accounting for multibyte and emoji chars
+	 *
+	 * @param string $string
+	 * @param int $start
+	 * @param int $length
+	 * @return string
+	 */
+	protected function trim_name(string $string, int $start, int $length): string
+	{
+		// Check if string contains any HTML entities
+		if (str_contains($string, '&') && preg_match('/&[#a-zA-Z0-9]+;/', $string))
+		{
+			$decoded = html_entity_decode($string, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+			$trimmed = utf8_substr($decoded, $start, $length);
+
+			return htmlspecialchars($trimmed, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+		}
+
+		// If no HTML entities, just trim the string directly
+		return utf8_substr($string, $start, $length);
 	}
 
 	/**
