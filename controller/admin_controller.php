@@ -21,6 +21,9 @@ use phpbb\template\template;
 
 class admin_controller
 {
+	/** @var string $id */
+	public string $id;
+
 	/** @var string $u_action */
 	public string $u_action;
 
@@ -88,11 +91,14 @@ class admin_controller
 	/**
 	 * Main ACP module
 	 *
+	 * @param string $id
 	 * @param string $mode
 	 * @return void
 	 */
-	public function main(string $mode = ''): void
+	public function main(string $id, string $mode = ''): void
 	{
+		$this->id = $id;
+
 		if ($mode !==  'settings')
 		{
 			return;
@@ -104,6 +110,7 @@ class admin_controller
 		$submit = $this->request->is_set_post('submit');
 		$upload = $this->request->is_set_post('upload');
 		$resync = $this->request->is_set_post('resync');
+		$delete = $this->request->is_set_post('delete');
 
 		if ($submit || $upload || $resync)
 		{
@@ -124,6 +131,10 @@ class admin_controller
 			{
 				$this->save_settings();
 			}
+		}
+		else if ($delete)
+		{
+			$this->delete();
 		}
 
 		$this->display_settings();
@@ -243,6 +254,38 @@ class admin_controller
 		}
 
 		$this->success('CONFIG_UPDATED');
+	}
+
+	/**
+	 * Delete image
+	 *
+	 * @return void
+	 */
+	public function delete(): void
+	{
+		$path = $this->request->variable('delete', '');
+
+		if (confirm_box(true))
+		{
+			try
+			{
+				$this->helper->delete_icon($path);
+				$this->success($this->language->lang('ACP_PWA_IMG_DELETED', $path));
+			}
+			catch (runtime_exception $e)
+			{
+				$this->error($this->language->lang('ACP_PWA_IMG_DELETE_ERROR', $this->language->lang($e->getMessage())));
+			}
+		}
+		else
+		{
+			confirm_box(false, 'ACP_PWA_IMG_DELETE', build_hidden_fields(array(
+				'i'			=> $this->id,
+				'mode'		=> 'settings',
+				'delete'	=> $path,
+				'action'	=> $this->u_action,
+			)));
+		}
 	}
 
 	/**

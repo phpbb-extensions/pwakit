@@ -56,8 +56,18 @@
 			<dt><label>{{ lang('ACP_PWA_KIT_ICONS') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_KIT_ICONS_EXPLAIN') }}</span></dt>
 			<dd>
 				{% for icon in PWA_KIT_ICONS %}
-					<p>
-						<img src="{{ icon.src }}" alt="{{ lang('ACP_PWA_KIT_ICONS_ALT') }}"><br>{{ icon.src|split('/')|last }}<br>{{ icon.sizes }}
+					{% set iconName = icon.src|split('/')|last %}
+					<p style="position: relative;">
+						<span class="delete-btn-container">
+							<img src="{{ icon.src }}" alt="{{ iconName|e("html") }}">
+							<button class="delete-btn" id="delete" name="delete" value="{{ iconName }}" title="{{ lang('ACP_PWA_IMG_DELETE') }}">
+								<span class="fa-stack fa-2x">
+									{{ Icon('font', 'circle', '', true, 'fa-stack-2x fa-inverse') }}
+									{{ Icon('font', 'trash-can', '', true, 'fa-stack-1x') }}
+								</span>
+							</button>
+						</span><br>
+						{{ iconName }}<br>{{ icon.sizes }}
 					</p>
 				{% else %}
 					{{ lang('ACP_PWA_KIT_NO_ICONS') }}

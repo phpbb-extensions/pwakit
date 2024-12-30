@@ -11,6 +11,7 @@
 namespace phpbb\pwakit\helper;
 
 use FastImageSize\FastImageSize;
+use phpbb\exception\runtime_exception;
 use phpbb\extension\manager as ext_manager;
 use phpbb\pwakit\storage\storage;
 use phpbb\storage\exception\storage_exception;
@@ -111,6 +112,39 @@ class helper
 		foreach ($files_to_untrack as $file)
 		{
 			$this->storage->untrack_file($file);
+		}
+	}
+
+	/**
+	 * Delete icon from storage and remove it from the storage table
+	 *
+	 * @param string $path
+	 * @throws runtime_exception
+	 * @return void
+	 */
+	public function delete_icon(string $path): void
+	{
+		if (empty($path))
+		{
+			throw new runtime_exception('ACP_PWA_IMG_DELETE_PATH_ERR');
+		}
+
+		// Remove any directory traversal attempts
+		$path = basename($path);
+
+		// Check for valid filename characters
+		if (!preg_match('/^[a-zA-Z0-9_\-.]+$/', $path))
+		{
+			throw new runtime_exception('ACP_PWA_IMG_DELETE_NAME_ERR');
+		}
+
+		try
+		{
+			$this->storage->delete($path);
+		}
+		catch (storage_exception $e)
+		{
+			throw new runtime_exception($e->getMessage());
 		}
 	}
 

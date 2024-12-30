@@ -35,3 +35,33 @@ input[type="color"] {
 	padding: 0;
 	cursor: pointer;
 }
+
+.delete-btn-container {
+	position: relative;
+	display: inline-block;
+}
+
+.delete-btn {
+	font-size: 7px;
+	background-color: #ffffff;
+	border: none;
+	border-radius: 0 0 0 50%;
+	color: #8b0000;
+	position: absolute;
+	top: 0;
+	right: 0;
+	display: none;
+	cursor: pointer;
+}
+
+.delete-btn-container:hover .delete-btn {
+	display: block;
+}
+
+.delete-btn:hover {
+	color: #ff0000;
+}
+
+.delete-btn:active {
+	color: #8b0000;
+}
