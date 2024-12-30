@@ -74,13 +74,32 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function manifest_updates(data $event): void
 	{
-		$icons = $this->pwa_helper->get_icons($event['board_path']);
+		// Prepare manifest updates array
+		$manifest_updates = [];
 
-		if (empty($icons))
+		// Add icons if available
+		if (!empty($icons = $this->pwa_helper->get_icons($event['board_path'])))
 		{
-			return;
+			$manifest_updates['icons'] = $icons;
 		}
 
-		$event->update_subarray('manifest', 'icons', $icons);
+		// Add theme and background colors if configured
+		if (!empty($this->config['pwa_theme_color']))
+		{
+			$manifest_updates['theme_color'] = $this->config['pwa_theme_color'];
+		}
+		if (!empty($this->config['pwa_bg_color']))
+		{
+			$manifest_updates['background_color'] = $this->config['pwa_bg_color'];
+		}
+
+		// Update manifest only if there are changes
+		if (!empty($manifest_updates))
+		{
+			foreach ($manifest_updates as $key => $value)
+			{
+				$event->update_subarray('manifest', $key, $value);
+			}
+		}
 	}
 }
