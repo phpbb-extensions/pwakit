@@ -77,12 +77,6 @@ class main_listener implements EventSubscriberInterface
 		// Prepare manifest updates array
 		$manifest_updates = [];
 
-		// Add icons if available
-		if (!empty($icons = $this->pwa_helper->get_icons($event['board_path'])))
-		{
-			$manifest_updates['icons'] = $icons;
-		}
-
 		// Add theme and background colors if configured
 		if (!empty($this->config['pwa_theme_color']))
 		{
@@ -91,6 +85,12 @@ class main_listener implements EventSubscriberInterface
 		if (!empty($this->config['pwa_bg_color']))
 		{
 			$manifest_updates['background_color'] = $this->config['pwa_bg_color'];
+		}
+
+		// Add icons if available
+		if (!empty($icons = $this->pwa_helper->get_icons($event['board_path'])))
+		{
+			$manifest_updates['icons'] = $icons;
 		}
 
 		// Update manifest only if there are changes
