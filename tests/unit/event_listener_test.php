@@ -157,6 +157,7 @@ class event_listener_test extends \phpbb_test_case
 		return [
 			[
 				'./',
+				[],
 				[
 					'icons' => [
 						[
@@ -175,6 +176,10 @@ class event_listener_test extends \phpbb_test_case
 			[
 				'./../',
 				[
+					'pwa_theme_color' => '#ffffff',
+					'pwa_bg_color' => '#000000',
+				],
+				[
 					'icons' => [
 						[
 							'src' => './../images/site_icons/touch-icon-192.png',
@@ -186,11 +191,14 @@ class event_listener_test extends \phpbb_test_case
 							'sizes' => '512x512',
 							'type' => 'image/png'
 						]
-					]
+					],
+					'theme_color' => '#ffffff',
+					'background_color' => '#000000',
 				],
 			],
 			[
 				'',
+				[],
 				[],
 			],
 		];
@@ -198,11 +206,12 @@ class event_listener_test extends \phpbb_test_case
 
 	/**
 	 * @param $board_path
+	 * @param $configs
 	 * @param $expected
 	 * @return void
 	 * @dataProvider manifest_updates_test_data
 	 */
-	public function test_manifest_updates($board_path, $expected)
+	public function test_manifest_updates($board_path, $configs, $expected)
 	{
 		$event = new data([
 			'manifest' => [
@@ -215,6 +224,11 @@ class event_listener_test extends \phpbb_test_case
 			],
 			'board_path' => $board_path,
 		]);
+
+		foreach ($configs as $key => $value)
+		{
+			$this->config[$key] = $value;
+		}
 
 		$expected = array_merge($event['manifest'], $expected);
 
