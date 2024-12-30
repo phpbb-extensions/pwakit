@@ -180,6 +180,8 @@ class event_listener_test extends \phpbb_test_case
 					'pwa_bg_color' => '#000000',
 				],
 				[
+					'theme_color' => '#ffffff',
+					'background_color' => '#000000',
 					'icons' => [
 						[
 							'src' => './../images/site_icons/touch-icon-192.png',
@@ -192,8 +194,6 @@ class event_listener_test extends \phpbb_test_case
 							'type' => 'image/png'
 						]
 					],
-					'theme_color' => '#ffffff',
-					'background_color' => '#000000',
 				],
 			],
 			[
