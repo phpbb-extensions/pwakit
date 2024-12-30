@@ -269,8 +269,8 @@ class admin_controller
 		{
 			try
 			{
-				$this->helper->delete_icon($path);
-				$this->success($this->language->lang('ACP_PWA_IMG_DELETED', $path));
+				$result = $this->helper->delete_icon($path);
+				$this->success($this->language->lang('ACP_PWA_IMG_DELETED', $result));
 			}
 			catch (runtime_exception $e)
 			{

@@ -120,9 +120,9 @@ class helper
 	 *
 	 * @param string $path
 	 * @throws runtime_exception
-	 * @return void
+	 * @return string
 	 */
-	public function delete_icon(string $path): void
+	public function delete_icon(string $path): string
 	{
 		if (empty($path))
 		{
@@ -130,10 +130,19 @@ class helper
 		}
 
 		// Remove any directory traversal attempts
-		$path = basename($path);
+		$storage_path = $this->get_storage_path() . '/';
+		$pos = strpos($path, $storage_path);
+		if ($pos !== false)
+		{
+			$path = substr($path, $pos + strlen($storage_path));
+		}
+		else
+		{
+			$path = basename($path);
+		}
 
 		// Check for valid filename characters
-		if (!preg_match('/^[a-zA-Z0-9_\-.]+$/', $path))
+		if (!preg_match('#^[a-zA-Z0-9_\-./]+$#', $path))
 		{
 			throw new runtime_exception('ACP_PWA_IMG_DELETE_NAME_ERR');
 		}
@@ -146,6 +155,8 @@ class helper
 		{
 			throw new runtime_exception($e->getMessage());
 		}
+
+		return $path;
 	}
 
 	/**
