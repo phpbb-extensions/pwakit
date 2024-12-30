@@ -53,6 +53,7 @@ $lang = array_merge($lang, [
 	'ACP_PWA_KIT_NO_ICONS'			=> 'No icons are available. Click <strong>Upload</strong> to add new icons or click <strong>Resync</strong> to find existing icons that were previously uploaded.',
 	'ACP_PWA_IMG_UPLOAD'			=> 'Upload web application icons',
 	'ACP_PWA_IMG_UPLOAD_EXPLAIN'	=> 'Upload PNG images to <samp>%s</samp>.',
+	'ACP_PWA_IMG_UPLOAD_SUCCESS'	=> 'Image uploaded successfully.',
 	'ACP_PWA_IMG_DELETE'			=> 'Delete image',
 	'ACP_PWA_IMG_DELETE_CONFIRM'	=> 'Are you sure you want to delete this image?',
 	'ACP_PWA_IMG_DELETE_ERROR'		=> 'An error occurred while trying to remove the image. %s',

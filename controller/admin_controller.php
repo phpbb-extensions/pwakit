@@ -253,7 +253,7 @@ class admin_controller
 			return;
 		}
 
-		$this->success('CONFIG_UPDATED');
+		$this->success('ACP_PWA_IMG_UPLOAD_SUCCESS');
 	}
 
 	/**
