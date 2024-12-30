@@ -36,12 +36,12 @@ input[type="color"] {
 	cursor: pointer;
 }
 
-.image-container {
+.delete-btn-container {
 	position: relative;
 	display: inline-block;
 }
 
-.delete-icon {
+.delete-btn {
 	font-size: 7px;
 	background-color: #ffffff;
 	border: none;
@@ -54,10 +54,14 @@ input[type="color"] {
 	cursor: pointer;
 }
 
-.image-container:hover .delete-icon {
+.delete-btn-container:hover .delete-btn {
 	display: block;
 }
 
-.delete-icon:hover {
+.delete-btn:hover {
 	color: #ff0000;
+}
+
+.delete-btn:active {
+	color: #8b0000;
 }
