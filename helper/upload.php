@@ -39,6 +39,17 @@ class upload
 	}
 
 	/**
+	 * Set the file spec storage
+	 *
+	 * @param filespec_storage $file
+	 * @return void
+	 */
+	public function set_file(filespec_storage $file): void
+	{
+		$this->file = $file;
+	}
+
+	/**
 	 * Handle upload
 	 *
 	 * @throws	runtime_exception
@@ -51,7 +62,7 @@ class upload
 		$this->files_upload->set_allowed_extensions(['png']);
 
 		// Upload file
-		$this->file = $this->files_upload->handle_upload('files.types.form_storage', 'pwa_upload');
+		$this->set_file($this->files_upload->handle_upload('files.types.form_storage', 'pwa_upload'));
 		$this->file->clean_filename('real');
 
 		// Move file to proper location
