@@ -145,7 +145,7 @@ class admin_controller
 	 *
 	 * @return void
 	 */
-	public function display_settings(): void
+	protected function display_settings(): void
 	{
 		$this->template->assign_vars([
 			'SITE_NAME'			=> $this->config->offsetGet('sitename'),
@@ -165,7 +165,7 @@ class admin_controller
 	 *
 	 * @return void
 	 */
-	public function save_settings(): void
+	protected function save_settings(): void
 	{
 		$config_array = [
 			'pwa_bg_color'		=> $this->request->variable('pwa_bg_color', ''),
@@ -195,7 +195,7 @@ class admin_controller
 	 *
 	 * @return bool
 	 */
-	public function display_errors(): bool
+	protected function display_errors(): bool
 	{
 		$has_errors = (bool) count($this->errors);
 
@@ -235,7 +235,7 @@ class admin_controller
 	 *
 	 * @return void
 	 */
-	public function upload(): void
+	protected function upload(): void
 	{
 		try
 		{
@@ -261,7 +261,7 @@ class admin_controller
 	 *
 	 * @return void
 	 */
-	public function delete(): void
+	protected function delete(): void
 	{
 		$path = $this->request->variable('delete', '');
 

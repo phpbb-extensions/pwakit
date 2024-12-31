@@ -39,7 +39,7 @@ if (empty($lang) || !is_array($lang))
 //
 
 $lang = array_merge($lang, [
-	'ACP_PWA_KIT_SETTINGS_EXPLAIN'	=> 'Here you can manage the members of your Web Application Manifest. You can also preview the touch icons found in <samp>%s</samp>.',
+	'ACP_PWA_KIT_SETTINGS_EXPLAIN'	=> 'Here you can manage the members of your Web Application Manifest. You can also preview the web application icons found in <samp>%s</samp>.',
 	'ACP_PWA_KIT_SITE_NAME_EXPLAIN'	=> 'Used to specify the full name of your web application. This can be configured in General -> Board Settings.',
 	'ACP_PWA_KIT_SHORT_NAME_EXPLAIN'=> 'Used to specify a short name for your web application, which may be used when the full name is too long for the available space. This can be configured in General -> Board Settings.',
 	'ACP_PWA_KIT_LEGEND_IDENTITY'	=> 'Identity &amp; Presentation',
