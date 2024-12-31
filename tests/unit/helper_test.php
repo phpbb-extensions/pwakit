@@ -119,14 +119,14 @@ class helper_test extends \phpbb_database_test_case
 			$phpbb_root_path
 		);
 
-		@copy(__DIR__ . '/fixtures/foo.png', $this->phpbb_root_path . $this->storage_path . '/foo.png');
+		@copy(__DIR__ . '/fixtures/foo.png', __DIR__ . '/../site_icons/foo.png');
 	}
 
 	protected function tearDown(): void
 	{
 		foreach (['foo.png', 'bar.png'] as $file)
 		{
-			$path = $this->phpbb_root_path . $this->storage_path . '/' . $file;
+			$path = __DIR__ . '/../site_icons/' . $file;
 			if (file_exists($path))
 			{
 				@unlink($path);
@@ -190,10 +190,10 @@ class helper_test extends \phpbb_database_test_case
 	public function test_resync_icons()
 	{
 		// delete physical foo.png file
-		@unlink($this->phpbb_root_path . $this->storage_path . '/foo.png');
+		@unlink(__DIR__ . '/../site_icons/foo.png');
 
 		// add new bar.png file
-		@copy(__DIR__ . '/fixtures/bar.png', $this->phpbb_root_path . $this->storage_path . '/bar.png');
+		@copy(__DIR__ . '/fixtures/bar.png', __DIR__ . '/../site_icons/bar.png');
 
 		// assert our storage tracking is currently still tracking the deleted image only
 		$this->assertEquals(['foo.png'], $this->storage->get_tracked_files());
