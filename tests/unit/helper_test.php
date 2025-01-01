@@ -23,6 +23,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class helper_test extends \phpbb_database_test_case
 {
+	protected const FIXTURES = __DIR__ . '/../fixtures/';
+
 	/** @var config */
 	protected config $config;
 
@@ -47,7 +49,7 @@ class helper_test extends \phpbb_database_test_case
 
 	protected function getDataSet()
 	{
-		return $this->createXMLDataSet(__DIR__ . '/fixtures/storage.xml');
+		return $this->createXMLDataSet(self::FIXTURES . 'storage.xml');
 	}
 
 	protected function setUp(): void
@@ -58,7 +60,7 @@ class helper_test extends \phpbb_database_test_case
 
 		$this->phpbb_root_path = $phpbb_root_path;
 
-		$this->storage_path = 'ext/phpbb/pwakit/tests/unit/fixtures/site_icons';
+		$this->storage_path = 'ext/phpbb/pwakit/tests/fixtures/site_icons';
 
 		$this->config = new config([
 			'storage\phpbb_pwakit\provider' => 'phpbb\\storage\\provider\\local',
@@ -119,14 +121,14 @@ class helper_test extends \phpbb_database_test_case
 			$phpbb_root_path
 		);
 
-		@copy(__DIR__ . '/fixtures/foo.png', __DIR__ . '/fixtures/site_icons/foo.png');
+		@copy(self::FIXTURES . 'foo.png', self::FIXTURES . 'site_icons/foo.png');
 	}
 
 	protected function tearDown(): void
 	{
 		foreach (['foo.png', 'bar.png'] as $file)
 		{
-			$path = __DIR__ . '/fixtures/site_icons/' . $file;
+			$path = self::FIXTURES . 'site_icons/' . $file;
 			if (file_exists($path))
 			{
 				@unlink($path);
@@ -160,11 +162,12 @@ class helper_test extends \phpbb_database_test_case
 	public function delete_icon_test_data(): array
 	{
 		return [
-			['', 'ACP_PWA_IMG_DELETE_PATH_ERR', ['foo.png']],
-			['f$$.png', 'ACP_PWA_IMG_DELETE_NAME_ERR', ['foo.png']],
-			['ext/phpbb/pwakit/tests/unit/fixtures/site_icons/foo.png', '', []],
-			['../foo.png', '', []],
-			['foo.png', '', []],
+			['', 'ACP_PWA_IMG_DELETE_PATH_ERR', ['foo.png']], // empty icon name so nothing gets deleted
+			['f$$.png', 'ACP_PWA_IMG_DELETE_NAME_ERR', ['foo.png']], // invalid icon name so nothing gets deleted
+			['bar.png', 'STORAGE_FILE_NO_EXIST', ['foo.png']], // icon doesn't exist so nothing gets deleted
+			['ext/phpbb/pwakit/tests/fixtures/site_icons/foo.png', '', []], // icon with its full storage path gets deleted
+			['../foo.png', '', []], // icon with possible path traversal still gets deleted properly
+			['foo.png', '', []], // icon by just name alone gets deleted properly
 		];
 	}
 
@@ -192,10 +195,10 @@ class helper_test extends \phpbb_database_test_case
 	public function test_resync_icons()
 	{
 		// delete physical foo.png file
-		@unlink(__DIR__ . '/fixtures/site_icons/foo.png');
+		@unlink(self::FIXTURES . 'site_icons/foo.png');
 
 		// add new bar.png file
-		@copy(__DIR__ . '/fixtures/bar.png', __DIR__ . '/fixtures/site_icons/bar.png');
+		@copy(self::FIXTURES . 'bar.png', self::FIXTURES . 'site_icons/bar.png');
 
 		// assert our storage tracking is currently still tracking the deleted image only
 		$this->assertEquals(['foo.png'], $this->storage->get_tracked_files());
