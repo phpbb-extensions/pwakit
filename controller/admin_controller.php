@@ -177,7 +177,7 @@ class admin_controller
 			$this->validate_hex_color($config_value);
 		}
 
-		if ($this->display_errors())
+		if ($this->has_errors())
 		{
 			return;
 		}
@@ -191,20 +191,28 @@ class admin_controller
 	}
 
 	/**
-	 * Display any errors
+	 * Are there any errors?
 	 *
 	 * @return bool
 	 */
-	protected function display_errors(): bool
+	protected function has_errors(): bool
 	{
-		$has_errors = (bool) count($this->errors);
+		return (bool) count($this->errors);
+	}
+
+	/**
+	 * Display any errors
+	 *
+	 * @return void
+	 */
+	protected function display_errors(): void
+	{
+		$has_errors = $this->has_errors();
 
 		$this->template->assign_vars([
 			'S_ERROR'	=> $has_errors,
 			'ERROR_MSG'	=> $has_errors ? implode('<br>', $this->errors) : '',
 		]);
-
-		return $has_errors;
 	}
 
 	/**
@@ -248,7 +256,7 @@ class admin_controller
 			$this->errors[] = $this->language->lang($e->getMessage());
 		}
 
-		if ($this->display_errors())
+		if ($this->has_errors())
 		{
 			return;
 		}
