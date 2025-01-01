@@ -145,7 +145,7 @@ class admin_controller
 	 *
 	 * @return void
 	 */
-	public function display_settings(): void
+	protected function display_settings(): void
 	{
 		$this->template->assign_vars([
 			'SITE_NAME'			=> $this->config->offsetGet('sitename'),
@@ -165,7 +165,7 @@ class admin_controller
 	 *
 	 * @return void
 	 */
-	public function save_settings(): void
+	protected function save_settings(): void
 	{
 		$config_array = [
 			'pwa_bg_color'		=> $this->request->variable('pwa_bg_color', ''),
@@ -177,7 +177,7 @@ class admin_controller
 			$this->validate_hex_color($config_value);
 		}
 
-		if ($this->display_errors())
+		if ($this->has_errors())
 		{
 			return;
 		}
@@ -191,20 +191,28 @@ class admin_controller
 	}
 
 	/**
-	 * Display any errors
+	 * Are there any errors?
 	 *
 	 * @return bool
 	 */
-	public function display_errors(): bool
+	protected function has_errors(): bool
 	{
-		$has_errors = (bool) count($this->errors);
+		return (bool) count($this->errors);
+	}
+
+	/**
+	 * Display any errors
+	 *
+	 * @return void
+	 */
+	protected function display_errors(): void
+	{
+		$has_errors = $this->has_errors();
 
 		$this->template->assign_vars([
 			'S_ERROR'	=> $has_errors,
 			'ERROR_MSG'	=> $has_errors ? implode('<br>', $this->errors) : '',
 		]);
-
-		return $has_errors;
 	}
 
 	/**
@@ -235,7 +243,7 @@ class admin_controller
 	 *
 	 * @return void
 	 */
-	public function upload(): void
+	protected function upload(): void
 	{
 		try
 		{
@@ -248,7 +256,7 @@ class admin_controller
 			$this->errors[] = $this->language->lang($e->getMessage());
 		}
 
-		if ($this->display_errors())
+		if ($this->has_errors())
 		{
 			return;
 		}
@@ -261,7 +269,7 @@ class admin_controller
 	 *
 	 * @return void
 	 */
-	public function delete(): void
+	protected function delete(): void
 	{
 		$path = $this->request->variable('delete', '');
 

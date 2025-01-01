@@ -39,7 +39,7 @@ if (empty($lang) || !is_array($lang))
 //
 
 $lang = array_merge($lang, [
-	'ACP_PWA_KIT_SETTINGS_EXPLAIN'	=> 'Here you can manage the members of your Web Application Manifest. You can also preview the touch icons found in <samp>%s</samp>.',
+	'ACP_PWA_KIT_SETTINGS_EXPLAIN'	=> 'Here you can manage the members of your Web Application Manifest. You can also preview the web application icons found in <samp>%s</samp>.',
 	'ACP_PWA_KIT_SITE_NAME_EXPLAIN'	=> 'Used to specify the full name of your web application. This can be configured in General -> Board Settings.',
 	'ACP_PWA_KIT_SHORT_NAME_EXPLAIN'=> 'Used to specify a short name for your web application, which may be used when the full name is too long for the available space. This can be configured in General -> Board Settings.',
 	'ACP_PWA_KIT_LEGEND_IDENTITY'	=> 'Identity &amp; Presentation',
@@ -48,6 +48,7 @@ $lang = array_merge($lang, [
 	'ACP_PWA_THEME_COLOR_EXPLAIN'	=> 'Used to specify the default colour for your web application’s user interface. This colour may be applied to various browser UI elements, such as the toolbar, address bar, and status bar.',
 	'ACP_PWA_BG_COLOR'				=> 'Background colour (optional)',
 	'ACP_PWA_BG_COLOR_EXPLAIN'		=> 'Used to specify an initial background colour for your web application. This colour appears in the application window before your application’s stylesheets have loaded.',
+	'ACP_PWA_INVALID_COLOR'			=> 'The colour code “<samp>%s</samp>” is not a valid hex code.',
 	'ACP_PWA_KIT_ICONS'				=> 'Web application icons',
 	'ACP_PWA_KIT_ICONS_EXPLAIN'		=> 'PNG image files that represent your web application. Multiple sizes are preferred for compatibility with various devices.',
 	'ACP_PWA_KIT_NO_ICONS'			=> 'No icons are available. Click <strong>Upload</strong> to add new icons or click <strong>Resync</strong> to find existing icons that were previously uploaded.',
@@ -60,7 +61,6 @@ $lang = array_merge($lang, [
 	'ACP_PWA_IMG_DELETED'			=> '“%s” has been removed.',
 	'ACP_PWA_IMG_DELETE_PATH_ERR'	=> 'Invalid file path provided.',
 	'ACP_PWA_IMG_DELETE_NAME_ERR'	=> 'Invalid characters in filename.',
-	'PWA_IMG_RESYNC_BTN'			=> 'Resync',
-	'PWA_IMG_UPLOAD_BTN'			=> 'Upload',
-	'ACP_PWA_INVALID_COLOR'			=> 'The colour code “<samp>%s</samp>” is not a valid hex code.',
+	'ACP_PWA_IMG_RESYNC_BTN'		=> 'Resync',
+	'ACP_PWA_IMG_UPLOAD_BTN'		=> 'Upload',
 ]);

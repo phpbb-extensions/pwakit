@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+    <table name="phpbb_storage">
+        <column>file_id</column>
+        <column>file_path</column>
+        <column>storage</column>
+        <column>filesize</column>
+        <row>
+            <value>1</value>
+            <value>foo.png</value>
+            <value>phpbb_pwakit</value>
+            <value>161</value>
+        </row>
+    </table>
+</dataset>
