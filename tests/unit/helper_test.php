@@ -58,7 +58,7 @@ class helper_test extends \phpbb_database_test_case
 
 		$this->phpbb_root_path = $phpbb_root_path;
 
-		$this->storage_path = 'ext/phpbb/pwakit/tests/site_icons';
+		$this->storage_path = 'ext/phpbb/pwakit/tests/unit/fixtures/site_icons';
 
 		$this->config = new config([
 			'storage\phpbb_pwakit\provider' => 'phpbb\\storage\\provider\\local',
@@ -119,14 +119,14 @@ class helper_test extends \phpbb_database_test_case
 			$phpbb_root_path
 		);
 
-		@copy(__DIR__ . '/fixtures/foo.png', __DIR__ . '/../site_icons/foo.png');
+		@copy(__DIR__ . '/fixtures/foo.png', __DIR__ . '/fixtures/site_icons/foo.png');
 	}
 
 	protected function tearDown(): void
 	{
 		foreach (['foo.png', 'bar.png'] as $file)
 		{
-			$path = __DIR__ . '/../site_icons/' . $file;
+			$path = __DIR__ . '/fixtures/site_icons/' . $file;
 			if (file_exists($path))
 			{
 				@unlink($path);
@@ -161,8 +161,10 @@ class helper_test extends \phpbb_database_test_case
 	{
 		return [
 			['', 'ACP_PWA_IMG_DELETE_PATH_ERR', ['foo.png']],
-			['foo$$.png', 'ACP_PWA_IMG_DELETE_NAME_ERR', ['foo.png']],
-			['foo.png', '', []]
+			['f$$.png', 'ACP_PWA_IMG_DELETE_NAME_ERR', ['foo.png']],
+			['ext/phpbb/pwakit/tests/unit/fixtures/site_icons/foo.png', '', []],
+			['../foo.png', '', []],
+			['foo.png', '', []],
 		];
 	}
 
@@ -177,7 +179,7 @@ class helper_test extends \phpbb_database_test_case
 		try
 		{
 			$deleted = $this->helper->delete_icon($icon);
-			$this->assertEquals($icon, $deleted);
+			$this->assertEquals(basename($icon), $deleted);
 		}
 		catch (runtime_exception $e)
 		{
@@ -190,10 +192,10 @@ class helper_test extends \phpbb_database_test_case
 	public function test_resync_icons()
 	{
 		// delete physical foo.png file
-		@unlink(__DIR__ . '/../site_icons/foo.png');
+		@unlink(__DIR__ . '/fixtures/site_icons/foo.png');
 
 		// add new bar.png file
-		@copy(__DIR__ . '/fixtures/bar.png', __DIR__ . '/../site_icons/bar.png');
+		@copy(__DIR__ . '/fixtures/bar.png', __DIR__ . '/fixtures/site_icons/bar.png');
 
 		// assert our storage tracking is currently still tracking the deleted image only
 		$this->assertEquals(['foo.png'], $this->storage->get_tracked_files());
