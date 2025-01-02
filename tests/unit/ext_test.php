@@ -10,6 +10,8 @@
 
 namespace phpbb\pwakit\tests\unit;
 
+use PHPUnit\Framework\MockObject\MockObject;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use phpbb\config\config;
 use phpbb\db\migrator;
 use phpbb\filesystem\exception\filesystem_exception;
@@ -19,8 +21,6 @@ use phpbb\log\log;
 use phpbb\pwakit\ext;
 use phpbb_mock_user;
 use phpbb_test_case;
-use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ext_test extends phpbb_test_case
 {

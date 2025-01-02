@@ -10,14 +10,15 @@
 
 namespace phpbb\pwakit\tests\unit;
 
+use PHPUnit\Framework\MockObject\MockObject;
+use phpbb\exception\runtime_exception;
 use phpbb\files\filespec_storage;
 use phpbb\files\upload as files_upload;
 use phpbb\pwakit\helper\upload;
 use phpbb\storage\storage;
-use PHPUnit\Framework\MockObject\MockObject;
-use phpbb\exception\runtime_exception;
+use phpbb_test_case;
 
-class upload_test extends \phpbb_test_case
+class upload_test extends phpbb_test_case
 {
 	protected MockObject|\phpbb\files\upload $files_upload;
 	protected MockObject|filespec_storage $file;

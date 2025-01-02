@@ -11,17 +11,27 @@
 namespace phpbb\pwakit\tests\unit;
 
 use FastImageSize\FastImageSize;
+use PHPUnit\DbUnit\DataSet\DefaultDataSet;
+use PHPUnit\DbUnit\DataSet\IDataSet;
+use PHPUnit\DbUnit\DataSet\XmlDataSet;
+use PHPUnit\Framework\MockObject\MockObject;
+use phpbb\cache\driver\driver_interface as cache;
 use phpbb\config\config;
 use phpbb\di\service_collection;
 use phpbb\exception\runtime_exception;
 use phpbb\filesystem\filesystem;
 use phpbb\pwakit\helper\helper;
 use phpbb\pwakit\storage\storage;
+use phpbb\storage\adapter\local as adapter_local;
 use phpbb\storage\adapter_factory;
+use phpbb\storage\provider\local as provider_local;
+use phpbb\storage\state_helper;
 use phpbb\template\template;
-use PHPUnit\Framework\MockObject\MockObject;
+use phpbb_database_test_case;
+use phpbb_mock_container_builder;
+use phpbb_mock_extension_manager;
 
-class helper_test extends \phpbb_database_test_case
+class helper_test extends phpbb_database_test_case
 {
 	protected const FIXTURES = __DIR__ . '/../fixtures/';
 
@@ -47,7 +57,7 @@ class helper_test extends \phpbb_database_test_case
 		return array('phpbb/pwakit');
 	}
 
-	protected function getDataSet()
+	protected function getDataSet(): IDataSet|XmlDataSet|DefaultDataSet
 	{
 		return $this->createXMLDataSet(self::FIXTURES . 'storage.xml');
 	}
@@ -63,36 +73,36 @@ class helper_test extends \phpbb_database_test_case
 		$this->storage_path = 'ext/phpbb/pwakit/tests/fixtures/site_icons';
 
 		$this->config = new config([
-			'storage\phpbb_pwakit\provider' => 'phpbb\\storage\\provider\\local',
+			'storage\phpbb_pwakit\provider' => provider_local::class,
 			'storage\phpbb_pwakit\config\path' => $this->storage_path
 		]);
 
-		$phpbb_extension_manager = new \phpbb_mock_extension_manager($phpbb_root_path);
+		$phpbb_extension_manager = new phpbb_mock_extension_manager($phpbb_root_path);
 
-		$cache = $this->createMock('\phpbb\cache\driver\driver_interface');
+		$cache = $this->createMock(cache::class);
 
 		$db = $this->new_dbal();
 
-		$phpbb_container = new \phpbb_mock_container_builder();
+		$phpbb_container = new phpbb_mock_container_builder();
 
-		$storage_provider = new \phpbb\storage\provider\local();
+		$storage_provider = new provider_local();
 		$phpbb_container->set('storage.provider.local', $storage_provider);
 		$provider_collection = new service_collection($phpbb_container);
 		$provider_collection->add('storage.provider.local');
-		$provider_collection->add_service_class('storage.provider.local', 'phpbb\storage\provider\local');
+		$provider_collection->add_service_class('storage.provider.local', provider_local::class);
 
-		$adapter_local = new \phpbb\storage\adapter\local(new filesystem(), $phpbb_root_path);
+		$adapter_local = new adapter_local(new filesystem(), $phpbb_root_path);
 		$phpbb_container->set('storage.adapter.local', $adapter_local);
 		$adapter_collection = new service_collection($phpbb_container);
 		$adapter_collection->add('storage.adapter.local');
-		$adapter_collection->add_service_class('storage.adapter.local', 'phpbb\storage\adapter\local');
+		$adapter_collection->add_service_class('storage.adapter.local', adapter_local::class);
 
 		$adapter_factory = new adapter_factory(
 			$this->config,
 			$adapter_collection,
 			$provider_collection
 		);
-		$state_helper = $this->getMockBuilder('\phpbb\storage\state_helper')
+		$state_helper = $this->getMockBuilder(state_helper::class)
 			->disableOriginalConstructor()
 			->getMock();
 
