@@ -22,7 +22,7 @@ use phpbb\filesystem\exception\filesystem_exception;
 class ext extends base
 {
 	public const PWA_ICON_DIR = 'images/site_icons';
-	protected const PHPBB_MIN_VERSION = '4.0.0-dev';
+	public const PHPBB_MIN_VERSION = '4.0.0-dev';
 
 	/**
 	 * {@inheritdoc}
