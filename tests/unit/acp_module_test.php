@@ -10,18 +10,18 @@
 
 namespace phpbb\pwakit\tests\unit;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use p_master;
 use phpbb\cache\driver\dummy;
+use phpbb\db\driver\driver_interface;
 use phpbb\module\module_manager;
-use phpbb_mock_event_dispatcher;
-use phpbb_mock_extension_manager;
+use phpbb\pwakit\acp\pwa_acp_module;
+use phpbb\pwakit\controller\admin_controller;
 use phpbb\request\request;
 use phpbb\template\template;
+use phpbb_mock_event_dispatcher;
+use phpbb_mock_extension_manager;
 use phpbb_test_case;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use phpbb\pwakit\controller\admin_controller;
-use phpbb\pwakit\acp\pwa_acp_module;
-use phpbb\db\driver\driver_interface;
 
 require_once __DIR__ . '/../../../../../includes/functions_module.php';
 

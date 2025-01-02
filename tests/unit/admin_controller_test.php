@@ -10,6 +10,7 @@
 
 namespace phpbb\pwakit\controller;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use phpbb\config\config;
 use phpbb\exception\runtime_exception;
 use phpbb\language\language;
@@ -20,7 +21,6 @@ use phpbb\request\request;
 use phpbb\request\request_interface;
 use phpbb\template\template;
 use phpbb_test_case;
-use PHPUnit\Framework\MockObject\MockObject;
 
 class admin_controller_test extends phpbb_test_case
 {

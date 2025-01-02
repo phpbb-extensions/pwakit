@@ -10,15 +10,16 @@
 
 namespace phpbb\pwakit\tests\unit;
 
+use PHPUnit\Framework\MockObject\MockObject;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use phpbb\config\config;
 use phpbb\event\data;
 use phpbb\pwakit\event\main_listener;
 use phpbb\pwakit\helper\helper;
 use phpbb\template\template;
-use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use phpbb_test_case;
 
-class event_listener_test extends \phpbb_test_case
+class event_listener_test extends phpbb_test_case
 {
 	/** @var config */
 	protected config $config;
