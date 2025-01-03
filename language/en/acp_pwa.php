@@ -39,7 +39,7 @@ if (empty($lang) || !is_array($lang))
 //
 
 $lang = array_merge($lang, [
-	'ACP_PWA_KIT_SETTINGS_EXPLAIN'	=> 'Here you can manage the members of your Web Application Manifest. You can also preview the web application icons found in <samp>%s</samp>.',
+	'ACP_PWA_KIT_SETTINGS_EXPLAIN'	=> 'Here you can manage the appearance and branding of your Web Application as it will appear on mobile devices with custom app icons and UI colors.',
 	'ACP_PWA_KIT_SITE_NAME_EXPLAIN'	=> 'Used to specify the full name of your web application. This can be configured in General -> Board Settings.',
 	'ACP_PWA_KIT_SHORT_NAME_EXPLAIN'=> 'Used to specify a short name for your web application, which may be used when the full name is too long for the available space. This can be configured in General -> Board Settings.',
 	'ACP_PWA_KIT_LEGEND_IDENTITY'	=> 'Identity &amp; Presentation',
@@ -53,7 +53,7 @@ $lang = array_merge($lang, [
 	'ACP_PWA_KIT_ICONS_EXPLAIN'		=> 'PNG image files that represent your web application. Multiple sizes are preferred for compatibility with various devices.',
 	'ACP_PWA_KIT_NO_ICONS'			=> 'No icons are available. Click <strong>Upload</strong> to add new icons or click <strong>Resync</strong> to find existing icons that were previously uploaded.',
 	'ACP_PWA_IMG_UPLOAD'			=> 'Upload web application icons',
-	'ACP_PWA_IMG_UPLOAD_EXPLAIN'	=> 'Upload PNG images to <samp>%s</samp>.',
+	'ACP_PWA_IMG_UPLOAD_EXPLAIN'	=> 'Upload PNG images. Images are currently being stored in <samp>%s</samp>. This can be changed at any time to another location in General -> Storage settings.',
 	'ACP_PWA_IMG_UPLOAD_SUCCESS'	=> 'Image uploaded successfully.',
 	'ACP_PWA_IMG_DELETE'			=> 'Delete image',
 	'ACP_PWA_IMG_DELETE_CONFIRM'	=> 'Are you sure you want to delete this image?',
