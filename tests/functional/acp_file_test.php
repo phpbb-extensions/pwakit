@@ -115,4 +115,31 @@ class acp_file_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
 		$this->assertStringContainsString('foo.png', $crawler->filter('fieldset')->eq(2)->text());
 	}
+
+	public function test_resync_delete_file()
+	{
+		// Manually copy image to site icon dir
+		copy($this->path . 'bar.png', __DIR__ . '/../../../../../images/site_icons/bar.png');
+
+		$this->login();
+		$this->admin_login();
+
+		// Ensure copied image does not yet appear
+		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
+		$this->assertContainsLang('ACP_PWA_KIT_NO_ICONS', $crawler->filter('fieldset')->eq(2)->html());
+
+		// Resync image
+		$form = $crawler->selectButton('resync')->form();
+		$crawler = self::submit($form);
+		$this->assertStringContainsString('bar.png', $crawler->filter('fieldset')->eq(2)->text());
+
+		// Delete image
+		$form = $crawler->selectButton('delete')->form(['delete' => 'bar.png']);
+		$crawler = self::submit($form);
+		$form = $crawler->selectButton('confirm')->form(['delete' => 'bar.png']);
+		$crawler = self::submit($form);
+		$this->assertStringContainsString($this->lang('ACP_PWA_IMG_DELETED', 'bar.png'), $crawler->text());
+		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
+		$this->assertContainsLang('ACP_PWA_KIT_NO_ICONS', $crawler->filter('fieldset')->eq(2)->html());
+	}
 }
