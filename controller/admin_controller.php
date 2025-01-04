@@ -60,9 +60,9 @@ class admin_controller
 	 * @param template $template
 	 * @param helper $helper
 	 * @param upload $upload
-	 * @param $phpbb_root_path
+	 * @param string $phpbb_root_path
 	 */
-	public function __construct(config $config, language $language, request $request, template $template, helper $helper, upload $upload, $phpbb_root_path)
+	public function __construct(config $config, language $language, request $request, template $template, helper $helper, upload $upload, string $phpbb_root_path)
 	{
 		$this->config = $config;
 		$this->helper = $helper;
