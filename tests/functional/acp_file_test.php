@@ -55,11 +55,6 @@ class acp_file_test extends phpbb_functional_test_case
 
 	private function upload_file($filename, $mimetype): Crawler
 	{
-		if (isset(self::$config['phpbb_functional_url']))
-		{
-			self::markTestSkipped('This test skipped on local dev servers.');
-		}
-
 		// Request ACP index for correct URL
 		self::request('GET', 'adm/index.php?sid=' . $this->sid);
 
