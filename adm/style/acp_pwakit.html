@@ -28,11 +28,17 @@
 		</dl>
 		<dl>
 			<dt><label for="pwa_theme_color">{{ lang('ACP_PWA_THEME_COLOR') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_THEME_COLOR_EXPLAIN') }}</span></dt>
-			<dd><input type="text" id="pwa_theme_color" name="pwa_theme_color" size="20" value="{{ PWA_THEME_COLOR }}" placeholder="#000000"> <input type="color" id="pwa_theme_color_picker" value="#000000"></dd>
+			<dd>
+				<input type="text" id="pwa_theme_color" name="pwa_theme_color" size="20" value="{{ PWA_THEME_COLOR }}" placeholder="#000000">
+				<input type="color" id="pwa_theme_color_picker" aria-label="{{ lang('ACP_PWA_THEME_COLOR') }}" value="{{ PWA_THEME_COLOR|default('#000000') }}">
+			</dd>
 		</dl>
 		<dl>
 			<dt><label for="pwa_bg_color">{{ lang('ACP_PWA_BG_COLOR') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_BG_COLOR_EXPLAIN') }}</span></dt>
-			<dd><input type="text" id="pwa_bg_color" name="pwa_bg_color" size="20" value="{{ PWA_BG_COLOR }}" placeholder="#000000"> <input type="color" id="pwa_bg_color_picker" value="#000000"></dd>
+			<dd>
+				<input type="text" id="pwa_bg_color" name="pwa_bg_color" size="20" value="{{ PWA_BG_COLOR }}" placeholder="#000000">
+				<input type="color" id="pwa_bg_color_picker" aria-label="{{ lang('ACP_PWA_BG_COLOR') }}" value="{{ PWA_BG_COLOR|default('#000000') }}">
+			</dd>
 		</dl>
 	</fieldset>
 
@@ -48,8 +54,8 @@
 			<dt><label for="pwa_upload">{{ lang('ACP_PWA_IMG_UPLOAD') ~ lang('COLON') }}</label><br /><span>{{ lang('ACP_PWA_IMG_UPLOAD_EXPLAIN', PWA_IMAGES_DIR) }}</span></dt>
 			<dd>
 				<input type="file" accept="image/*" class="inputbox autowidth" id="pwa_upload" name="pwa_upload" />
-				<button class="button2 pwakit-button" id="upload" name="upload">{{ Icon('font', 'upload', lang('ACP_PWA_IMG_UPLOAD_BTN')) }}</button>
-				<button class="button2 pwakit-button" id="resync" name="resync">{{ Icon('font', 'sync', lang('ACP_PWA_IMG_RESYNC_BTN')) }}</button>
+				<button class="button2 pwakit-button" id="upload" name="upload" value="{{ lang('ACP_PWA_IMG_UPLOAD_BTN') }}">{{ Icon('font', 'upload', lang('ACP_PWA_IMG_UPLOAD_BTN')) }}</button>
+				<button class="button2 pwakit-button" id="resync" name="resync" value="{{ lang('ACP_PWA_IMG_RESYNC_BTN') }}">{{ Icon('font', 'sync', lang('ACP_PWA_IMG_RESYNC_BTN')) }}</button>
 			</dd>
 		</dl>
 		<dl>
@@ -60,7 +66,7 @@
 					<p style="position: relative;">
 						<span class="delete-btn-container">
 							<img src="{{ icon.src }}" alt="{{ iconName|e("html") }}">
-							<button class="delete-btn" id="delete" name="delete" value="{{ icon.src }}" title="{{ lang('ACP_PWA_IMG_DELETE') }}">
+							<button class="delete-btn" name="delete" value="{{ icon.src }}" title="{{ lang('ACP_PWA_IMG_DELETE') }}">
 								<span class="fa-stack fa-2x">
 									{{ Icon('font', 'circle', '', true, 'fa-stack-2x fa-inverse') }}
 									{{ Icon('font', 'trash-can', '', true, 'fa-stack-1x') }}
