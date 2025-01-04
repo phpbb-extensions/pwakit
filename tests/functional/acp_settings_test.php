@@ -27,6 +27,7 @@ class acp_settings_test extends \phpbb_functional_test_case
 	{
 		$this->login();
 		$this->admin_login();
+		$this->add_lang('acp/extensions');
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
 

@@ -51,9 +51,11 @@ class acp_file_test extends \phpbb_functional_test_case
 
 	private function upload_file($filename, $mimetype)
 	{
-		$url = 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid;
+		// don't use adm, somehow self::$client->request remembers it from the admin log in
+		$url = 'index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid;
 
 		$crawler = self::$client->request('GET', $url);
+		$this->assertContainsLang('ACP_PWA_KIT_SETTINGS', $crawler->text());
 
 		$file_form_data = array_merge(['upload' => $this->lang('ACP_PWA_IMG_UPLOAD_BTN')], $this->get_hidden_fields($crawler, $url));
 
@@ -72,7 +74,9 @@ class acp_file_test extends \phpbb_functional_test_case
 			['pwa_upload' => $file]
 		);
 
-		return $crawler;
+		$this->assertContainsLang('ACP_PWA_IMG_UPLOAD_SUCCESS', $crawler->text());
+
+		return self::$client->request('GET', $url);
 	}
 
 //	public function test_empty_file()
@@ -150,9 +154,7 @@ class acp_file_test extends \phpbb_functional_test_case
 		// Ensure there was no error message rendered
 		$this->assertStringNotContainsString('<h2>' . $this->lang('INFORMATION') . '</h2>', self::get_content());
 
-		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
-
 		// Also the file name should be in the first row of the files table
-		$this->assertEquals('foo.png', $crawler->filter('fieldset')->eq(2)->text());
+		$this->assertStringContainsString('foo.png', $crawler->filter('fieldset')->eq(2)->text());
 	}
 }
