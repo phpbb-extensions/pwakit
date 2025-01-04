@@ -10,12 +10,16 @@
 
 namespace phpbb\pwakit\tests\functional;
 
+use DirectoryIterator;
+use phpbb_functional_test_case;
+use Symfony\Component\DomCrawler\Crawler;
+
 /**
  * @group functional
  */
-class acp_file_test extends \phpbb_functional_test_case
+class acp_file_test extends phpbb_functional_test_case
 {
-	private $path;
+	private string $path;
 
 	protected static function setup_extensions(): array
 	{
@@ -32,7 +36,7 @@ class acp_file_test extends \phpbb_functional_test_case
 
 	protected function tearDown(): void
 	{
-		$iterator = new \DirectoryIterator(__DIR__ . '/../../../../../images/site_icons/');
+		$iterator = new DirectoryIterator(__DIR__ . '/../../../../../images/site_icons/');
 		foreach ($iterator as $fileinfo)
 		{
 			if (
@@ -49,8 +53,11 @@ class acp_file_test extends \phpbb_functional_test_case
 		}
 	}
 
-	private function upload_file($filename, $mimetype)
+	private function upload_file($filename, $mimetype): Crawler
 	{
+		// Request index for correct URL
+		self::request('GET', 'adm/index.php?sid=' . $this->sid);
+
 		// don't use adm, somehow self::$client->request remembers it from the admin log in
 		$url = 'index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid;
 
@@ -67,16 +74,12 @@ class acp_file_test extends \phpbb_functional_test_case
 			'error' => UPLOAD_ERR_OK,
 		];
 
-		$crawler = self::$client->request(
+		return self::$client->request(
 			'POST',
 			$url,
 			$file_form_data,
 			['pwa_upload' => $file]
 		);
-
-		$this->assertContainsLang('ACP_PWA_IMG_UPLOAD_SUCCESS', $crawler->text());
-
-		return self::$client->request('GET', $url);
 	}
 
 //	public function test_empty_file()
@@ -152,9 +155,9 @@ class acp_file_test extends \phpbb_functional_test_case
 		$crawler = $this->upload_file('foo.png', 'image/png');
 
 		// Ensure there was no error message rendered
-		$this->assertStringNotContainsString('<h2>' . $this->lang('INFORMATION') . '</h2>', self::get_content());
+		$this->assertContainsLang('ACP_PWA_IMG_UPLOAD_SUCCESS', $crawler->text());
 
-		// Also the file name should be in the first row of the files table
+		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
 		$this->assertStringContainsString('foo.png', $crawler->filter('fieldset')->eq(2)->text());
 	}
 }
