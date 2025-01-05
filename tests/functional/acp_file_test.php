@@ -28,7 +28,13 @@ class acp_file_test extends phpbb_functional_test_case
 
 	protected function setUp(): void
 	{
+		if (getenv('GITHUB_ACTIONS') !== 'true')
+		{
+			$this->markTestSkipped('This test is skipped on local test servers since they may not always work for uploading.');
+		}
+
 		parent::setUp();
+
 		$this->path = __DIR__ . '/../fixtures/';
 		$this->add_lang('posting');
 		$this->add_lang_ext('phpbb/pwakit', ['acp_pwa', 'info_acp_pwa']);

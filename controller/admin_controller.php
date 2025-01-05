@@ -310,9 +310,7 @@ class admin_controller
 		if (str_contains($string, '&') && preg_match('/&[#a-zA-Z0-9]+;/', $string))
 		{
 			$decoded = html_entity_decode($string, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-
 			$trimmed = utf8_substr($decoded, $start, $length);
-
 			return htmlspecialchars($trimmed, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 		}
 
