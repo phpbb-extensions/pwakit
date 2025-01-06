@@ -19,7 +19,8 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class acp_file_test extends phpbb_functional_test_case
 {
-	private string $path;
+	private string $fixtures;
+	private string $icons;
 
 	protected static function setup_extensions(): array
 	{
@@ -35,27 +36,29 @@ class acp_file_test extends phpbb_functional_test_case
 
 		parent::setUp();
 
-		$this->path = __DIR__ . '/../fixtures/';
+		$this->fixtures = __DIR__ . '/../fixtures/';
+		$this->icons = __DIR__ . '/../../../../../images/site_icons/';
+
 		$this->add_lang('posting');
 		$this->add_lang_ext('phpbb/pwakit', ['acp_pwa', 'info_acp_pwa']);
 	}
 
 	protected function tearDown(): void
 	{
-		$iterator = new DirectoryIterator(__DIR__ . '/../../../../../images/site_icons/');
-		foreach ($iterator as $fileinfo)
+		$iterator = new DirectoryIterator($this->icons);
+		foreach ($iterator as $fileInfo)
 		{
 			if (
-				$fileinfo->isDot()
-				|| $fileinfo->isDir()
-				|| $fileinfo->getFilename() === 'index.htm'
-				|| $fileinfo->getFilename() === '.htaccess'
+				$fileInfo->isDot()
+				|| $fileInfo->isDir()
+				|| $fileInfo->getFilename() === 'index.htm'
+				|| $fileInfo->getFilename() === '.htaccess'
 			)
 			{
 				continue;
 			}
 
-			unlink($fileinfo->getPathname());
+			unlink($fileInfo->getPathname());
 		}
 	}
 
@@ -73,10 +76,10 @@ class acp_file_test extends phpbb_functional_test_case
 		$file_form_data = array_merge(['upload' => $this->lang('ACP_PWA_IMG_UPLOAD_BTN')], $this->get_hidden_fields($crawler, $url));
 
 		$file = [
-			'tmp_name' => $this->path . $filename,
+			'tmp_name' => $this->fixtures . $filename,
 			'name' => $filename,
 			'type' => $mimetype,
-			'size' => filesize($this->path . $filename),
+			'size' => filesize($this->fixtures . $filename),
 			'error' => UPLOAD_ERR_OK,
 		];
 
@@ -110,64 +113,128 @@ class acp_file_test extends phpbb_functional_test_case
 
 	public function test_upload_valid_file()
 	{
+		$test_image = 'foo.png';
+
 		// Check icon does not yet appear in the html tags
-		$crawler = self::request('GET', 'index.php');
-		$this->assertCount(0, $crawler->filter('link[rel="apple-touch-icon"]'));
+		$this->assertAppleTouchIconNotPresent();
 
 		$this->login();
 		$this->admin_login();
 
-		$crawler = $this->upload_file('foo.png', 'image/png');
+		$crawler = $this->upload_file($test_image, 'image/png');
 
 		// Ensure there was no error message rendered
 		$this->assertContainsLang('ACP_PWA_IMG_UPLOAD_SUCCESS', $crawler->text());
 
 		// Check icon appears in the ACP as expected
-		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
-		$this->assertStringContainsString('foo.png', $crawler->filter('fieldset')->eq(2)->text());
+		$this->assertIconInACP($test_image);
 
 		// Check icon appears in the html tags as expected
-		$crawler = self::request('GET', 'index.php?sid=' . $this->sid);
-		$this->assertStringContainsString('foo.png', $crawler->filter('link[rel="apple-touch-icon"]')->attr('href'));
+		$this->assertAppleTouchIconPresent($test_image);
 	}
 
 	public function test_resync_delete_file()
 	{
+		$test_image = 'bar.png';
+
 		// Manually copy image to site icon dir
-		copy($this->path . 'bar.png', __DIR__ . '/../../../../../images/site_icons/bar.png');
+		@copy($this->fixtures . $test_image, $this->icons . $test_image);
 
 		// Check icon does not appear in the html tags
-		$crawler = self::request('GET', 'index.php');
-		$this->assertCount(0, $crawler->filter('link[rel="apple-touch-icon"]'));
+		$this->assertAppleTouchIconNotPresent();
 
 		$this->login();
 		$this->admin_login();
 
-		// Ensure copied image does not appear
-		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
-		$this->assertContainsLang('ACP_PWA_KIT_NO_ICONS', $crawler->filter('fieldset')->eq(2)->html());
+		// Ensure copied image does not appear in ACP
+		$crawler = $this->assertIconsNotInACP();
 
-		// Resync image
-		$form = $crawler->selectButton('resync')->form();
-		$crawler = self::submit($form);
-		$this->assertStringContainsString('bar.png', $crawler->filter('fieldset')->eq(2)->text());
-
-		// Check icon appears in the html tags as expected
-		$crawler = self::request('GET', 'index.php?sid=' . $this->sid);
-		$this->assertStringContainsString('bar.png', $crawler->filter('link[rel="apple-touch-icon"]')->attr('href'));
+		// Resync image and then verify icon appears in the html tags as expected
+		$this->performResync($crawler, $test_image);
+		$this->assertAppleTouchIconPresent($test_image);
 
 		// Delete image
-		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
-		$form = $crawler->selectButton('delete')->form(['delete' => 'bar.png']);
-		$crawler = self::submit($form);
-		$form = $crawler->selectButton('confirm')->form(['delete' => 'bar.png']);
-		$crawler = self::submit($form);
-		$this->assertStringContainsString($this->lang('ACP_PWA_IMG_DELETED', 'bar.png'), $crawler->text());
-		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
-		$this->assertContainsLang('ACP_PWA_KIT_NO_ICONS', $crawler->filter('fieldset')->eq(2)->html());
+		$this->performDelete($test_image);
+		$this->assertIconsNotInACP();
 
 		// Check icon does not appear in the html tags
+		$this->assertAppleTouchIconNotPresent();
+	}
+
+	/**
+	 * Perform the resync action
+	 *
+	 * @param Crawler $crawler
+	 * @param string $expected The name of an icon/image expected to see after resync
+	 * @return void
+	 */
+	private function performResync(Crawler $crawler, string $expected): void
+	{
+		$form = $crawler->selectButton('resync')->form();
+		$crawler = self::submit($form);
+		$this->assertStringContainsString($expected, $crawler->filter('fieldset')->eq(2)->text());
+	}
+
+	/**
+	 * Perform the delete action for an icon
+	 *
+	 * @param string $icon
+	 * @return void
+	 */
+	private function performDelete(string $icon): void
+	{
+		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
+		$form = $crawler->selectButton('delete')->form(['delete' => $icon]);
+		$crawler = self::submit($form);
+		$form = $crawler->selectButton('confirm')->form(['delete' => $icon]);
+		$crawler = self::submit($form);
+		$this->assertStringContainsString($this->lang('ACP_PWA_IMG_DELETED', $icon), $crawler->text());
+	}
+
+	/**
+	 * Assert icon's meta tags do not appear in HTML
+	 *
+	 * @return void
+	 */
+	private function assertAppleTouchIconNotPresent(): void
+	{
 		$crawler = self::request('GET', 'index.php');
 		$this->assertCount(0, $crawler->filter('link[rel="apple-touch-icon"]'));
+	}
+
+	/**
+	 * Assert icon's meta tags appear in HTML
+	 *
+	 * @param string $icon
+	 * @return void
+	 */
+	private function assertAppleTouchIconPresent(string $icon): void
+	{
+		$crawler = self::request('GET', 'index.php?sid=' . $this->sid);
+		$this->assertStringContainsString($icon, $crawler->filter('link[rel="apple-touch-icon"]')->attr('href'));
+	}
+
+	/**
+	 * Assert icon does not appear in ACP
+	 *
+	 * @return Crawler
+	 */
+	private function assertIconsNotInACP(): Crawler
+	{
+		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
+		$this->assertContainsLang('ACP_PWA_KIT_NO_ICONS', $crawler->filter('fieldset')->eq(2)->html());
+		return $crawler;
+	}
+
+	/**
+	 * Assert icon appears in ACP
+	 *
+	 * @param string $icon
+	 * @return void
+	 */
+	private function assertIconInACP(string $icon): void
+	{
+		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
+		$this->assertStringContainsString($icon, $crawler->filter('fieldset')->eq(2)->text());
 	}
 }

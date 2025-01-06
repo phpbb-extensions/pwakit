@@ -169,6 +169,14 @@ class helper_test extends phpbb_database_test_case
 		$this->assertEquals($expected,  $this->helper->get_icons());
 	}
 
+	public function test_get_icons_empty()
+	{
+		// delete physical foo.png file
+		@unlink(self::FIXTURES . 'site_icons/foo.png');
+
+		$this->assertCount(0, array_column($this->helper->get_icons(), 'src'));
+	}
+
 	public function delete_icon_test_data(): array
 	{
 		return [
