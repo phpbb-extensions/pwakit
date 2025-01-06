@@ -91,6 +91,7 @@ class ext_test extends phpbb_test_case
 		return [
 			[true, false, 'create-icon-dir'],
 			[false, false, 'create-icon-dir'],
+			[false, true, true],
 		];
 	}
 
@@ -108,17 +109,25 @@ class ext_test extends phpbb_test_case
 			->method('exists')
 			->willReturn($file_exists);
 
-		$filesystem->expects($file_exists ? self::never() : self::once())
+		$filesystem->expects($file_exists || $old_state ? self::never() : self::once())
 			->method('mkdir');
 
-		$this->container->expects(self::once())
+		$this->extension_finder->expects($old_state ? self::once() : self::never())
+			->method('extension_directory')
+			->willReturnSelf();
+
+		$this->extension_finder->expects($old_state ? self::once() : self::never())
+			->method('find_from_extension')
+			->willReturn([]);
+
+		$this->container->expects($old_state ? self::never() : self::once())
 			->method('get')
 			->with('filesystem')
 			->willReturn($filesystem);
 
 		$ext = new ext($this->container, $this->extension_finder, $this->migrator, 'phpbb/pwakit', '');
 
-		self::assertEquals($expected, $ext->enable_step($old_state));
+		self::assertSame($expected, $ext->enable_step($old_state));
 	}
 
 	public function test_enable_fails()
