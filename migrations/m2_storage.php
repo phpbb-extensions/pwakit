@@ -29,7 +29,8 @@ class m2_storage extends container_aware_migration
 
 	public function effectively_installed(): int
 	{
-		return $this->config->offsetExists('storage\\phpbb_pwakit\\config\\path');
+		return $this->config->offsetExists('storage\\phpbb_pwakit\\provider')
+			&& $this->config->offsetExists('storage\\phpbb_pwakit\\config\\path');
 	}
 
 	public function update_data(): array
@@ -74,16 +75,19 @@ class m2_storage extends container_aware_migration
 			$this->tables['storage']
 		);
 
+		$storage_path = ext::PWA_ICON_DIR . '/';
+
 		// Get all files at once
 		$files = $extension_manager->get_finder()
 			->set_extensions([])
 			->suffix('.png')
-			->core_path(ext::PWA_ICON_DIR . '/')
+			->core_path($storage_path)
 			->get_files();
 
-		// Extract just the file names
-		$files = array_map(static function($image) {
-			return basename($image);
+		// Extract just the file paths relative to the storage dir
+		$files = array_map(static function($image) use ($storage_path) {
+			$pos = strpos($image, $storage_path);
+			return $pos !== false ? substr($image, $pos + strlen($storage_path)) : $image;
 		}, $files);
 
 		// Track each file
