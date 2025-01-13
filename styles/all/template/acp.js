@@ -2,11 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	const DEFAULT_COLOR = '#000000';
 	const HEX_REGEX = /^#([A-Fa-f0-9]{6})$/;
 
-	const setupColorField = (textId, pickerId) => {
-		const colorText = document.getElementById(textId);
-		const colorPicker = document.getElementById(pickerId);
+	const colorPickers = document.querySelectorAll('input[type="color"]');
 
-		if (!colorText || !colorPicker) {
+	colorPickers.forEach(colorPicker => {
+		const colorText = colorPicker.previousElementSibling;
+
+		if (!colorText || colorText.type !== 'text') {
 			return;
 		}
 
@@ -32,9 +33,5 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 
 		syncColors(colorText, colorPicker);
-	};
-
-	['theme', 'bg'].forEach(type =>
-		setupColorField(`pwa_${type}_color`, `pwa_${type}_color_picker`)
-	);
+	});
 });
