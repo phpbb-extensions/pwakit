@@ -11,7 +11,9 @@
 
 namespace phpbb\pwakit\controller;
 
+use phpbb\cache\driver\driver_interface as cache_driver;
 use phpbb\config\config;
+use phpbb\db\driver\driver_interface as db_driver;
 use phpbb\exception\runtime_exception;
 use phpbb\language\language;
 use phpbb\pwakit\helper\helper;
@@ -27,8 +29,14 @@ class admin_controller
 	/** @var string $u_action */
 	public string $u_action;
 
+	/** @var cache_driver $cache */
+	protected cache_driver $cache;
+
 	/** @var config $config */
 	protected config $config;
+
+	/** @var db_driver $db */
+	protected db_driver $db;
 
 	/** @var helper $helper */
 	protected helper $helper;
@@ -54,7 +62,9 @@ class admin_controller
 	/**
 	 * Constructor
 	 *
+	 * @param cache_driver $cache
 	 * @param config $config
+	 * @param db_driver $db
 	 * @param language $language
 	 * @param request $request
 	 * @param template $template
@@ -62,9 +72,11 @@ class admin_controller
 	 * @param upload $upload
 	 * @param string $phpbb_root_path
 	 */
-	public function __construct(config $config, language $language, request $request, template $template, helper $helper, upload $upload, string $phpbb_root_path)
+	public function __construct(cache_driver $cache, config $config, db_driver $db, language $language, request $request, template $template, helper $helper, upload $upload, string $phpbb_root_path)
 	{
+		$this->cache = $cache;
 		$this->config = $config;
+		$this->db = $db;
 		$this->helper = $helper;
 		$this->upload = $upload;
 		$this->language = $language;
@@ -150,10 +162,9 @@ class admin_controller
 		$this->template->assign_vars([
 			'SITE_NAME'			=> $this->config->offsetGet('sitename'),
 			'SITE_NAME_SHORT'	=> $this->config->offsetGet('sitename_short') ?: $this->trim_name($this->config->offsetGet('sitename'), 0, 12),
-			'PWA_BG_COLOR'		=> $this->config->offsetGet('pwa_bg_color'),
-			'PWA_THEME_COLOR'	=> $this->config->offsetGet('pwa_theme_color'),
 			'PWA_IMAGES_DIR'	=> $this->helper->get_storage_path(),
 			'PWA_KIT_ICONS'		=> $this->helper->get_icons($this->phpbb_root_path),
+			'STYLES'			=> $this->get_styles(),
 			'U_ACTION'			=> $this->u_action,
 		]);
 
@@ -167,24 +178,27 @@ class admin_controller
 	 */
 	protected function save_settings(): void
 	{
-		$config_array = [
-			'pwa_bg_color'		=> $this->request->variable('pwa_bg_color', ''),
-			'pwa_theme_color'	=> $this->request->variable('pwa_theme_color', ''),
-		];
+		$styles = $this->get_styles();
+		$updates = [];
 
-		foreach ($config_array as $config_value)
+		foreach ($styles as $row)
 		{
-			$this->validate_hex_color($config_value);
+			$style_id			= $row['style_id'];
+			$pwa_bg_color		= $this->request->variable('pwa_bg_color_' . $style_id, '');
+			$pwa_theme_color	= $this->request->variable('pwa_theme_color_' . $style_id, '');
+
+			$updates[] = [
+				'style_id'			=> $style_id,
+				'pwa_bg_color'		=> $this->validate_hex_color($pwa_bg_color) ? $pwa_bg_color : $row['pwa_bg_color'],
+				'pwa_theme_color'	=> $this->validate_hex_color($pwa_theme_color) ? $pwa_theme_color : $row['pwa_theme_color'],
+			];
 		}
+
+		$this->set_styles($updates);
 
 		if ($this->has_errors())
 		{
 			return;
-		}
-
-		foreach ($config_array as $config_name => $config_value)
-		{
-			$this->config->set($config_name, $config_value);
 		}
 
 		$this->success('CONFIG_UPDATED');
@@ -219,15 +233,15 @@ class admin_controller
 	 * Validate HTML color hex codes
 	 *
 	 * @param string $code
-	 * @return void
+	 * @return bool
 	 */
-	protected function validate_hex_color(string $code): void
+	protected function validate_hex_color(string $code): bool
 	{
 		$code = trim($code);
 
 		if ($code === '')
 		{
-			return;
+			return true;
 		}
 
 		$test = (bool) preg_match('/^#([0-9A-F]{3}){1,2}$/i', $code);
@@ -236,6 +250,8 @@ class admin_controller
 		{
 			$this->errors[] = $this->language->lang('ACP_PWA_INVALID_COLOR', $code);
 		}
+
+		return $test;
 	}
 
 	/**
@@ -338,5 +354,50 @@ class admin_controller
 	protected function error(string $msg): void
 	{
 		trigger_error($this->language->lang($msg) . adm_back_link($this->u_action), E_USER_WARNING);
+	}
+
+	/**
+	 * Get style data from the styles table
+	 *
+	 * @return array Style data
+	 */
+	protected function get_styles(): array
+	{
+		$sql = 'SELECT style_id, style_name, pwa_bg_color, pwa_theme_color
+			FROM ' . STYLES_TABLE . '
+			WHERE style_active = 1';
+		$result = $this->db->sql_query($sql);
+
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		return $rows;
+	}
+
+	/**
+	 * Set style data in the styles table
+	 *
+	 * @param array $data
+	 * @return void
+	 */
+	protected function set_styles(array $data): void
+	{
+		if (!empty($data))
+		{
+			$this->db->sql_transaction('begin');
+
+			foreach ($data as $row)
+			{
+				$sql = 'UPDATE ' . STYLES_TABLE . "
+					SET pwa_bg_color = '" . $this->db->sql_escape($row['pwa_bg_color']) . "',
+						pwa_theme_color = '" . $this->db->sql_escape($row['pwa_theme_color']) . "'
+					WHERE style_id = " . (int) $row['style_id'];
+				$this->db->sql_query($sql);
+			}
+
+			$this->db->sql_transaction('commit');
+
+			$this->cache->destroy('sql', STYLES_TABLE);
+		}
 	}
 }

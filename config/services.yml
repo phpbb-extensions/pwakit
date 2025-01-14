@@ -2,9 +2,9 @@ services:
     phpbb.pwakit.listener:
         class: phpbb\pwakit\event\main_listener
         arguments:
-            - '@config'
             - '@phpbb.pwakit.helper'
             - '@template'
+            - '@user'
         tags:
             - { name: event.listener }
 
@@ -37,7 +37,9 @@ services:
     phpbb.pwakit.admin.controller:
         class: phpbb\pwakit\controller\admin_controller
         arguments:
+            - '@cache.driver'
             - '@config'
+            - '@dbal.conn'
             - '@language'
             - '@request'
             - '@template'

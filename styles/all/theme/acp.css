@@ -82,3 +82,8 @@ input[type="color"]::-moz-color-swatch {
 .delete-btn:active {
 	color: #8b0000;
 }
+
+.color-pickers {
+	display: inline-block;
+	width: 120px;
+}

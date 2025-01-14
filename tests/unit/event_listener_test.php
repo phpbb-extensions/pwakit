@@ -12,17 +12,17 @@ namespace phpbb\pwakit\tests\unit;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use phpbb\config\config;
 use phpbb\event\data;
 use phpbb\pwakit\event\main_listener;
 use phpbb\pwakit\helper\helper;
 use phpbb\template\template;
+use phpbb\user;
 use phpbb_test_case;
 
 class event_listener_test extends phpbb_test_case
 {
-	/** @var config */
-	protected config $config;
+	/** @var user|MockObject */
+	protected user|MockObject $user;
 
 	/** @var template|MockObject  */
 	protected template|MockObject $template;
@@ -37,7 +37,11 @@ class event_listener_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		$this->config = new config([]);
+		$this->user = $this->createMock(user::class);
+		$this->user->optionset('user_id', 2);
+		$this->user->data['user_id'] = 2;
+		$this->user->style['pwa_bg_color'] = '';
+		$this->user->style['pwa_theme_color'] = '';
 
 		$this->template = $this->getMockBuilder(template::class)
 			->getMock();
@@ -55,9 +59,9 @@ class event_listener_test extends phpbb_test_case
 	protected function get_listener(): main_listener
 	{
 		return new main_listener(
-			$this->config,
 			$this->helper,
-			$this->template
+			$this->template,
+			$this->user
 		);
 	}
 
@@ -135,7 +139,7 @@ class event_listener_test extends phpbb_test_case
 	{
 		foreach ($configs as $key => $value)
 		{
-			$this->config[$key] = $value;
+			$this->user->style[$key] = $value;
 		}
 
 		$this->helper->expects(static::once())
@@ -228,7 +232,7 @@ class event_listener_test extends phpbb_test_case
 
 		foreach ($configs as $key => $value)
 		{
-			$this->config[$key] = $value;
+			$this->user->style[$key] = $value;
 		}
 
 		$expected = array_merge($event['manifest'], $expected);
