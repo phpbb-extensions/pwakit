@@ -365,7 +365,8 @@ class admin_controller
 	{
 		$sql = 'SELECT style_id, style_name, pwa_bg_color, pwa_theme_color
 			FROM ' . STYLES_TABLE . '
-			WHERE style_active = 1';
+			WHERE style_active = 1
+			ORDER BY style_name';
 		$result = $this->db->sql_query($sql);
 
 		$rows = $this->db->sql_fetchrowset($result);
