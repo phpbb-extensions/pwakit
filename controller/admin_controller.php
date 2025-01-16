@@ -367,7 +367,7 @@ class admin_controller
 			FROM ' . STYLES_TABLE . '
 			WHERE style_active = 1
 			ORDER BY style_name';
-		$result = $this->db->sql_query($sql);
+		$result = $this->db->sql_query($sql, 3600);
 
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
