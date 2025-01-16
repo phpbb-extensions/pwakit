@@ -44,7 +44,7 @@ class acp_settings_test extends \phpbb_functional_test_case
 
 		// Check ACP page loads
 		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
-		$this->assertContainsLang('ACP_PWA_KIT_SETTINGS', $crawler->filter('div.main > h1')->text());
+		$this->assertContainsLang('ACP_PWA_KIT_TITLE', $crawler->filter('div.main > h1')->text());
 
 		// The _1 means these are for prosilver (style id 1)
 		$form_data = [
