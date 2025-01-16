@@ -78,9 +78,10 @@ class admin_controller
 	 * @param upload $upload
 	 * @param string $phpbb_root_path
 	 * @param string $relative_admin_path
-	 * @param string $phpEx
+	 * @param string $php_ext
 	 */
-	public function __construct(cache_driver $cache, config $config, db_driver $db, language $language, request $request, template $template, helper $helper, upload $upload, string $phpbb_root_path, string $relative_admin_path, string $phpEx)
+	public function __construct(cache_driver $cache, config $config, db_driver $db, language $language, request $request,
+		template $template, helper $helper, upload $upload, string $phpbb_root_path, string $relative_admin_path, string $php_ext)
 	{
 		$this->cache = $cache;
 		$this->config = $config;
@@ -92,7 +93,7 @@ class admin_controller
 		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpbb_admin_path = $phpbb_root_path . $relative_admin_path;
-		$this->php_ext = $phpEx;
+		$this->php_ext = $php_ext;
 
 		$this->language->add_lang('acp/board');
 		$this->language->add_lang('acp_pwa', 'phpbb/pwakit');
