@@ -15,9 +15,6 @@ use phpbb\filesystem\exception\filesystem_exception;
 
 /**
  * Progressive Web App Extension base
- *
- * It is recommended to remove this file from
- * an extension if it is not going to be used.
  */
 class ext extends base
 {
