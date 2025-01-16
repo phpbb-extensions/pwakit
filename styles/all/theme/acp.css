@@ -53,25 +53,29 @@ input[type="color"]::-moz-color-swatch {
 	border-radius: 50%;
 }
 
-.delete-btn-container {
+.pwa-icon-container {
 	position: relative;
 	display: inline-block;
+}
+
+.pwa-icon-container > img {
+	max-width: 100%;
 }
 
 .delete-btn {
 	font-size: 7px;
 	background-color: #ffffff;
 	border: none;
-	border-radius: 0 0 0 50%;
+	border-radius: 0 0 50%;
 	color: #8b0000;
 	position: absolute;
 	top: 0;
-	right: 0;
+	left: 0;
 	display: none;
 	cursor: pointer;
 }
 
-.delete-btn-container:hover .delete-btn {
+.pwa-icon-container:hover .delete-btn {
 	display: block;
 }
 
