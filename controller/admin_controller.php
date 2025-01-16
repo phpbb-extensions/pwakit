@@ -80,19 +80,8 @@ class admin_controller
 	 * @param string $relative_admin_path
 	 * @param string $php_ext
 	 */
-	public function __construct(
-		cache_driver $cache,
-		config $config,
-		db_driver $db,
-		language $language,
-		request $request,
-		template $template,
-		helper $helper,
-		upload $upload,
-		string $phpbb_root_path,
-		string $relative_admin_path,
-		string $php_ext
-	)
+	public function __construct(cache_driver $cache, config $config, db_driver $db, language $language, request $request,
+		template $template, helper $helper, upload $upload, string $phpbb_root_path, string $relative_admin_path, string $php_ext)
 	{
 		$this->cache = $cache;
 		$this->config = $config;
