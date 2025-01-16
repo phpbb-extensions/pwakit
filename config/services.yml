@@ -46,3 +46,5 @@ services:
             - '@phpbb.pwakit.helper'
             - '@phpbb.pwakit.upload'
             - '%core.root_path%'
+            - '%core.adm_relative_path%'
+            - '%core.php_ext%'

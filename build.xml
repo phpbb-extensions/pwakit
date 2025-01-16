@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Progressive Web App Build Script" description="Builds an extension.zip from a git repository" default="all">
+<project name="Progressive Web App Kit Build Script" description="Builds an extension.zip from a git repository" default="all">
 	<property name="vendor-name" value="phpbb" />
 	<property name="extension-name" value="pwakit" />
 	<!--

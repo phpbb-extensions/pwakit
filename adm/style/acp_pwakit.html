@@ -4,8 +4,8 @@
 
 <a id="maincontent"></a>
 
-<h1>{{ lang('ACP_PWA_KIT_SETTINGS') }}</h1>
-<p>{{ lang('ACP_PWA_KIT_SETTINGS_EXPLAIN', PWA_IMAGES_DIR) }}</p>
+<h1>{{ lang('ACP_PWA_KIT_TITLE') }}</h1>
+<p>{{ lang('ACP_PWA_KIT_EXPLAIN', PWA_IMAGES_DIR) }}</p>
 
 {% if S_ERROR %}
 <div class="errorbox">
@@ -18,11 +18,11 @@
 	<fieldset>
 		<legend>{{ lang('ACP_PWA_KIT_LEGEND_IDENTITY') }}</legend>
 		<dl>
-			<dt><label>{{ lang('SITE_NAME') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_KIT_SITE_NAME_EXPLAIN') }}</span></dt>
+			<dt><label>{{ lang('SITE_NAME') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_KIT_SITE_NAME_EXPLAIN', U_BOARD_SETTINGS) }}</span></dt>
 			<dd>{{ SITE_NAME }}</dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('SITE_NAME_SHORT') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_KIT_SHORT_NAME_EXPLAIN') }}</span></dt>
+			<dt><label>{{ lang('SITE_NAME_SHORT') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_KIT_SHORT_NAME_EXPLAIN', U_BOARD_SETTINGS) }}</span></dt>
 			<dd>{{ SITE_NAME_SHORT }}</dd>
 		</dl>
 	</fieldset>
@@ -30,6 +30,7 @@
 	<h1>{{ lang('ACP_PWA_COLORS') }}</h1>
 	<p>{{ lang('ACP_PWA_COLORS_EXPLAIN') }}</p>
 	<fieldset>
+		<legend>{{ lang('ACP_PWA_KIT_LEGEND_PRESENTS') }}</legend>
 		<dl>
 			<dt><label>{{ lang('ACP_STYLES') ~ lang('COLON') }}</label></dt>
 			<dd>
@@ -55,16 +56,21 @@
 		{% endfor %}
 	</fieldset>
 
-	<fieldset class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}">&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}">
+	<fieldset>
+		<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}">&nbsp;
+			<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}">
+		</p>
 		{{ S_FORM_TOKEN }}
 	</fieldset>
 
+	<h1>{{ lang('ACP_PWA_KIT_APP_ICONS') }}</h1>
+	<p>{{ lang('ACP_PWA_KIT_APP_ICONS_EXPLAIN') }}</p>
 	<fieldset>
 		<legend>{{ lang('ACP_PWA_KIT_LEGEND_ICONS') }}</legend>
 		<dl>
-			<dt><label for="pwa_upload">{{ lang('ACP_PWA_IMG_UPLOAD') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_IMG_UPLOAD_EXPLAIN', PWA_IMAGES_DIR) }}</span></dt>
+			<dt><label for="pwa_upload">{{ lang('ACP_PWA_IMG_UPLOAD') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_IMG_UPLOAD_EXPLAIN', PWA_IMAGES_DIR, U_STORAGE_SETTINGS) }}</span></dt>
 			<dd>
 				<input type="file" accept="image/*" class="inputbox autowidth" id="pwa_upload" name="pwa_upload">
 				<button class="button2 pwakit-button" id="upload" name="upload" value="{{ lang('ACP_PWA_IMG_UPLOAD_BTN') }}">{{ Icon('font', 'upload', lang('ACP_PWA_IMG_UPLOAD_BTN')) }}</button>
@@ -77,7 +83,7 @@
 				{% for icon in PWA_KIT_ICONS %}
 					{% set iconName = icon.src|split('/')|last %}
 					<p style="position: relative;">
-						<span class="delete-btn-container">
+						<span class="pwa-icon-container">
 							<img src="{{ icon.src }}" alt="{{ iconName|e("html") }}">
 							<button class="delete-btn" name="delete" value="{{ icon.src }}" title="{{ lang('ACP_PWA_IMG_DELETE') }}">
 								<span class="fa-stack fa-2x">

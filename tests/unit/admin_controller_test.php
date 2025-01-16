@@ -13,6 +13,7 @@ namespace phpbb\pwakit\controller;
 use Exception;
 use phpbb\db\driver\driver_interface as dbal;
 use phpbb_mock_cache;
+use phpbb_mock_event_dispatcher;
 use PHPUnit\DbUnit\DataSet\DefaultDataSet;
 use PHPUnit\DbUnit\DataSet\IDataSet;
 use PHPUnit\DbUnit\DataSet\XmlDataSet;
@@ -48,6 +49,8 @@ class admin_controller_test extends phpbb_database_test_case
 
 	protected upload $upload;
 
+	protected string $phpbb_root_path;
+
 	protected static function setup_extensions(): array
 	{
 		return array('phpbb/pwakit');
@@ -65,7 +68,7 @@ class admin_controller_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$this->db = $this->new_dbal();
 
@@ -95,6 +98,10 @@ class admin_controller_test extends phpbb_database_test_case
 			->disableOriginalConstructor()
 			->getMock();
 
+		$this->phpbb_root_path = $phpbb_root_path;
+
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+
 		self::$valid_form = true;
 		self::$confirm = true;
 
@@ -107,7 +114,9 @@ class admin_controller_test extends phpbb_database_test_case
 			$this->template,
 			$this->helper,
 			$this->upload,
-			$phpbb_root_path
+			$this->phpbb_root_path,
+			'adm/',
+			$phpEx
 		);
 
 		$this->admin_controller->set_page_url('');
@@ -240,6 +249,8 @@ class admin_controller_test extends phpbb_database_test_case
 				'PWA_IMAGES_DIR'	=> 'images/site_icons',
 				'PWA_KIT_ICONS'		=> [],
 				'STYLES'			=> $expected_style_data,
+				'U_BOARD_SETTINGS'	=> "{$this->phpbb_root_path}adm/index.php?i=acp_board&amp;mode=settings",
+				'U_STORAGE_SETTINGS'=> "{$this->phpbb_root_path}adm/index.php?i=acp_storage&amp;mode=settings",
 				'U_ACTION'			=> '',
 			],
 			[
