@@ -59,6 +59,12 @@ class admin_controller
 	/** @var array $errors */
 	protected array $errors = [];
 
+	/** @var string $phpbb_admin_path */
+	protected string $phpbb_admin_path;
+
+	/** @var string $php_ext */
+	protected string $php_ext;
+
 	/**
 	 * Constructor
 	 *
@@ -71,8 +77,10 @@ class admin_controller
 	 * @param helper $helper
 	 * @param upload $upload
 	 * @param string $phpbb_root_path
+	 * @param string $relative_admin_path
+	 * @param string $phpEx
 	 */
-	public function __construct(cache_driver $cache, config $config, db_driver $db, language $language, request $request, template $template, helper $helper, upload $upload, string $phpbb_root_path)
+	public function __construct(cache_driver $cache, config $config, db_driver $db, language $language, request $request, template $template, helper $helper, upload $upload, string $phpbb_root_path, string $relative_admin_path, string $phpEx)
 	{
 		$this->cache = $cache;
 		$this->config = $config;
@@ -83,6 +91,8 @@ class admin_controller
 		$this->request = $request;
 		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_admin_path = $phpbb_root_path . $relative_admin_path;
+		$this->php_ext = $phpEx;
 
 		$this->language->add_lang('acp/board');
 		$this->language->add_lang('acp_pwa', 'phpbb/pwakit');
@@ -92,7 +102,7 @@ class admin_controller
 	/**
 	 * Set page url
 	 *
-	 * @param string $u_action	Custom form action
+	 * @param string $u_action
 	 * @return void
 	 */
 	public function set_page_url(string $u_action): void
@@ -165,6 +175,8 @@ class admin_controller
 			'PWA_IMAGES_DIR'	=> $this->helper->get_storage_path(),
 			'PWA_KIT_ICONS'		=> $this->helper->get_icons($this->phpbb_root_path),
 			'STYLES'			=> $this->get_styles(),
+			'U_BOARD_SETTINGS'	=> append_sid("{$this->phpbb_admin_path}index.$this->php_ext", "i=acp_board&amp;mode=settings"),
+			'U_STORAGE_SETTINGS'=> append_sid("{$this->phpbb_admin_path}index.$this->php_ext", "i=acp_storage&amp;mode=settings"),
 			'U_ACTION'			=> $this->u_action,
 		]);
 
