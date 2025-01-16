@@ -172,7 +172,7 @@ class acp_file_test extends phpbb_functional_test_case
 	{
 		$form = $crawler->selectButton('resync')->form();
 		$crawler = self::submit($form);
-		$this->assertStringContainsString($expected, $crawler->filter('fieldset')->eq(2)->text());
+		$this->assertStringContainsString($expected, $crawler->filter('fieldset')->eq(3)->text());
 	}
 
 	/**
@@ -222,7 +222,7 @@ class acp_file_test extends phpbb_functional_test_case
 	private function assertIconsNotInACP(): Crawler
 	{
 		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
-		$this->assertContainsLang('ACP_PWA_KIT_NO_ICONS', $crawler->filter('fieldset')->eq(2)->html());
+		$this->assertContainsLang('ACP_PWA_KIT_NO_ICONS', $crawler->filter('fieldset')->eq(3)->html());
 		return $crawler;
 	}
 
@@ -235,6 +235,6 @@ class acp_file_test extends phpbb_functional_test_case
 	private function assertIconInACP(string $icon): void
 	{
 		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
-		$this->assertStringContainsString($icon, $crawler->filter('fieldset')->eq(2)->text());
+		$this->assertStringContainsString($icon, $crawler->filter('fieldset')->eq(3)->text());
 	}
 }

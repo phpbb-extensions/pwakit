@@ -19,37 +19,32 @@ class m1_initial extends migration
 		return ['\phpbb\db\migration\data\v400\dev'];
 	}
 
-	public function effectively_installed(): int
+	public function effectively_installed(): bool
 	{
-		$sql = 'SELECT module_id
-			FROM ' . $this->table_prefix . "modules
-			WHERE module_class = 'acp'
-				AND module_langname = 'ACP_PWA_KIT_TITLE'";
-		$result = $this->db->sql_query($sql);
-		$module_id = (int) $this->db->sql_fetchfield('module_id');
-		$this->db->sql_freeresult($result);
-
-		return $module_id;
+		return $this->db_tools->sql_column_exists($this->table_prefix . 'styles', 'pwa_bg_color');
 	}
 
-	public function update_data(): array
+	public function update_schema(): array
 	{
 		return [
-			['config.add', ['pwa_bg_color', '']],
-			['config.add', ['pwa_theme_color', '']],
-			['module.add', [
-				'acp',
-				'ACP_CAT_DOT_MODS',
-				'ACP_PWA_KIT_TITLE'
-			]],
-			['module.add', [
-				'acp',
-				'ACP_PWA_KIT_TITLE',
-				[
-					'module_basename'	=> '\phpbb\pwakit\acp\pwa_acp_module',
-					'modes'				=> ['settings'],
+			'add_columns'	=> [
+				$this->table_prefix . 'styles'	=> [
+					'pwa_bg_color'		=> ['VCHAR:8', ''],
+					'pwa_theme_color'	=> ['VCHAR:8', ''],
 				],
-			]],
+			],
+		];
+	}
+
+	public function revert_schema(): array
+	{
+		return [
+			'drop_columns'	=> [
+				$this->table_prefix . 'styles'	=> [
+					'pwa_bg_color',
+					'pwa_theme_color',
+				],
+			],
 		];
 	}
 }

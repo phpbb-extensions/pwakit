@@ -10,35 +10,35 @@
 
 namespace phpbb\pwakit\event;
 
-use phpbb\config\config;
 use phpbb\event\data;
 use phpbb\pwakit\helper\helper;
 use phpbb\template\template;
+use phpbb\user;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class main_listener implements EventSubscriberInterface
 {
-	/** @var config $config */
-	protected config $config;
-
 	/** @var helper $pwa_helper */
 	protected helper $pwa_helper;
 
 	/** @var template $template */
 	protected template $template;
 
+	/** @var user $user */
+	protected user $user;
+
 	/**
 	 * Constructor
 	 *
-	 * @param config $config
 	 * @param helper $helper
 	 * @param template $template
+	 * @param user $user
 	 */
-	public function __construct(config $config, helper $helper, template $template)
+	public function __construct(helper $helper, template $template, user $user)
 	{
-		$this->config = $config;
 		$this->pwa_helper = $helper;
 		$this->template = $template;
+		$this->user = $user;
 	}
 
 	/**
@@ -60,8 +60,8 @@ class main_listener implements EventSubscriberInterface
 	public function header_updates(): void
 	{
 		$this->template->assign_vars([
-			'PWA_THEME_COLOR'	=> $this->config['pwa_theme_color'],
-			'PWA_BG_COLOR'		=> $this->config['pwa_bg_color'],
+			'PWA_THEME_COLOR'	=> $this->user->style['pwa_theme_color'],
+			'PWA_BG_COLOR'		=> $this->user->style['pwa_bg_color'],
 			'U_TOUCH_ICONS' 	=> array_column($this->pwa_helper->get_icons(), 'src'),
 		]);
 	}
@@ -78,13 +78,13 @@ class main_listener implements EventSubscriberInterface
 		$manifest_updates = [];
 
 		// Add theme and background colors if configured
-		if (!empty($this->config['pwa_theme_color']))
+		if (!empty($this->user->style['pwa_theme_color']))
 		{
-			$manifest_updates['theme_color'] = $this->config['pwa_theme_color'];
+			$manifest_updates['theme_color'] = $this->user->style['pwa_theme_color'];
 		}
-		if (!empty($this->config['pwa_bg_color']))
+		if (!empty($this->user->style['pwa_bg_color']))
 		{
-			$manifest_updates['background_color'] = $this->config['pwa_bg_color'];
+			$manifest_updates['background_color'] = $this->user->style['pwa_bg_color'];
 		}
 
 		// Add icons if available

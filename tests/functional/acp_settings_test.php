@@ -46,15 +46,16 @@ class acp_settings_test extends \phpbb_functional_test_case
 		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
 		$this->assertContainsLang('ACP_PWA_KIT_SETTINGS', $crawler->filter('div.main > h1')->text());
 
+		// The _1 means these are for prosilver (style id 1)
 		$form_data = [
-			'pwa_bg_color'		=> '#333333',
-			'pwa_theme_color'	=> '#666666',
+			'pwa_bg_color_1'	=> '#333333',
+			'pwa_theme_color_1'	=> '#666666',
 		];
 
 		// Check initial data fields are empty
-		foreach ($form_data as $config_name => $config_value)
+		foreach ($form_data as $name => $value)
 		{
-			$this->assertEquals('', $crawler->filter('input[name="' . $config_name . '"]')->attr('value'));
+			$this->assertEquals('', $crawler->filter('input[name="' . $name . '"]')->attr('value'));
 		}
 
 		// Submit form
@@ -64,14 +65,14 @@ class acp_settings_test extends \phpbb_functional_test_case
 
 		// Check saved data now appears in data fields
 		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
-		foreach ($form_data as $config_name => $config_value)
+		foreach ($form_data as $name => $value)
 		{
-			$this->assertEquals($config_value, $crawler->filter('input[name="' . $config_name . '"]')->attr('value'));
+			$this->assertEquals($value, $crawler->filter('input[name="' . $name . '"]')->attr('value'));
 		}
 
 		// Check saved data appears in the forum's meta tags as expected
 		$crawler = self::request('GET', 'index.php?sid=' . $this->sid);
-		$this->assertEquals($form_data['pwa_theme_color'], $crawler->filter('meta[name="theme-color"]')->attr('content'));
-		$this->assertEquals($form_data['pwa_bg_color'], $crawler->filter('meta[name="background-color"]')->attr('content'));
+		$this->assertEquals($form_data['pwa_theme_color_1'], $crawler->filter('meta[name="theme-color"]')->attr('content'));
+		$this->assertEquals($form_data['pwa_bg_color_1'], $crawler->filter('meta[name="background-color"]')->attr('content'));
 	}
 }

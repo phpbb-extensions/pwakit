@@ -20,11 +20,11 @@ use phpbb\storage\adapter_factory;
 use phpbb\storage\exception\storage_exception;
 use phpbb\storage\provider\local;
 
-class m2_storage extends container_aware_migration
+class m3_storage extends container_aware_migration
 {
 	public static function depends_on(): array
 	{
-		return ['\phpbb\pwakit\migrations\m1_initial'];
+		return ['\phpbb\pwakit\migrations\m2_data'];
 	}
 
 	public function effectively_installed(): int

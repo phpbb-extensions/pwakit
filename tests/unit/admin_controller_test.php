@@ -10,6 +10,12 @@
 
 namespace phpbb\pwakit\controller;
 
+use Exception;
+use phpbb\db\driver\driver_interface as dbal;
+use phpbb_mock_cache;
+use PHPUnit\DbUnit\DataSet\DefaultDataSet;
+use PHPUnit\DbUnit\DataSet\IDataSet;
+use PHPUnit\DbUnit\DataSet\XmlDataSet;
 use PHPUnit\Framework\MockObject\MockObject;
 use phpbb\config\config;
 use phpbb\exception\runtime_exception;
@@ -20,13 +26,15 @@ use phpbb\pwakit\helper\upload;
 use phpbb\request\request;
 use phpbb\request\request_interface;
 use phpbb\template\template;
-use phpbb_test_case;
+use phpbb_database_test_case;
 
-class admin_controller_test extends phpbb_test_case
+class admin_controller_test extends phpbb_database_test_case
 {
 	public static bool $confirm;
 
 	public static bool $valid_form;
+
+	protected dbal $db;
 
 	protected config $config;
 
@@ -40,6 +48,16 @@ class admin_controller_test extends phpbb_test_case
 
 	protected upload $upload;
 
+	protected static function setup_extensions(): array
+	{
+		return array('phpbb/pwakit');
+	}
+
+	protected function getDataSet(): IDataSet|XmlDataSet|DefaultDataSet
+	{
+		return $this->createXMLDataSet(__DIR__ . '/../fixtures/styles.xml');
+	}
+
 	/**
 	 * Setup test environment
 	 */
@@ -48,6 +66,8 @@ class admin_controller_test extends phpbb_test_case
 		parent::setUp();
 
 		global $phpbb_root_path, $phpEx;
+
+		$this->db = $this->new_dbal();
 
 		$this->config = new config([
 			'sitename' => 'phpBB',
@@ -79,7 +99,9 @@ class admin_controller_test extends phpbb_test_case
 		self::$confirm = true;
 
 		$this->admin_controller = new admin_controller(
+			new phpbb_mock_cache(),
 			$this->config,
+			$this->db,
 			$this->language,
 			$this->request,
 			$this->template,
@@ -145,56 +167,40 @@ class admin_controller_test extends phpbb_test_case
 				[
 					'sitename' => 'phpBB',
 					'sitename_short' => 'phpBB',
-					'pwa_bg_color' => '',
-					'pwa_theme_color' => '',
 				],
 				[
 					'sitename' => 'phpBB',
 					'sitename_short' => 'phpBB',
-					'pwa_bg_color' => '',
-					'pwa_theme_color' => '',
 				],
 			],
 			[
 				[
 					'sitename' => 'phpBB',
 					'sitename_short' => '',
-					'pwa_bg_color' => '#fff000',
-					'pwa_theme_color' => '#000fff',
 				],
 				[
 					'sitename' => 'phpBB',
 					'sitename_short' => 'phpBB',
-					'pwa_bg_color' => '#fff000',
-					'pwa_theme_color' => '#000fff',
 				],
 			],
 			[
 				[
 					'sitename' => 'phpBB Long Site Name',
 					'sitename_short' => '',
-					'pwa_bg_color' => '',
-					'pwa_theme_color' => '',
 				],
 				[
 					'sitename' => 'phpBB Long Site Name',
 					'sitename_short' => 'phpBB Long S',
-					'pwa_bg_color' => '',
-					'pwa_theme_color' => '',
 				],
 			],
 			[
 				[
 					'sitename' => utf8_encode_ucr('phpBB™ 😂😂😂😂😂😂😂😂'),
 					'sitename_short' => '',
-					'pwa_bg_color' => '',
-					'pwa_theme_color' => '',
 				],
 				[
 					'sitename' => utf8_encode_ucr('phpBB™ 😂😂😂😂😂😂😂😂'),
 					'sitename_short' => 'phpBB™ 😂😂😂😂😂',
-					'pwa_bg_color' => '',
-					'pwa_theme_color' => '',
 				],
 			],
 		];
@@ -212,14 +218,28 @@ class admin_controller_test extends phpbb_test_case
 			$this->config->set($key, $value);
 		}
 
+		$expected_style_data = [
+			0 => [
+				'style_id' => 1,
+				'style_name' => 'prosilver',
+				'pwa_bg_color' => '#fff000',
+				'pwa_theme_color' => '#000fff',
+			],
+			1 => [
+				'style_id' => 2,
+				'style_name' => 'silverfoo',
+				'pwa_bg_color' => '',
+				'pwa_theme_color' => '',
+			],
+		];
+
 		$expectedCalls = [
 			[
 				'SITE_NAME'			=> $expected['sitename'],
 				'SITE_NAME_SHORT'	=> $expected['sitename_short'],
-				'PWA_BG_COLOR'		=> $expected['pwa_bg_color'],
-				'PWA_THEME_COLOR'	=> $expected['pwa_theme_color'],
 				'PWA_IMAGES_DIR'	=> 'images/site_icons',
 				'PWA_KIT_ICONS'		=> [],
+				'STYLES'			=> $expected_style_data,
 				'U_ACTION'			=> '',
 			],
 			[
@@ -244,34 +264,80 @@ class admin_controller_test extends phpbb_test_case
 		return [
 			[	// all good inputs
 				[
-					'pwa_bg_color' => '#000000',
-					'pwa_theme_color' => '#ffffff',
+					'pwa_bg_color_1' => '#000000',
+					'pwa_theme_color_1' => '#ffffff',
+					'pwa_bg_color_2' => '#cccccc',
+					'pwa_theme_color_2' => '#dddddd',
 				],
-				true,
+				[
+					0 => ['pwa_bg_color' => '#000000', 'pwa_theme_color' => '#ffffff'],
+					1 => ['pwa_bg_color' => '#cccccc', 'pwa_theme_color' => '#dddddd'],
+				],
+				'CONFIG_UPDATED',
+			],
+			[	// one style with good inputs
+				[
+					'pwa_bg_color_1' => '#000000',
+					'pwa_theme_color_1' => '#ffffff',
+					'pwa_bg_color_2' => '',
+					'pwa_theme_color_2' => '',
+				],
+				[
+					0 => ['pwa_bg_color' => '#000000', 'pwa_theme_color' => '#ffffff'],
+					1 => ['pwa_bg_color' => '', 'pwa_theme_color' => ''],
+				],
+				'CONFIG_UPDATED',
+			],
+			[	// one style with good inputs
+				[
+					'pwa_bg_color_1' => '#000000',
+					'pwa_theme_color_1' => '',
+					'pwa_bg_color_2' => '',
+					'pwa_theme_color_2' => '#ffffff',
+				],
+				[
+					0 => ['pwa_bg_color' => '#000000', 'pwa_theme_color' => ''],
+					1 => ['pwa_bg_color' => '', 'pwa_theme_color' => '#ffffff'],
+				],
 				'CONFIG_UPDATED',
 			],
 			[	// one bad input
 				[
-					'pwa_bg_color' => '#000000',
-					'pwa_theme_color' => 'ffffff',
+					'pwa_bg_color_1' => '#000000',
+					'pwa_theme_color_1' => 'fff',
+					'pwa_bg_color_2' => '#ffffff',
+					'pwa_theme_color_2' => '',
 				],
-				false,
+				[
+					0 => ['pwa_bg_color' => '#000000', 'pwa_theme_color' => '#000fff'],
+					1 => ['pwa_bg_color' => '#ffffff', 'pwa_theme_color' => ''],
+				],
 				'ACP_PWA_INVALID_COLOR',
 			],
 			[	// all bad inputs
 				[
-					'pwa_bg_color' => '000000',
-					'pwa_theme_color' => 'ffffff',
+					'pwa_bg_color_1' => 'foo',
+					'pwa_theme_color_1' => 'bar',
+					'pwa_bg_color_2' => '123456',
+					'pwa_theme_color_2' => '######',
 				],
-				false,
-				'ACP_PWA_INVALID_COLOR<br>ACP_PWA_INVALID_COLOR',
+				[
+					0 => ['pwa_bg_color' => '#fff000', 'pwa_theme_color' => '#000fff'],
+					1 => ['pwa_bg_color' => '', 'pwa_theme_color' => ''],
+				],
+				'ACP_PWA_INVALID_COLOR<br>ACP_PWA_INVALID_COLOR<br>ACP_PWA_INVALID_COLOR<br>ACP_PWA_INVALID_COLOR',
 			],
 			[	// all empty inputs
 				[
-					'pwa_bg_color' => '',
-					'pwa_theme_color' => '',
+					'pwa_bg_color_1' => '',
+					'pwa_theme_color_1' => '',
+					'pwa_bg_color_2' => '',
+					'pwa_theme_color_2' => '',
 				],
-				true,
+				[
+					0 => ['pwa_bg_color' => '', 'pwa_theme_color' => ''],
+					1 => ['pwa_bg_color' => '', 'pwa_theme_color' => ''],
+				],
 				'CONFIG_UPDATED'
 			],
 		];
@@ -287,11 +353,7 @@ class admin_controller_test extends phpbb_test_case
 	 */
 	public function test_submit($form_data, $expected, $expected_msg)
 	{
-		if ($expected)
-		{
-			$this->setExpectedTriggerError(E_USER_NOTICE, $expected_msg);
-		}
-		else
+		if ($expected_msg !== 'CONFIG_UPDATED')
 		{
 			$firstCallDone = false;
 			$this->template->method('assign_vars')
@@ -312,27 +374,35 @@ class admin_controller_test extends phpbb_test_case
 			;
 		}
 
-		$this->request_submit('submit');
-
-		$this->request->expects($this->exactly(2))
+		$this->request->expects($this->exactly(4))
 			->method('variable')
 			->willReturnMap([
-				['pwa_bg_color', '', false, request_interface::REQUEST, $form_data['pwa_bg_color']],
-				['pwa_theme_color', '', false, request_interface::REQUEST, $form_data['pwa_theme_color']]
+				['pwa_bg_color_1', '', false, request_interface::REQUEST, $form_data['pwa_bg_color_1']],
+				['pwa_theme_color_1', '', false, request_interface::REQUEST, $form_data['pwa_theme_color_1']],
+				['pwa_bg_color_2', '', false, request_interface::REQUEST, $form_data['pwa_bg_color_2']],
+				['pwa_theme_color_2', '', false, request_interface::REQUEST, $form_data['pwa_theme_color_2']],
 			]);
 
-		$this->call_admin_controller();
+		try
+		{
+			$this->request_submit('submit');
+			$this->call_admin_controller();
+		}
+		catch (Exception $e)
+		{
+			$this->assertEquals($expected_msg, $e->getMessage());
+		}
 
-		if ($expected)
-		{
-			$this->assertEquals($form_data['pwa_bg_color'], $this->config['pwa_bg_color']);
-			$this->assertEquals($form_data['pwa_theme_color'], $this->config['pwa_theme_color']);
-		}
-		else
-		{
-			$this->assertNotEquals($form_data['pwa_bg_color'], $this->config['pwa_bg_color']);
-			$this->assertNotEquals($form_data['pwa_theme_color'], $this->config['pwa_theme_color']);
-		}
+		$sql = 'SELECT pwa_bg_color, pwa_theme_color
+			FROM ' . STYLES_TABLE . '
+			WHERE style_active = 1
+			ORDER BY style_id';
+		$result = $this->db->sql_query($sql);
+
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		$this->assertSame($expected, $rows);
 	}
 
 	public function test_upload()
