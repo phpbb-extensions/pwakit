@@ -4,8 +4,8 @@
 
 <a id="maincontent"></a>
 
-<h1>{{ lang('ACP_PWA_KIT_SETTINGS') }}</h1>
-<p>{{ lang('ACP_PWA_KIT_SETTINGS_EXPLAIN', PWA_IMAGES_DIR) }}</p>
+<h1>{{ lang('ACP_PWA_KIT_TITLE') }}</h1>
+<p>{{ lang('ACP_PWA_KIT_EXPLAIN', PWA_IMAGES_DIR) }}</p>
 
 {% if S_ERROR %}
 <div class="errorbox">
@@ -30,6 +30,7 @@
 	<h1>{{ lang('ACP_PWA_COLORS') }}</h1>
 	<p>{{ lang('ACP_PWA_COLORS_EXPLAIN') }}</p>
 	<fieldset>
+		<legend>{{ lang('ACP_PWA_KIT_LEGEND_PRESENTS') }}</legend>
 		<dl>
 			<dt><label>{{ lang('ACP_STYLES') ~ lang('COLON') }}</label></dt>
 			<dd>
@@ -61,6 +62,8 @@
 		{{ S_FORM_TOKEN }}
 	</fieldset>
 
+	<h1>{{ lang('ACP_PWA_KIT_APP_ICONS') }}</h1>
+	<p>{{ lang('ACP_PWA_KIT_APP_ICONS_EXPLAIN') }}</p>
 	<fieldset>
 		<legend>{{ lang('ACP_PWA_KIT_LEGEND_ICONS') }}</legend>
 		<dl>
