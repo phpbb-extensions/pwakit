@@ -167,13 +167,13 @@ class admin_controller
 	 */
 	protected function execute_action(string $action): void
 	{
-		// Actions that require form key validation
+		// Actions that require form key validation (not using confirm_box())
 		$form_key_actions = ['submit', 'resync', 'upload'];
 
 		// Check form key validation
 		if (in_array($action, $form_key_actions, true) && !check_form_key(self::FORM_KEY))
 		{
-			$this->error($this->language->lang('FORM_INVALID'));
+			$this->error('FORM_INVALID');
 		}
 
 		// Using match expression (PHP 8.0+)
