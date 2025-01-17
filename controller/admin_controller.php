@@ -133,28 +133,11 @@ class admin_controller
 
 		$action = $this->get_action();
 
-		if (!$action)
+		if ($action)
 		{
-			$this->display_settings();
-			return;
+			$this->execute_action($action);
 		}
 
-		// Handle delete action separately as it doesn't require form key validation
-		if ($action === 'delete')
-		{
-			$this->delete();
-			$this->display_settings();
-			return;
-		}
-
-		// Validate form key for other actions
-		if (!check_form_key(self::FORM_KEY))
-		{
-			$this->error($this->language->lang('FORM_INVALID'));
-		}
-
-		// Execute action
-		$this->execute_action($action);
 		$this->display_settings();
 	}
 
@@ -165,7 +148,7 @@ class admin_controller
 	 */
 	protected function get_action(): string|null
 	{
-		$actions = ['submit', 'upload', 'resync', 'delete'];
+		$actions = ['submit', 'resync', 'upload', 'delete'];
 		foreach ($actions as $action)
 		{
 			if ($this->request->is_set_post($action))
@@ -184,18 +167,22 @@ class admin_controller
 	 */
 	protected function execute_action(string $action): void
 	{
-		switch ($action)
+		// Actions that require form key validation
+		$form_key_actions = ['submit', 'resync', 'upload'];
+
+		// Check form key validation
+		if (in_array($action, $form_key_actions, true) && !check_form_key(self::FORM_KEY))
 		{
-			case 'upload':
-				$this->upload();
-				break;
-			case 'resync':
-				$this->helper->resync_icons();
-				break;
-			case 'submit':
-				$this->save_settings();
-				break;
+			$this->error($this->language->lang('FORM_INVALID'));
 		}
+
+		// Using match expression (PHP 8.0+)
+		match($action) {
+			'submit' => $this->save_settings(),
+			'resync' => $this->helper->resync_icons(),
+			'upload' => $this->upload(),
+			'delete' => $this->delete(),
+		};
 	}
 
 	/**
