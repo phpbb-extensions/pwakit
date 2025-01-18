@@ -134,10 +134,6 @@ class acp_module_test extends phpbb_test_case
 
 		$admin_controller
 			->expects(self::once())
-			->method('set_page_url');
-
-		$admin_controller
-			->expects(self::once())
 			->method('main');
 
 		$p_master = new p_master();

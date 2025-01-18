@@ -118,8 +118,6 @@ class admin_controller_test extends phpbb_database_test_case
 			'adm/',
 			$phpEx
 		);
-
-		$this->admin_controller->set_page_url('');
 	}
 
 	public function module_access_test_data(): array
@@ -510,7 +508,7 @@ class admin_controller_test extends phpbb_database_test_case
 	 */
 	private function call_admin_controller(string $mode = 'settings'): void
 	{
-		$this->admin_controller->main(0, $mode);
+		$this->admin_controller->main('\\phpbb\\pwakit\\acp\\pwa_acp_module', $mode, '');
 	}
 
 	/**
