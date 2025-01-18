@@ -23,6 +23,8 @@ use phpbb\template\template;
 
 class admin_controller
 {
+	protected const FORM_KEY = 'acp_pwakit';
+
 	/** @var string $id */
 	public string $id;
 
@@ -122,45 +124,65 @@ class admin_controller
 	{
 		$this->id = $id;
 
-		if ($mode !==  'settings')
+		if ($mode !== 'settings')
 		{
 			return;
 		}
 
-		$form_key = 'acp_pwakit';
-		add_form_key($form_key);
+		add_form_key(self::FORM_KEY);
 
-		$submit = $this->request->is_set_post('submit');
-		$upload = $this->request->is_set_post('upload');
-		$resync = $this->request->is_set_post('resync');
-		$delete = $this->request->is_set_post('delete');
+		$action = $this->get_action();
 
-		if ($submit || $upload || $resync)
+		if ($action)
 		{
-			if (!check_form_key($form_key))
-			{
-				$this->error($this->language->lang('FORM_INVALID'));
-			}
-
-			if ($upload)
-			{
-				$this->upload();
-			}
-			else if ($resync)
-			{
-				$this->helper->resync_icons();
-			}
-			else
-			{
-				$this->save_settings();
-			}
-		}
-		else if ($delete)
-		{
-			$this->delete();
+			$this->execute_action($action);
 		}
 
 		$this->display_settings();
+	}
+
+	/**
+	 * Get the action from the request. We need to check is_set_post() for all actions
+	 *
+	 * @return string|null
+	 */
+	protected function get_action(): string|null
+	{
+		$actions = ['submit', 'resync', 'upload', 'delete'];
+		foreach ($actions as $action)
+		{
+			if ($this->request->is_set_post($action))
+			{
+				return $action;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Execute the action
+	 *
+	 * @param string $action
+	 * @return void
+	 */
+	protected function execute_action(string $action): void
+	{
+		// Actions that require form key validation (not using confirm_box())
+		$form_key_actions = ['submit', 'resync', 'upload'];
+
+		// Check form key validation
+		if (in_array($action, $form_key_actions, true) && !check_form_key(self::FORM_KEY))
+		{
+			$this->error('FORM_INVALID');
+		}
+
+		// Using match expression (PHP 8.0+)
+		match($action) {
+			'submit' => $this->save_settings(),
+			'resync' => $this->helper->resync_icons(),
+			'upload' => $this->upload(),
+			'delete' => $this->delete(),
+		};
 	}
 
 	/**
@@ -176,8 +198,8 @@ class admin_controller
 			'PWA_IMAGES_DIR'	=> $this->helper->get_storage_path(),
 			'PWA_KIT_ICONS'		=> $this->helper->get_icons($this->phpbb_root_path),
 			'STYLES'			=> $this->get_styles(),
-			'U_BOARD_SETTINGS'	=> append_sid("{$this->phpbb_admin_path}index.$this->php_ext", "i=acp_board&amp;mode=settings"),
-			'U_STORAGE_SETTINGS'=> append_sid("{$this->phpbb_admin_path}index.$this->php_ext", "i=acp_storage&amp;mode=settings"),
+			'U_BOARD_SETTINGS'	=> append_sid("{$this->phpbb_admin_path}index.$this->php_ext", 'i=acp_board&amp;mode=settings'),
+			'U_STORAGE_SETTINGS'=> append_sid("{$this->phpbb_admin_path}index.$this->php_ext", 'i=acp_storage&amp;mode=settings'),
 			'U_ACTION'			=> $this->u_action,
 		]);
 
@@ -200,8 +222,7 @@ class admin_controller
 			$pwa_bg_color		= $this->request->variable('pwa_bg_color_' . $style_id, '');
 			$pwa_theme_color	= $this->request->variable('pwa_theme_color_' . $style_id, '');
 
-			$updates[] = [
-				'style_id'			=> $style_id,
+			$updates[$style_id] = [
 				'pwa_bg_color'		=> $this->validate_hex_color($pwa_bg_color) ? $pwa_bg_color : $row['pwa_bg_color'],
 				'pwa_theme_color'	=> $this->validate_hex_color($pwa_theme_color) ? $pwa_theme_color : $row['pwa_theme_color'],
 			];
@@ -391,21 +412,20 @@ class admin_controller
 	/**
 	 * Set style data in the styles table
 	 *
-	 * @param array $data
+	 * @param array $rows Array of style table data to update; style_id is key
 	 * @return void
 	 */
-	protected function set_styles(array $data): void
+	protected function set_styles(array $rows): void
 	{
-		if (!empty($data))
+		if (!empty($rows))
 		{
 			$this->db->sql_transaction('begin');
 
-			foreach ($data as $row)
+			foreach ($rows as $style_id => $row)
 			{
-				$sql = 'UPDATE ' . STYLES_TABLE . "
-					SET pwa_bg_color = '" . $this->db->sql_escape($row['pwa_bg_color']) . "',
-						pwa_theme_color = '" . $this->db->sql_escape($row['pwa_theme_color']) . "'
-					WHERE style_id = " . (int) $row['style_id'];
+				$sql = 'UPDATE ' . STYLES_TABLE . '
+					SET ' . $this->db->sql_build_array('UPDATE', $row) . '
+					WHERE style_id = ' . (int) $style_id;
 				$this->db->sql_query($sql);
 			}
 
