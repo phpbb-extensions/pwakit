@@ -35,15 +35,11 @@ class pwa_acp_module
 	{
 		global $phpbb_container;
 
-		/** @var admin_controller $admin_controller */
-		$admin_controller = $phpbb_container->get('phpbb.pwakit.admin.controller');
-
-		// Make the $u_action url available in the admin controller
-		$admin_controller->set_page_url($this->u_action);
-
 		$this->tpl_name = 'acp_pwakit';
 		$this->page_title = 'ACP_PWA_KIT_SETTINGS';
 
-		$admin_controller->main($id, $mode);
+		/** @var admin_controller $admin_controller */
+		$admin_controller = $phpbb_container->get('phpbb.pwakit.admin.controller');
+		$admin_controller->main($id, $mode, $this->u_action);
 	}
 }

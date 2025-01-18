@@ -26,10 +26,10 @@ class admin_controller
 	protected const FORM_KEY = 'acp_pwakit';
 
 	/** @var string $id */
-	public string $id;
+	protected string $id;
 
 	/** @var string $u_action */
-	public string $u_action;
+	protected string $u_action;
 
 	/** @var cache_driver $cache */
 	protected cache_driver $cache;
@@ -103,31 +103,22 @@ class admin_controller
 	}
 
 	/**
-	 * Set page url
-	 *
-	 * @param string $u_action
-	 * @return void
-	 */
-	public function set_page_url(string $u_action): void
-	{
-		$this->u_action = $u_action;
-	}
-
-	/**
 	 * Main ACP module
 	 *
 	 * @param string $id
 	 * @param string $mode
+	 * @param string $u_action
 	 * @return void
 	 */
-	public function main(string $id, string $mode = ''): void
+	public function main(string $id, string $mode, string $u_action): void
 	{
-		$this->id = $id;
-
 		if ($mode !== 'settings')
 		{
 			return;
 		}
+
+		$this->id = $id;
+		$this->u_action = $u_action;
 
 		add_form_key(self::FORM_KEY);
 
