@@ -97,17 +97,7 @@ class helper
 		$files_to_untrack = array_diff($tracked_files, $untracked_files);
 
 		// Batch process tracking operations
-		foreach ($files_to_track as $file)
-		{
-			try
-			{
-				$this->storage->track_file($file);
-			}
-			catch (storage_exception)
-			{
-				// If file doesn't exist, don't track it
-			}
-		}
+		$this->storage->track_files($files_to_track);
 
 		foreach ($files_to_untrack as $file)
 		{

@@ -20,10 +20,13 @@ use phpbb\config\config;
 use phpbb\di\service_collection;
 use phpbb\exception\runtime_exception;
 use phpbb\filesystem\filesystem;
+use phpbb\language\language;
+use phpbb\language\language_file_loader;
 use phpbb\pwakit\helper\helper;
 use phpbb\pwakit\storage\storage;
 use phpbb\storage\adapter\local as adapter_local;
 use phpbb\storage\adapter_factory;
+use phpbb\storage\file_tracker;
 use phpbb\storage\provider\local as provider_local;
 use phpbb\storage\state_helper;
 use phpbb\template\template;
@@ -66,7 +69,7 @@ class helper_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		global $phpbb_root_path;
+		global $phpbb_root_path, $phpEx;
 
 		$this->phpbb_root_path = $phpbb_root_path;
 
@@ -85,7 +88,9 @@ class helper_test extends phpbb_database_test_case
 
 		$phpbb_container = new phpbb_mock_container_builder();
 
-		$storage_provider = new provider_local();
+		$language = new language(new language_file_loader($phpbb_root_path, $phpEx));
+
+		$storage_provider = new provider_local($language);
 		$phpbb_container->set('storage.provider.local', $storage_provider);
 		$provider_collection = new service_collection($phpbb_container);
 		$provider_collection->add('storage.provider.local');
@@ -109,12 +114,16 @@ class helper_test extends phpbb_database_test_case
 		$this->template = $this->getMockBuilder(template::class)
 			->getMock();
 
-		$this->storage = new storage(
-			$db,
+		$file_tracker = new file_tracker(
 			$cache,
-			$adapter_factory,
-			'phpbb_pwakit',
+			$db,
 			'phpbb_storage'
+		);
+
+		$this->storage = new storage(
+			$adapter_factory,
+			$file_tracker,
+			'phpbb_pwakit'
 		);
 
 		$this->helper = new \phpbb\pwakit\helper\helper(

@@ -19,7 +19,7 @@ class storage extends \phpbb\storage\storage
 	 */
 	public function get_tracked_files(): array
 	{
-		$sql = 'SELECT file_path FROM ' . $this->storage_table . "
+		$sql = 'SELECT file_path FROM ' . $this->file_tracker->storage_table . "
 			WHERE storage = '" . $this->db->sql_escape($this->get_name()) . "'
 			ORDER BY file_path";
 		$result = $this->db->sql_query($sql);
@@ -27,5 +27,50 @@ class storage extends \phpbb\storage\storage
 		$this->db->sql_freeresult($result);
 
 		return array_column($files, 'file_path');
+	}
+
+	/**
+	 * Wrapper for file_tracker::track_file
+	 *
+	 * @param string $path
+	 * @return void
+	 */
+	public function track_file(string $path): void
+	{
+		$this->file_tracker->track_file('phpbb_pwakit', $path, filesize($path));
+	}
+
+	/**
+	 * Wrapper for file_tracker::untrack_file
+	 *
+	 * @param string $path
+	 * @return void
+	 */
+	public function untrack_file(string $path): void
+	{
+		$this->file_tracker->untrack_file('phpbb_pwakit', $path);
+	}
+
+	/**
+	 * Wrapper for file_tracker::track_files
+	 *
+	 * @param array $paths
+	 * @return void
+	 */
+	public function track_files(array $paths): void
+	{
+		$files = [];
+		foreach ($paths as $path)
+		{
+			$files[] = [
+				'file_path' => $path,
+				'filesize'  => filesize($path),
+			];
+		}
+
+		if (!empty($files))
+		{
+			$this->file_tracker->track_files('phpbb_pwakit', $files);
+		}
 	}
 }

@@ -26,11 +26,9 @@ services:
     phpbb.pwakit.storage:
         class: phpbb\pwakit\storage\storage
         arguments:
-            - '@dbal.conn'
-            - '@cache.driver'
             - '@storage.adapter.factory'
+            - '@storage.file_tracker'
             - 'phpbb_pwakit'
-            - '%tables.storage%'
         tags:
             - { name: storage }
 
