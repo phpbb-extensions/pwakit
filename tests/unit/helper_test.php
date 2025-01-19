@@ -23,10 +23,10 @@ use phpbb\filesystem\filesystem;
 use phpbb\language\language;
 use phpbb\language\language_file_loader;
 use phpbb\pwakit\helper\helper;
-use phpbb\pwakit\storage\storage;
+use phpbb\pwakit\storage\file_tracker;
+use phpbb\storage\storage;
 use phpbb\storage\adapter\local as adapter_local;
 use phpbb\storage\adapter_factory;
-use phpbb\storage\file_tracker;
 use phpbb\storage\provider\local as provider_local;
 use phpbb\storage\state_helper;
 use phpbb\template\template;
@@ -49,6 +49,9 @@ class helper_test extends phpbb_database_test_case
 
 	/** @var storage */
 	protected storage $storage;
+
+	/** @var file_tracker $file_tracker */
+	protected file_tracker $file_tracker;
 
 	/** @var string */
 	protected string $storage_path;
@@ -114,7 +117,7 @@ class helper_test extends phpbb_database_test_case
 		$this->template = $this->getMockBuilder(template::class)
 			->getMock();
 
-		$file_tracker = new file_tracker(
+		$this->file_tracker = new file_tracker(
 			$cache,
 			$db,
 			'phpbb_storage'
@@ -122,7 +125,7 @@ class helper_test extends phpbb_database_test_case
 
 		$this->storage = new storage(
 			$adapter_factory,
-			$file_tracker,
+			$this->file_tracker,
 			'phpbb_pwakit'
 		);
 
@@ -130,6 +133,7 @@ class helper_test extends phpbb_database_test_case
 			$phpbb_extension_manager,
 			new FastImageSize(),
 			$this->storage,
+			$this->file_tracker,
 			new \phpbb\storage\helper(
 				$this->config,
 				$adapter_factory,
@@ -159,7 +163,7 @@ class helper_test extends phpbb_database_test_case
 
 	public function test_get_tracked_files()
 	{
-		$this->assertEquals(['foo.png'], $this->storage->get_tracked_files());
+		$this->assertEquals(['foo.png'], $this->file_tracker->get_tracked_files());
 	}
 
 	public function test_get_storage_path()
@@ -216,7 +220,7 @@ class helper_test extends phpbb_database_test_case
 			$this->assertEquals($exception, $e->getMessage());
 		}
 
-		$this->assertEquals($expected, $this->storage->get_tracked_files());
+		$this->assertEquals($expected, $this->file_tracker->get_tracked_files());
 	}
 
 	public function test_resync_icons()
@@ -228,12 +232,12 @@ class helper_test extends phpbb_database_test_case
 		@copy(self::FIXTURES . 'bar.png', self::FIXTURES . 'site_icons/bar.png');
 
 		// assert our storage tracking is currently still tracking the deleted image only
-		$this->assertEquals(['foo.png'], $this->storage->get_tracked_files());
+		$this->assertEquals(['foo.png'], $this->file_tracker->get_tracked_files());
 
 		// resync icons
 		$this->helper->resync_icons();
 
 		// assert we're no longer tracking the deleted file, and we are tracking the newly added file
-		$this->assertEquals(['bar.png'], $this->storage->get_tracked_files());
+		$this->assertEquals(['bar.png'], $this->file_tracker->get_tracked_files());
 	}
 }

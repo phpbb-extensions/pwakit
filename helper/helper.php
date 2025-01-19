@@ -13,7 +13,8 @@ namespace phpbb\pwakit\helper;
 use FastImageSize\FastImageSize;
 use phpbb\exception\runtime_exception;
 use phpbb\extension\manager as ext_manager;
-use phpbb\pwakit\storage\storage;
+use phpbb\pwakit\storage\file_tracker;
+use phpbb\storage\storage;
 use phpbb\storage\exception\storage_exception;
 use phpbb\storage\helper as storage_helper;
 
@@ -28,6 +29,9 @@ class helper
 	/** @var storage */
 	protected storage $storage;
 
+	/** @var file_tracker $file_tracker */
+	protected file_tracker $file_tracker;
+
 	/** @var storage_helper */
 	protected storage_helper $storage_helper;
 
@@ -40,14 +44,16 @@ class helper
 	 * @param ext_manager $extension_manager
 	 * @param FastImageSize $imagesize
 	 * @param storage $storage
+	 * @param file_tracker $file_tracker
 	 * @param storage_helper $storage_helper
 	 * @param string $root_path
 	 */
-	public function __construct(ext_manager $extension_manager, FastImageSize $imagesize, storage $storage, storage_helper $storage_helper, string $root_path)
+	public function __construct(ext_manager $extension_manager, FastImageSize $imagesize, storage $storage, file_tracker $file_tracker, storage_helper $storage_helper, string $root_path)
 	{
 		$this->extension_manager = $extension_manager;
 		$this->imagesize = $imagesize;
 		$this->storage = $storage;
+		$this->file_tracker = $file_tracker;
 		$this->storage_helper = $storage_helper;
 		$this->root_path = $root_path;
 	}
@@ -97,11 +103,11 @@ class helper
 		$files_to_untrack = array_diff($tracked_files, $untracked_files);
 
 		// Batch process tracking operations
-		$this->storage->track_files($files_to_track);
+		$this->file_tracker->track_files(file_tracker::STORAGE_NAME, $files_to_track);
 
 		foreach ($files_to_untrack as $file)
 		{
-			$this->storage->untrack_file($file);
+			$this->file_tracker->untrack_file(file_tracker::STORAGE_NAME, $file);
 		}
 	}
 
@@ -157,7 +163,7 @@ class helper
 	protected function get_stored_images(): array
 	{
 		$path = $this->get_storage_path();
-		$images = $this->storage->get_tracked_files();
+		$images = $this->file_tracker->get_tracked_files();
 
 		$result = [];
 		foreach ($images as $image)

@@ -13,7 +13,7 @@ namespace phpbb\pwakit\migrations;
 use phpbb\db\migration\container_aware_migration;
 use phpbb\extension\manager;
 use phpbb\pwakit\ext;
-use phpbb\pwakit\storage\file_tracker;
+use phpbb\storage\file_tracker;
 use phpbb\storage\provider\local;
 
 class m3_storage extends container_aware_migration

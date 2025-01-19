@@ -14,6 +14,7 @@ services:
             - '@ext.manager'
             - '@upload_imagesize'
             - '@phpbb.pwakit.storage'
+            - '@phpbb.pwakit.file_tracker'
             - '@storage.helper'
             - '%core.root_path%'
 
@@ -24,13 +25,17 @@ services:
             - '@phpbb.pwakit.storage'
 
     phpbb.pwakit.storage:
-        class: phpbb\pwakit\storage\storage
+        class: phpbb\storage\storage
         arguments:
             - '@storage.adapter.factory'
-            - '@storage.file_tracker'
+            - '@phpbb.pwakit.file_tracker'
             - 'phpbb_pwakit'
         tags:
             - { name: storage }
+
+    phpbb.pwakit.file_tracker:
+        class: phpbb\pwakit\storage\file_tracker
+        parent: storage.file_tracker
 
     phpbb.pwakit.admin.controller:
         class: phpbb\pwakit\controller\admin_controller
