@@ -10,8 +10,10 @@
 
 namespace phpbb\pwakit\storage;
 
-class storage extends \phpbb\storage\storage
+class file_tracker extends \phpbb\storage\file_tracker
 {
+	public const STORAGE_NAME = 'phpbb_pwakit';
+
 	/**
 	 * Gets tracked files in the storage table
 	 *
@@ -20,7 +22,7 @@ class storage extends \phpbb\storage\storage
 	public function get_tracked_files(): array
 	{
 		$sql = 'SELECT file_path FROM ' . $this->storage_table . "
-			WHERE storage = '" . $this->db->sql_escape($this->get_name()) . "'
+			WHERE storage = '" . self::STORAGE_NAME . "'
 			ORDER BY file_path";
 		$result = $this->db->sql_query($sql);
 		$files = $this->db->sql_fetchrowset($result);

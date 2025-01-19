@@ -6,7 +6,7 @@ env:
     IMAGE_ICC: 1          # Run icc profile sniffer on your images? 1 or 0
     EPV: 0                # Run EPV (Extension Pre Validator) on your code? 1 or 0
     EXECUTABLE_FILES: 1   # Run check for executable files? 1 or 0
-    PHPBB_BRANCH: master  # The phpBB branch to run tests on
+    PHPBB_BRANCH: ticket/17361  # The phpBB branch to run tests on
 
 on:
     push:
@@ -37,7 +37,7 @@ jobs:
             - name: Checkout phpBB
               uses: actions/checkout@v4
               with:
-                  repository: phpbb/phpbb
+                  repository: rubencm/phpbb
                   ref: ${{ env.PHPBB_BRANCH }}
                   path: phpBB3
 
@@ -162,7 +162,7 @@ jobs:
             - name: Checkout phpBB
               uses: actions/checkout@v4
               with:
-                  repository: phpbb/phpbb
+                  repository: rubencm/phpbb
                   ref: ${{ env.PHPBB_BRANCH }}
                   path: phpBB3
 
@@ -303,7 +303,7 @@ jobs:
             - name: Checkout phpBB
               uses: actions/checkout@v4
               with:
-                  repository: phpbb/phpbb
+                  repository: rubencm/phpbb
                   ref: ${{ env.PHPBB_BRANCH }}
                   path: phpBB3
 
@@ -401,7 +401,7 @@ jobs:
             - name: Checkout phpBB
               uses: actions/checkout@v4
               with:
-                  repository: phpbb/phpbb
+                  repository: rubencm/phpbb
                   ref: ${{ env.PHPBB_BRANCH }}
                   path: phpBB3
 
