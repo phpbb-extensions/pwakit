@@ -103,7 +103,7 @@ class helper
 		$files_to_untrack = array_diff($tracked_files, $untracked_files);
 
 		// Batch process tracking operations
-		$this->file_tracker->track_files(file_tracker::STORAGE_NAME, $files_to_track);
+		$this->file_tracker->pwakit_track_files(file_tracker::STORAGE_NAME, $files_to_track);
 
 		foreach ($files_to_untrack as $file)
 		{

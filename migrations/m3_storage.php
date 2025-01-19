@@ -72,7 +72,10 @@ class m3_storage extends container_aware_migration
 		// Extract just the file paths relative to the storage dir
 		$files = array_map(static function($image) use ($storage_path) {
 			$pos = strpos($image, $storage_path);
-			return $pos !== false ? substr($image, $pos + strlen($storage_path)) : $image;
+			return [
+				'file_path' => $pos !== false ? substr($image, $pos + strlen($storage_path)) : $image,
+				'filesize' => filesize($image)
+			];
 		}, $files);
 
 		// Track files

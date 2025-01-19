@@ -55,7 +55,7 @@ class file_tracker extends \phpbb\storage\file_tracker
 		return array_column($files, 'file_path');
 	}
 
-	public function track_files(string $storage, array $files): void
+	public function pwakit_track_files(string $storage, array $files): void
 	{
 		$files_ary = [];
 		foreach ($files as $file)
