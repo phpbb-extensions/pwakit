@@ -53,6 +53,16 @@ class helper
 	}
 
 	/**
+	 * Storage compatibility requires the local provider
+	 *
+	 * @return bool
+	 */
+	public function is_storage_compatible(): bool
+	{
+		return str_ends_with($this->storage_helper->get_current_provider($this->storage->get_name()), '\local');
+	}
+
+	/**
 	 * Get the storage path for the current storage definition
 	 *
 	 * @return string

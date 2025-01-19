@@ -91,6 +91,7 @@ class admin_controller_test extends phpbb_database_test_case
 		$this->helper = $this->getMockBuilder(helper::class)
 			->disableOriginalConstructor()
 			->getMock();
+		$this->helper->method('is_storage_compatible')->willReturn(true);
 		$this->helper->method('get_storage_path')->willReturn('images/site_icons');
 		$this->helper->method('get_icons')->willReturn([]);
 
@@ -247,6 +248,7 @@ class admin_controller_test extends phpbb_database_test_case
 				'PWA_IMAGES_DIR'	=> 'images/site_icons',
 				'PWA_KIT_ICONS'		=> [],
 				'STYLES'			=> $expected_style_data,
+				'S_STORAGE_LOCAL'	=> true,
 				'U_BOARD_SETTINGS'	=> "{$this->phpbb_root_path}adm/index.php?i=acp_board&amp;mode=settings",
 				'U_STORAGE_SETTINGS'=> "{$this->phpbb_root_path}adm/index.php?i=acp_storage&amp;mode=settings",
 				'U_ACTION'			=> '',
