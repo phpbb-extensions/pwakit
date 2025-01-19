@@ -35,12 +35,7 @@ services:
 
     phpbb.pwakit.file_tracker:
         class: phpbb\pwakit\storage\file_tracker
-        arguments:
-            - '@cache.driver'
-            - '@dbal.conn'
-            - '%tables.storage%'
-            - '@config'
-            - '%core.root_path%'
+        parent: storage.file_tracker
 
     phpbb.pwakit.admin.controller:
         class: phpbb\pwakit\controller\admin_controller

@@ -120,9 +120,7 @@ class helper_test extends phpbb_database_test_case
 		$this->file_tracker = new file_tracker(
 			$cache,
 			$db,
-			'phpbb_storage',
-			$this->config,
-			$this->phpbb_root_path
+			'phpbb_storage'
 		);
 
 		$this->storage = new storage(

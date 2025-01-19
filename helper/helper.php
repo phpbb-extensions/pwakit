@@ -88,26 +88,39 @@ class helper
 	public function resync_icons(): void
 	{
 		$path = $this->get_storage_path() . '/';
+		$full_base_path = $this->root_path . $path;
 
-		// Get both arrays at once and pre-process paths
-		$untracked_files = array_map(static function($file) use ($path) {
-			return str_replace($path, '', $file);
-		}, $this->get_images());
+		// Create a single reusable callback function
+		$remove_path = static fn($file) => str_replace($path, '', $file);
 
-		$tracked_files = array_map(static function($file) use ($path) {
-			return str_replace($path, '', $file);
-		}, $this->get_stored_images());
+		// Get and process both arrays using the same callback
+		$untracked_files = array_map($remove_path, $this->get_images());
+		$tracked_files = array_map($remove_path, $this->get_stored_images());
 
 		// Process tracking changes
 		$files_to_track = array_diff($untracked_files, $tracked_files);
 		$files_to_untrack = array_diff($tracked_files, $untracked_files);
 
-		// Batch process tracking operations
-		$this->file_tracker->pwakit_track_files(file_tracker::STORAGE_NAME, $files_to_track);
+		// Prepare batch tracking array with array_map instead of foreach
+		$files = !empty($files_to_track) ? array_map(
+			static fn($file) => [
+				'file_path' => $file,
+				'filesize' => filesize($full_base_path . $file)
+			],
+			$files_to_track
+		) : [];
 
-		foreach ($files_to_untrack as $file)
+		if ($files)
 		{
-			$this->file_tracker->untrack_file(file_tracker::STORAGE_NAME, $file);
+			$this->file_tracker->track_files(file_tracker::STORAGE_NAME, $files);
+		}
+
+		if ($files_to_untrack)
+		{
+			foreach ($files_to_untrack as $file)
+			{
+				$this->file_tracker->untrack_file(file_tracker::STORAGE_NAME, $file);
+			}
 		}
 	}
 
