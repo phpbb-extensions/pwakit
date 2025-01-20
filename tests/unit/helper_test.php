@@ -128,6 +128,7 @@ class helper_test extends phpbb_database_test_case
 				$provider_collection,
 				$adapter_collection
 			),
+			$provider_collection,
 			$phpbb_root_path
 		);
 
