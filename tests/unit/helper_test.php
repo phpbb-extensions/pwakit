@@ -159,6 +159,12 @@ class helper_test extends phpbb_database_test_case
 		$this->assertTrue($this->helper->is_storage_local());
 	}
 
+	public function test_is_storage_not_local()
+	{
+		$this->config->set('storage\phpbb_pwakit\provider', 'foo');
+		$this->assertFalse($this->helper->is_storage_local());
+	}
+
 	public function test_get_storage_path()
 	{
 		$this->assertEquals($this->storage_path, $this->helper->get_storage_path());

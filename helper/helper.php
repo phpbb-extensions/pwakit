@@ -17,6 +17,7 @@ use phpbb\extension\manager as ext_manager;
 use phpbb\pwakit\storage\storage;
 use phpbb\storage\exception\storage_exception;
 use phpbb\storage\helper as storage_helper;
+use RuntimeException;
 
 class helper
 {
@@ -65,11 +66,18 @@ class helper
 	 */
 	public function is_storage_local(): bool
 	{
-		$current_provider = $this->provider_collection->get_by_class(
-			$this->storage_helper->get_current_provider($this->storage->get_name())
-		);
+		try
+		{
+			$storage_name = $this->storage->get_name();
+			$provider_class = $this->storage_helper->get_current_provider($storage_name);
+			$current_provider = $this->provider_collection->get_by_class($provider_class);
 
-		return $current_provider && $current_provider->get_name() === 'local';
+			return $current_provider && $current_provider->get_name() === 'local';
+		}
+		catch (RuntimeException)
+		{
+			return false;
+		}
 	}
 
 	/**
