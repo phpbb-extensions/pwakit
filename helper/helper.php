@@ -63,7 +63,7 @@ class helper
 	 *
 	 * @return bool
 	 */
-	public function is_storage_compatible(): bool
+	public function is_storage_local(): bool
 	{
 		$current_provider = $this->provider_collection->get_by_class(
 			$this->storage_helper->get_current_provider($this->storage->get_name())

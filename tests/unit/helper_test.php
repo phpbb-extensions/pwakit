@@ -154,9 +154,9 @@ class helper_test extends phpbb_database_test_case
 		$this->assertEquals(['foo.png'], $this->storage->get_tracked_files());
 	}
 
-	public function test_is_storage_compatible()
+	public function test_is_storage_local()
 	{
-		$this->assertTrue($this->helper->is_storage_compatible());
+		$this->assertTrue($this->helper->is_storage_local());
 	}
 
 	public function test_get_storage_path()

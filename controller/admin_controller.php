@@ -190,7 +190,7 @@ class admin_controller
 			'PWA_KIT_ICONS'		=> $this->helper->get_icons($this->phpbb_root_path),
 			'STYLES'			=> $this->get_styles(),
 
-			'S_STORAGE_LOCAL'	=> $this->helper->is_storage_compatible(),
+			'S_STORAGE_LOCAL'	=> $this->helper->is_storage_local(),
 
 			'U_BOARD_SETTINGS'	=> append_sid("{$this->phpbb_admin_path}index.$this->php_ext", 'i=acp_board&amp;mode=settings'),
 			'U_STORAGE_SETTINGS'=> append_sid("{$this->phpbb_admin_path}index.$this->php_ext", 'i=acp_storage&amp;mode=settings'),

@@ -91,7 +91,7 @@ class admin_controller_test extends phpbb_database_test_case
 		$this->helper = $this->getMockBuilder(helper::class)
 			->disableOriginalConstructor()
 			->getMock();
-		$this->helper->method('is_storage_compatible')->willReturn(true);
+		$this->helper->method('is_storage_local')->willReturn(true);
 		$this->helper->method('get_storage_path')->willReturn('images/site_icons');
 		$this->helper->method('get_icons')->willReturn([]);
 
