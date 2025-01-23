@@ -19,6 +19,7 @@ services:
 
     phpbb.pwakit.upload:
         class: phpbb\pwakit\helper\upload
+        shared: false
         arguments:
             - '@files.upload'
             - '@phpbb.pwakit.storage'
