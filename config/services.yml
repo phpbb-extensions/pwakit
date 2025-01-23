@@ -15,6 +15,7 @@ services:
             - '@upload_imagesize'
             - '@phpbb.pwakit.storage'
             - '@storage.helper'
+            - '@storage.provider_collection'
             - '%core.root_path%'
 
     phpbb.pwakit.upload:
