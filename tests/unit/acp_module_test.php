@@ -27,10 +27,7 @@ require_once __DIR__ . '/../../../../../includes/functions_module.php';
 
 class acp_module_test extends phpbb_test_case
 {
-	/** @var phpbb_mock_extension_manager */
 	protected phpbb_mock_extension_manager $extension_manager;
-
-	/** @var module_manager */
 	protected module_manager $module_manager;
 
 	protected function setUp(): void

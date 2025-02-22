@@ -21,13 +21,8 @@ use phpbb_test_case;
 
 class event_listener_test extends phpbb_test_case
 {
-	/** @var user|MockObject */
 	protected user|MockObject $user;
-
-	/** @var template|MockObject  */
 	protected template|MockObject $template;
-
-	/** @var helper */
 	protected helper $helper;
 
 	/**

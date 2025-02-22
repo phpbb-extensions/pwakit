@@ -25,9 +25,7 @@ use phpbb_test_case;
 class ext_test extends phpbb_test_case
 {
 	protected ContainerInterface|MockObject $container;
-
 	protected finder|MockObject $extension_finder;
-
 	protected migrator|MockObject $migrator;
 
 	protected function setUp(): void

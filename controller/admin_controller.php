@@ -328,12 +328,12 @@ class admin_controller
 		}
 		else
 		{
-			confirm_box(false, 'ACP_PWA_IMG_DELETE', build_hidden_fields(array(
+			confirm_box(false, 'ACP_PWA_IMG_DELETE', build_hidden_fields([
 				'i'			=> $this->id,
 				'mode'		=> 'settings',
 				'delete'	=> $path,
 				'action'	=> $this->u_action,
-			)));
+			]));
 		}
 	}
 

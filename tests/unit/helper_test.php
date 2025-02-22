@@ -38,29 +38,17 @@ class helper_test extends phpbb_database_test_case
 {
 	protected const FIXTURES = __DIR__ . '/../fixtures/';
 
-	/** @var config */
 	protected config $config;
-
-	/** @var template|MockObject  */
 	protected template|MockObject $template;
-
-	/** @var helper */
 	protected helper $helper;
-
-	/** @var storage */
 	protected storage $storage;
-
-	/** @var file_tracker $file_tracker */
 	protected file_tracker $file_tracker;
-
-	/** @var string */
 	protected string $storage_path;
-
 	protected string $phpbb_root_path;
 
 	protected static function setup_extensions(): array
 	{
-		return array('phpbb/pwakit');
+		return ['phpbb/pwakit'];
 	}
 
 	protected function getDataSet(): IDataSet|XmlDataSet|DefaultDataSet

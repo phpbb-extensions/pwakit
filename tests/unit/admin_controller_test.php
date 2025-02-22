@@ -32,28 +32,20 @@ use phpbb_database_test_case;
 class admin_controller_test extends phpbb_database_test_case
 {
 	public static bool $confirm;
-
 	public static bool $valid_form;
 
 	protected dbal $db;
-
 	protected config $config;
-
 	protected language $language;
-
 	protected request $request;
-
 	protected template|MockObject $template;
-
 	protected helper $helper;
-
 	protected upload $upload;
-
 	protected string $phpbb_root_path;
 
 	protected static function setup_extensions(): array
 	{
-		return array('phpbb/pwakit');
+		return ['phpbb/pwakit'];
 	}
 
 	protected function getDataSet(): IDataSet|XmlDataSet|DefaultDataSet
