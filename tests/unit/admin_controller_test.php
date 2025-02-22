@@ -32,28 +32,20 @@ use phpbb_database_test_case;
 class admin_controller_test extends phpbb_database_test_case
 {
 	public static bool $confirm;
-
 	public static bool $valid_form;
 
 	protected dbal $db;
-
 	protected config $config;
-
 	protected language $language;
-
 	protected request $request;
-
 	protected template|MockObject $template;
-
 	protected helper $helper;
-
 	protected upload $upload;
-
 	protected string $phpbb_root_path;
 
 	protected static function setup_extensions(): array
 	{
-		return array('phpbb/pwakit');
+		return ['phpbb/pwakit'];
 	}
 
 	protected function getDataSet(): IDataSet|XmlDataSet|DefaultDataSet
@@ -124,8 +116,8 @@ class admin_controller_test extends phpbb_database_test_case
 	public function module_access_test_data(): array
 	{
 		return [
-			['settings', true],
-			['foobar', false],
+			'correct mode' => ['settings', true],
+			'incorrect mode' => ['foobar', false],
 		];
 	}
 
@@ -147,9 +139,9 @@ class admin_controller_test extends phpbb_database_test_case
 	public function form_checks_data(): array
 	{
 		return [
-			['submit'],
-			['upload'],
-			['resync'],
+			'submit test' => ['submit'],
+			'upload test' => ['upload'],
+			'resync test' => ['resync'],
 		];
 	}
 
@@ -171,7 +163,7 @@ class admin_controller_test extends phpbb_database_test_case
 	public function display_settings_test_data(): array
 	{
 		return [
-			[
+			'site name and short name' => [
 				[
 					'sitename' => 'phpBB',
 					'sitename_short' => 'phpBB',
@@ -181,7 +173,7 @@ class admin_controller_test extends phpbb_database_test_case
 					'sitename_short' => 'phpBB',
 				],
 			],
-			[
+			'site name only' => [
 				[
 					'sitename' => 'phpBB',
 					'sitename_short' => '',
@@ -191,7 +183,7 @@ class admin_controller_test extends phpbb_database_test_case
 					'sitename_short' => 'phpBB',
 				],
 			],
-			[
+			'long site name only' => [
 				[
 					'sitename' => 'phpBB Long Site Name',
 					'sitename_short' => '',
@@ -201,7 +193,7 @@ class admin_controller_test extends phpbb_database_test_case
 					'sitename_short' => 'phpBB Long S',
 				],
 			],
-			[
+			'long mb site name only' => [
 				[
 					'sitename' => utf8_encode_ucr('phpBB™ 😂😂😂😂😂😂😂😂'),
 					'sitename_short' => '',
@@ -273,7 +265,7 @@ class admin_controller_test extends phpbb_database_test_case
 	public function submit_test_data(): array
 	{
 		return [
-			[	// all good inputs
+			'all good inputs' => [
 				[
 					'pwa_bg_color_1' => '#000000',
 					'pwa_theme_color_1' => '#ffffff',
@@ -286,7 +278,7 @@ class admin_controller_test extends phpbb_database_test_case
 				],
 				'CONFIG_UPDATED',
 			],
-			[	// one style with good inputs
+			'one style with good inputs #1' => [
 				[
 					'pwa_bg_color_1' => '#000000',
 					'pwa_theme_color_1' => '#ffffff',
@@ -299,7 +291,7 @@ class admin_controller_test extends phpbb_database_test_case
 				],
 				'CONFIG_UPDATED',
 			],
-			[	// one style with good inputs
+			'one style with good inputs #2' => [
 				[
 					'pwa_bg_color_1' => '#000000',
 					'pwa_theme_color_1' => '',
@@ -312,7 +304,7 @@ class admin_controller_test extends phpbb_database_test_case
 				],
 				'CONFIG_UPDATED',
 			],
-			[	// one bad input
+			'one bad input' => [
 				[
 					'pwa_bg_color_1' => '#000000',
 					'pwa_theme_color_1' => 'fff',
@@ -325,7 +317,7 @@ class admin_controller_test extends phpbb_database_test_case
 				],
 				'ACP_PWA_INVALID_COLOR',
 			],
-			[	// all bad inputs
+			'all bad inputs' => [
 				[
 					'pwa_bg_color_1' => 'foo',
 					'pwa_theme_color_1' => 'bar',
@@ -338,7 +330,7 @@ class admin_controller_test extends phpbb_database_test_case
 				],
 				'ACP_PWA_INVALID_COLOR<br>ACP_PWA_INVALID_COLOR<br>ACP_PWA_INVALID_COLOR<br>ACP_PWA_INVALID_COLOR',
 			],
-			[	// all empty inputs
+			'all empty inputs' => [
 				[
 					'pwa_bg_color_1' => '',
 					'pwa_theme_color_1' => '',
@@ -456,9 +448,21 @@ class admin_controller_test extends phpbb_database_test_case
 	public function delete_test_data(): array
 	{
 		return [
-			['foo.png', false, false], // not confirmed yet
-			['foo.png', true, false], // confirmed and valid data, no errors
-			['', true, true], // confirmed with invalid data, errors
+			'not confirmed' => [
+				'foo.png',
+				false,
+				false
+			],
+			'confirmed valid data' => [
+				'foo.png',
+				true,
+				false
+			],
+			'confirmed invalid data' => [
+				'',
+				true,
+				true
+			],
 		];
 	}
 

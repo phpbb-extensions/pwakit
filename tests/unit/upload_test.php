@@ -20,9 +20,9 @@ use phpbb_test_case;
 
 class upload_test extends phpbb_test_case
 {
-	protected MockObject|\phpbb\files\upload $files_upload;
+	protected MockObject|files_upload $files_upload;
 	protected MockObject|filespec_storage $file;
-	protected storage|MockObject $storage;
+	protected MockObject|storage $storage;
 
 	protected static function setup_extensions(): array
 	{
@@ -52,8 +52,8 @@ class upload_test extends phpbb_test_case
 	public function upload_data(): array
 	{
 		return [
-			[false],
-			[true],
+			'upload failed' => [false],
+			'upload succeeded' => [true],
 		];
 	}
 

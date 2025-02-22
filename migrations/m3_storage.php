@@ -10,14 +10,10 @@
 
 namespace phpbb\pwakit\migrations;
 
-use phpbb\cache\driver\driver_interface;
 use phpbb\db\migration\container_aware_migration;
 use phpbb\extension\manager;
 use phpbb\pwakit\ext;
-use phpbb\pwakit\storage\storage;
-use phpbb\storage\adapter\adapter_interface;
-use phpbb\storage\adapter_factory;
-use phpbb\storage\exception\storage_exception;
+use phpbb\storage\file_tracker;
 use phpbb\storage\provider\local;
 
 class m3_storage extends container_aware_migration
@@ -61,19 +57,8 @@ class m3_storage extends container_aware_migration
 		/** @var manager $extension_manager */
 		$extension_manager = $this->container->get('ext.manager');
 
-		/** @var driver_interface $cache */
-		$cache = $this->container->get('cache.driver');
-
-		/** @var adapter_interface|adapter_factory $factory */
-		$factory = $this->container->get('storage.adapter.factory');
-
-		$storage = new storage(
-			$this->db,
-			$cache,
-			$factory,
-			'phpbb_pwakit',
-			$this->tables['storage']
-		);
+		/** @var file_tracker $file_tracker */
+		$file_tracker = $this->container->get('storage.file_tracker');
 
 		$storage_path = ext::PWA_ICON_DIR . '/';
 
@@ -87,22 +72,14 @@ class m3_storage extends container_aware_migration
 		// Extract just the file paths relative to the storage dir
 		$files = array_map(static function($image) use ($storage_path) {
 			$pos = strpos($image, $storage_path);
-			return $pos !== false ? substr($image, $pos + strlen($storage_path)) : $image;
+			return [
+				'file_path' => $pos !== false ? substr($image, $pos + strlen($storage_path)) : $image,
+				'filesize' => filesize($image)
+			];
 		}, $files);
 
-		// Track each file
-		foreach ($files as $file)
-		{
-			try
-			{
-				$storage->track_file($file);
-			}
-			catch (storage_exception)
-			{
-				// If file doesn't exist or other error, continue with next file
-				continue;
-			}
-		}
+		// Track files
+		$file_tracker->track_files('phpbb_pwakit', $files);
 	}
 
 	/**

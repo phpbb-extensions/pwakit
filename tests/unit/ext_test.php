@@ -25,9 +25,7 @@ use phpbb_test_case;
 class ext_test extends phpbb_test_case
 {
 	protected ContainerInterface|MockObject $container;
-
 	protected finder|MockObject $extension_finder;
-
 	protected migrator|MockObject $migrator;
 
 	protected function setUp(): void
@@ -52,9 +50,18 @@ class ext_test extends phpbb_test_case
 	public function ext_test_data(): array
 	{
 		return [
-			[ext::PHPBB_MIN_VERSION, true], // current setting is enable-able
-			['4.0.0', true], // future phpbb is enable-able
-			['3.3.14', false], // old phpbb is not enable-able
+			'current version' => [
+				ext::PHPBB_MIN_VERSION,
+				true
+			],
+			'future version' => [
+				'4.0.0',
+				true
+			],
+			'outdated version' => [
+				'3.3.14',
+				false
+			],
 		];
 	}
 
@@ -89,9 +96,21 @@ class ext_test extends phpbb_test_case
 	public function enable_test_data(): array
 	{
 		return [
-			[true, false, 'create-icon-dir'],
-			[false, false, 'create-icon-dir'],
-			[false, true, true],
+			'dir exists' => [
+				true,
+				false,
+				'create-icon-dir'
+			],
+			'dir not exists' => [
+				false,
+				false,
+				'create-icon-dir'
+			],
+			'end of enable steps' => [
+				false,
+				true,
+				true
+			],
 		];
 	}
 

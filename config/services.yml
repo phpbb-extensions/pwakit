@@ -14,26 +14,30 @@ services:
             - '@ext.manager'
             - '@upload_imagesize'
             - '@phpbb.pwakit.storage'
+            - '@phpbb.pwakit.file_tracker'
             - '@storage.helper'
             - '@storage.provider_collection'
             - '%core.root_path%'
 
     phpbb.pwakit.upload:
         class: phpbb\pwakit\helper\upload
+        shared: false
         arguments:
             - '@files.upload'
             - '@phpbb.pwakit.storage'
 
     phpbb.pwakit.storage:
-        class: phpbb\pwakit\storage\storage
+        class: phpbb\storage\storage
         arguments:
-            - '@dbal.conn'
-            - '@cache.driver'
             - '@storage.adapter.factory'
+            - '@phpbb.pwakit.file_tracker'
             - 'phpbb_pwakit'
-            - '%tables.storage%'
         tags:
             - { name: storage }
+
+    phpbb.pwakit.file_tracker:
+        class: phpbb\pwakit\storage\file_tracker
+        parent: storage.file_tracker
 
     phpbb.pwakit.admin.controller:
         class: phpbb\pwakit\controller\admin_controller

@@ -14,7 +14,8 @@ use FastImageSize\FastImageSize;
 use phpbb\di\service_collection;
 use phpbb\exception\runtime_exception;
 use phpbb\extension\manager as ext_manager;
-use phpbb\pwakit\storage\storage;
+use phpbb\pwakit\storage\file_tracker;
+use phpbb\storage\storage;
 use phpbb\storage\exception\storage_exception;
 use phpbb\storage\helper as storage_helper;
 use RuntimeException;
@@ -29,6 +30,9 @@ class helper
 
 	/** @var storage */
 	protected storage $storage;
+
+	/** @var file_tracker $file_tracker */
+	protected file_tracker $file_tracker;
 
 	/** @var storage_helper */
 	protected storage_helper $storage_helper;
@@ -45,15 +49,17 @@ class helper
 	 * @param ext_manager $extension_manager
 	 * @param FastImageSize $imagesize
 	 * @param storage $storage
+	 * @param file_tracker $file_tracker
 	 * @param storage_helper $storage_helper
 	 * @param service_collection $provider_collection
 	 * @param string $root_path
 	 */
-	public function __construct(ext_manager $extension_manager, FastImageSize $imagesize, storage $storage, storage_helper $storage_helper, service_collection $provider_collection, string $root_path)
+	public function __construct(ext_manager $extension_manager, FastImageSize $imagesize, storage $storage, file_tracker $file_tracker, storage_helper $storage_helper, service_collection $provider_collection, string $root_path)
 	{
 		$this->extension_manager = $extension_manager;
 		$this->imagesize = $imagesize;
 		$this->storage = $storage;
+		$this->file_tracker = $file_tracker;
 		$this->storage_helper = $storage_helper;
 		$this->provider_collection = $provider_collection;
 		$this->root_path = $root_path;
@@ -110,36 +116,39 @@ class helper
 	public function resync_icons(): void
 	{
 		$path = $this->get_storage_path() . '/';
+		$full_base_path = $this->root_path . $path;
 
-		// Get both arrays at once and pre-process paths
-		$untracked_files = array_map(static function($file) use ($path) {
-			return str_replace($path, '', $file);
-		}, $this->get_images());
+		// Create a single reusable callback function
+		$remove_path = static fn($file) => str_replace($path, '', $file);
 
-		$tracked_files = array_map(static function($file) use ($path) {
-			return str_replace($path, '', $file);
-		}, $this->get_stored_images());
+		// Get and process both arrays using the same callback
+		$untracked_files = array_map($remove_path, $this->get_images());
+		$tracked_files = array_map($remove_path, $this->get_stored_images());
 
 		// Process tracking changes
 		$files_to_track = array_diff($untracked_files, $tracked_files);
 		$files_to_untrack = array_diff($tracked_files, $untracked_files);
 
-		// Batch process tracking operations
-		foreach ($files_to_track as $file)
+		// Prepare batch tracking array with array_map instead of foreach
+		$files = !empty($files_to_track) ? array_map(
+			static fn($file) => [
+				'file_path' => $file,
+				'filesize' => filesize($full_base_path . $file)
+			],
+			$files_to_track
+		) : [];
+
+		if ($files)
 		{
-			try
-			{
-				$this->storage->track_file($file);
-			}
-			catch (storage_exception)
-			{
-				// If file doesn't exist, don't track it
-			}
+			$this->file_tracker->track_files(file_tracker::STORAGE_NAME, $files);
 		}
 
-		foreach ($files_to_untrack as $file)
+		if ($files_to_untrack)
 		{
-			$this->storage->untrack_file($file);
+			foreach ($files_to_untrack as $file)
+			{
+				$this->file_tracker->untrack_file(file_tracker::STORAGE_NAME, $file);
+			}
 		}
 	}
 
@@ -195,7 +204,7 @@ class helper
 	protected function get_stored_images(): array
 	{
 		$path = $this->get_storage_path();
-		$images = $this->storage->get_tracked_files();
+		$images = $this->file_tracker->get_tracked_files();
 
 		$result = [];
 		foreach ($images as $image)
