@@ -52,8 +52,8 @@ class upload_test extends phpbb_test_case
 	public function upload_data(): array
 	{
 		return [
-			[false],
-			[true],
+			'upload failed' => [false],
+			'upload succeeded' => [true],
 		];
 	}
 

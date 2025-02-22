@@ -20,8 +20,11 @@ use phpbb\config\config;
 use phpbb\di\service_collection;
 use phpbb\exception\runtime_exception;
 use phpbb\filesystem\filesystem;
+use phpbb\language\language;
+use phpbb\language\language_file_loader;
 use phpbb\pwakit\helper\helper;
-use phpbb\pwakit\storage\storage;
+use phpbb\pwakit\storage\file_tracker;
+use phpbb\storage\storage;
 use phpbb\storage\adapter\local as adapter_local;
 use phpbb\storage\adapter_factory;
 use phpbb\storage\provider\local as provider_local;
@@ -39,6 +42,7 @@ class helper_test extends phpbb_database_test_case
 	protected template|MockObject $template;
 	protected helper $helper;
 	protected storage $storage;
+	protected file_tracker $file_tracker;
 	protected string $storage_path;
 	protected string $phpbb_root_path;
 
@@ -56,7 +60,7 @@ class helper_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		global $phpbb_root_path;
+		global $phpbb_root_path, $phpEx;
 
 		$this->phpbb_root_path = $phpbb_root_path;
 
@@ -75,7 +79,9 @@ class helper_test extends phpbb_database_test_case
 
 		$phpbb_container = new phpbb_mock_container_builder();
 
-		$storage_provider = new provider_local();
+		$language = new language(new language_file_loader($phpbb_root_path, $phpEx));
+
+		$storage_provider = new provider_local($language);
 		$phpbb_container->set('storage.provider.local', $storage_provider);
 		$provider_collection = new service_collection($phpbb_container);
 		$provider_collection->add('storage.provider.local');
@@ -99,18 +105,23 @@ class helper_test extends phpbb_database_test_case
 		$this->template = $this->getMockBuilder(template::class)
 			->getMock();
 
-		$this->storage = new storage(
-			$db,
+		$this->file_tracker = new file_tracker(
 			$cache,
-			$adapter_factory,
-			'phpbb_pwakit',
+			$db,
 			'phpbb_storage'
+		);
+
+		$this->storage = new storage(
+			$adapter_factory,
+			$this->file_tracker,
+			'phpbb_pwakit'
 		);
 
 		$this->helper = new \phpbb\pwakit\helper\helper(
 			$phpbb_extension_manager,
 			new FastImageSize(),
 			$this->storage,
+			$this->file_tracker,
 			new \phpbb\storage\helper(
 				$this->config,
 				$adapter_factory,
@@ -140,7 +151,7 @@ class helper_test extends phpbb_database_test_case
 
 	public function test_get_tracked_files()
 	{
-		$this->assertEquals(['foo.png'], $this->storage->get_tracked_files());
+		$this->assertEquals(['foo.png'], $this->file_tracker->get_tracked_files());
 	}
 
 	public function test_get_storage_path()
@@ -170,12 +181,36 @@ class helper_test extends phpbb_database_test_case
 	public function delete_icon_test_data(): array
 	{
 		return [
-			['', 'ACP_PWA_IMG_DELETE_PATH_ERR', ['foo.png']], // empty icon name so nothing gets deleted
-			['f$$.png', 'ACP_PWA_IMG_DELETE_NAME_ERR', ['foo.png']], // invalid icon name so nothing gets deleted
-			['bar.png', 'STORAGE_FILE_NO_EXIST', ['foo.png']], // icon doesn't exist so nothing gets deleted
-			['ext/phpbb/pwakit/tests/fixtures/site_icons/foo.png', '', []], // icon with its full storage path gets deleted
-			['../foo.png', '', []], // icon with possible path traversal still gets deleted properly
-			['foo.png', '', []], // icon by just name alone gets deleted properly
+			'empty icon name' => [
+				'',
+				'ACP_PWA_IMG_DELETE_PATH_ERR',
+				['foo.png']  // nothing gets deleted
+			],
+			'invalid icon name' => [
+				'f$$.png',
+				'ACP_PWA_IMG_DELETE_NAME_ERR',
+				['foo.png'] // nothing gets deleted
+			],
+			'no exists icon name' => [
+				'bar.png',
+				'STORAGE_FILE_NO_EXIST',
+				['foo.png'] // nothing gets deleted
+			],
+			'icon name with full storage path' => [
+				'ext/phpbb/pwakit/tests/fixtures/site_icons/foo.png',
+				'',
+				[] // gets deleted
+			],
+			'icon name with possible path traversal' => [
+				'../foo.png',
+				'',
+				[] // gets deleted
+			],
+			'icon name only' => [
+				'foo.png',
+				'',
+				[] //gets deleted
+			],
 		];
 	}
 
@@ -197,7 +232,7 @@ class helper_test extends phpbb_database_test_case
 			$this->assertEquals($exception, $e->getMessage());
 		}
 
-		$this->assertEquals($expected, $this->storage->get_tracked_files());
+		$this->assertEquals($expected, $this->file_tracker->get_tracked_files());
 	}
 
 	public function test_resync_icons()
@@ -209,12 +244,12 @@ class helper_test extends phpbb_database_test_case
 		@copy(self::FIXTURES . 'bar.png', self::FIXTURES . 'site_icons/bar.png');
 
 		// assert our storage tracking is currently still tracking the deleted image only
-		$this->assertEquals(['foo.png'], $this->storage->get_tracked_files());
+		$this->assertEquals(['foo.png'], $this->file_tracker->get_tracked_files());
 
 		// resync icons
 		$this->helper->resync_icons();
 
 		// assert we're no longer tracking the deleted file, and we are tracking the newly added file
-		$this->assertEquals(['bar.png'], $this->storage->get_tracked_files());
+		$this->assertEquals(['bar.png'], $this->file_tracker->get_tracked_files());
 	}
 }
