@@ -87,7 +87,7 @@ class event_listener_test extends phpbb_test_case
 	public function header_updates_test_data(): array
 	{
 		return [
-			[
+			'header with data' => [
 				[
 					'pwa_theme_color' => '#foobar',
 					'pwa_bg_color' => '#barfoo',
@@ -113,7 +113,7 @@ class event_listener_test extends phpbb_test_case
 					]
 				],
 			],
-			[
+			'header without data' => [
 				[
 					'pwa_theme_color' => '',
 					'pwa_bg_color' => '',
@@ -160,7 +160,7 @@ class event_listener_test extends phpbb_test_case
 	public function manifest_updates_test_data(): array
 	{
 		return [
-			[
+			'root path, no color options' => [
 				'./',
 				[],
 				[
@@ -178,7 +178,7 @@ class event_listener_test extends phpbb_test_case
 					]
 				],
 			],
-			[
+			'nested path, with color options' => [
 				'./../',
 				[
 					'pwa_theme_color' => '#ffffff',
@@ -201,7 +201,7 @@ class event_listener_test extends phpbb_test_case
 					],
 				],
 			],
-			[
+			'empty' => [
 				'',
 				[],
 				[],

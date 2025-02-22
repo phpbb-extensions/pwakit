@@ -193,12 +193,36 @@ class helper_test extends phpbb_database_test_case
 	public function delete_icon_test_data(): array
 	{
 		return [
-			['', 'ACP_PWA_IMG_DELETE_PATH_ERR', ['foo.png']], // empty icon name so nothing gets deleted
-			['f$$.png', 'ACP_PWA_IMG_DELETE_NAME_ERR', ['foo.png']], // invalid icon name so nothing gets deleted
-			['bar.png', 'STORAGE_FILE_NO_EXIST', ['foo.png']], // icon doesn't exist so nothing gets deleted
-			['ext/phpbb/pwakit/tests/fixtures/site_icons/foo.png', '', []], // icon with its full storage path gets deleted
-			['../foo.png', '', []], // icon with possible path traversal still gets deleted properly
-			['foo.png', '', []], // icon by just name alone gets deleted properly
+			'empty icon name' => [
+				'',
+				'ACP_PWA_IMG_DELETE_PATH_ERR',
+				['foo.png']  // nothing gets deleted
+			],
+			'invalid icon name' => [
+				'f$$.png',
+				'ACP_PWA_IMG_DELETE_NAME_ERR',
+				['foo.png'] // nothing gets deleted
+			],
+			'no exists icon name' => [
+				'bar.png',
+				'STORAGE_FILE_NO_EXIST',
+				['foo.png'] // nothing gets deleted
+			],
+			'icon name with full storage path' => [
+				'ext/phpbb/pwakit/tests/fixtures/site_icons/foo.png',
+				'',
+				[] // gets deleted
+			],
+			'icon name with possible path traversal' => [
+				'../foo.png',
+				'',
+				[] // gets deleted
+			],
+			'icon name only' => [
+				'foo.png',
+				'',
+				[] //gets deleted
+			],
 		];
 	}
 

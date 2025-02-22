@@ -80,9 +80,8 @@ class acp_module_test extends phpbb_test_case
 	public function module_auth_test_data(): array
 	{
 		return [
-			// module_auth, expected result
-			['ext_foo/bar', false],
-			['ext_phpbb/pwakit', true],
+			'invalid auth' => ['ext_foo/bar', false],
+			'valid auth' => ['ext_phpbb/pwakit', true],
 		];
 	}
 
@@ -97,7 +96,7 @@ class acp_module_test extends phpbb_test_case
 	public function main_module_test_data(): array
 	{
 		return [
-			['settings'],
+			'valid mode' => ['settings'],
 		];
 	}
 
