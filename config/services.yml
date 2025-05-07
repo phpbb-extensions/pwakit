@@ -16,6 +16,7 @@ services:
             - '@phpbb.pwakit.storage'
             - '@phpbb.pwakit.file_tracker'
             - '@storage.helper'
+            - '@storage.provider_collection'
             - '%core.root_path%'
 
     phpbb.pwakit.upload:
