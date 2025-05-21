@@ -24,7 +24,7 @@ class ext extends base
 	/**
 	 * {@inheritdoc}
 	 */
-	public function is_enableable(): bool|array
+	public function is_enableable(): array|bool
 	{
 		$config = $this->container->get('config');
 		return $this->version_check($config['version']) && $this->version_check(PHPBB_VERSION);
