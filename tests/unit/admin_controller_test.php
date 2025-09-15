@@ -14,8 +14,6 @@ use Exception;
 use phpbb\db\driver\driver_interface as dbal;
 use phpbb_mock_cache;
 use phpbb_mock_event_dispatcher;
-use PHPUnit\DbUnit\DataSet\DefaultDataSet;
-use PHPUnit\DbUnit\DataSet\IDataSet;
 use PHPUnit\DbUnit\DataSet\XmlDataSet;
 use PHPUnit\Framework\MockObject\MockObject;
 use phpbb\config\config;
@@ -48,7 +46,7 @@ class admin_controller_test extends phpbb_database_test_case
 		return ['phpbb/pwakit'];
 	}
 
-	protected function getDataSet(): IDataSet|XmlDataSet|DefaultDataSet
+	protected function getDataSet(): XmlDataSet
 	{
 		return $this->createXMLDataSet(__DIR__ . '/../fixtures/styles.xml');
 	}

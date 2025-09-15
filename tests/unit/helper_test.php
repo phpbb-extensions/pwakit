@@ -11,8 +11,6 @@
 namespace phpbb\pwakit\tests\unit;
 
 use FastImageSize\FastImageSize;
-use PHPUnit\DbUnit\DataSet\DefaultDataSet;
-use PHPUnit\DbUnit\DataSet\IDataSet;
 use PHPUnit\DbUnit\DataSet\XmlDataSet;
 use PHPUnit\Framework\MockObject\MockObject;
 use phpbb\cache\driver\driver_interface as cache;
@@ -51,7 +49,7 @@ class helper_test extends phpbb_database_test_case
 		return ['phpbb/pwakit'];
 	}
 
-	protected function getDataSet(): IDataSet|XmlDataSet|DefaultDataSet
+	protected function getDataSet(): XmlDataSet
 	{
 		return $this->createXMLDataSet(self::FIXTURES . 'storage.xml');
 	}

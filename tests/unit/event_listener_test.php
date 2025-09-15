@@ -23,7 +23,7 @@ class event_listener_test extends phpbb_test_case
 {
 	protected user|MockObject $user;
 	protected template|MockObject $template;
-	protected helper $helper;
+	protected helper $pwa_helper;
 
 	/**
 	 * Setup test environment
@@ -32,8 +32,12 @@ class event_listener_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		$this->user = $this->createMock(user::class);
-		$this->user->optionset('user_id', 2);
+		$this->user = $this->getMockBuilder(user::class)
+			->disableOriginalConstructor()
+			->getMock();
+		$this->user->method('optionset')
+			->with('user_id', 2)
+			->willReturn(null);
 		$this->user->data['user_id'] = 2;
 		$this->user->style['pwa_bg_color'] = '';
 		$this->user->style['pwa_theme_color'] = '';
@@ -41,7 +45,7 @@ class event_listener_test extends phpbb_test_case
 		$this->template = $this->getMockBuilder(template::class)
 			->getMock();
 
-		$this->helper = $this->getMockBuilder(helper::class)
+		$this->pwa_helper = $this->getMockBuilder(helper::class)
 			->disableOriginalConstructor()
 			->getMock();
 	}
@@ -54,7 +58,7 @@ class event_listener_test extends phpbb_test_case
 	protected function get_listener(): main_listener
 	{
 		return new main_listener(
-			$this->helper,
+			$this->pwa_helper,
 			$this->template,
 			$this->user
 		);
@@ -73,42 +77,44 @@ class event_listener_test extends phpbb_test_case
 	 */
 	public function test_getSubscribedEvents()
 	{
+		$events = main_listener::getSubscribedEvents();
 		static::assertEquals([
-			'core.page_header',
-			'core.modify_manifest',
-		], array_keys(\phpbb\pwakit\event\main_listener::getSubscribedEvents()));
+			'core.page_header' => 'header_updates',
+			'core.modify_manifest' => 'manifest_updates',
+		], $events);
 	}
 
 	public function header_updates_test_data(): array
 	{
 		return [
-			'header with data' => [
+			'valid hex colors' => [
 				[
-					'pwa_theme_color' => '#foobar',
-					'pwa_bg_color' => '#barfoo',
+					'pwa_theme_color' => '#ffffff',
+					'pwa_bg_color' => '#000000',
 				],
+				self::getValidIcons(),
 				[
-					[
-						'src' => 'images/site_icons/touch-icon-192.png',
-						'sizes' => '192x192',
-						'type' => 'image/png'
-					],
-					[
-						'src' => 'images/site_icons/touch-icon-512.png',
-						'sizes' => '512x512',
-						'type' => 'image/png'
-					],
-				],
-				[
-					'pwa_theme_color' => '#foobar',
-					'pwa_bg_color' => '#barfoo',
+					'pwa_theme_color' => '#ffffff',
+					'pwa_bg_color' => '#000000',
 					'icons' => [
 						'images/site_icons/touch-icon-192.png',
 						'images/site_icons/touch-icon-512.png',
 					]
 				],
 			],
-			'header without data' => [
+			'invalid hex colors' => [
+				[
+					'pwa_theme_color' => '#gggggg',
+					'pwa_bg_color' => 'invalid',
+				],
+				[],
+				[
+					'pwa_theme_color' => '#gggggg',
+					'pwa_bg_color' => 'invalid',
+					'icons' => [],
+				],
+			],
+			'empty values' => [
 				[
 					'pwa_theme_color' => '',
 					'pwa_bg_color' => '',
@@ -123,6 +129,22 @@ class event_listener_test extends phpbb_test_case
 		];
 	}
 
+	private static function getValidIcons(): array
+	{
+		return [
+			[
+				'src' => 'images/site_icons/touch-icon-192.png',
+				'sizes' => '192x192',
+				'type' => 'image/png'
+			],
+			[
+				'src' => 'images/site_icons/touch-icon-512.png',
+				'sizes' => '512x512',
+				'type' => 'image/png'
+			],
+		];
+	}
+
 	/**
 	 * @param $configs
 	 * @param $icons
@@ -132,24 +154,32 @@ class event_listener_test extends phpbb_test_case
 	 */
 	public function test_header_updates($configs, $icons, $expected)
 	{
-		foreach ($configs as $key => $value)
-		{
-			$this->user->style[$key] = $value;
-		}
-
-		$this->helper->expects(static::once())
+		// Setup expectations
+		$this->pwa_helper->expects(static::once())
 			->method('get_icons')
 			->willReturn($icons);
 
+		$templateVars = [
+			'PWA_THEME_COLOR' => $expected['pwa_theme_color'],
+			'PWA_BG_COLOR' => $expected['pwa_bg_color'],
+			'U_TOUCH_ICONS' => $expected['icons'],
+		];
+
 		$this->template->expects(static::once())
 			->method('assign_vars')
-			->with([
-				'PWA_THEME_COLOR'	=> $expected['pwa_theme_color'],
-				'PWA_BG_COLOR'		=> $expected['pwa_bg_color'],
-				'U_TOUCH_ICONS' 	=> $expected['icons'],
-			]);
+			->with(static::identicalTo($templateVars));
 
-		$this->get_listener()->header_updates();
+		// Apply configurations
+		foreach ($configs as $key => $value) {
+			$this->user->style[$key] = $value;
+		}
+
+		$listener = $this->get_listener();
+		$listener->header_updates();
+
+		// Verify the final state
+		$this->assertEquals($configs['pwa_theme_color'], $this->user->style['pwa_theme_color']);
+		$this->assertEquals($configs['pwa_bg_color'], $this->user->style['pwa_bg_color']);
 	}
 
 	public function manifest_updates_test_data(): array
@@ -213,32 +243,56 @@ class event_listener_test extends phpbb_test_case
 	 */
 	public function test_manifest_updates($board_path, $configs, $expected)
 	{
+		$initialManifest = [
+			'name' => 'Test Site',
+			'short_name' => 'TestSite',
+			'display' => 'standalone',
+			'orientation' => 'portrait',
+			'start_url' => './',
+			'scope' => './',
+		];
+
 		$event = new data([
-			'manifest' => [
-				'name'			=> 'Test Site',
-				'short_name'	=> 'TestSite',
-				'display'		=> 'standalone',
-				'orientation'	=> 'portrait',
-				'start_url'		=> './',
-				'scope'			=> './',
-			],
+			'manifest' => $initialManifest,
 			'board_path' => $board_path,
 		]);
 
-		foreach ($configs as $key => $value)
-		{
+		// Set up and verify the initial state
+		$this->assertSame($initialManifest, $event['manifest']);
+
+		foreach ($configs as $key => $value) {
 			$this->user->style[$key] = $value;
 		}
 
-		$expected = array_merge($event['manifest'], $expected);
+		$expected = array_merge($initialManifest, $expected);
 
-		$this->helper->expects(static::once())
+		// Verify helper method call
+		$this->pwa_helper->expects(static::once())
 			->method('get_icons')
 			->with($board_path)
 			->willReturn($expected['icons'] ?? []);
 
-		$this->get_listener()->manifest_updates($event);
+		// Execute test
+		$listener = $this->get_listener();
+		$listener->manifest_updates($event);
 
+		// Verify the final state
 		$this->assertSame($expected, $event['manifest']);
+
+		// Verify manifest structure
+		if (!empty($event['manifest'])) {
+			$this->assertArrayHasKey('name', $event['manifest']);
+			$this->assertArrayHasKey('short_name', $event['manifest']);
+			$this->assertArrayHasKey('display', $event['manifest']);
+			$this->assertArrayHasKey('orientation', $event['manifest']);
+		}
+
+		// Verify color format if present
+		if (isset($event['manifest']['theme_color'])) {
+			$this->assertMatchesRegularExpression('/^#[0-9a-f]{6}$/i', $event['manifest']['theme_color']);
+		}
+		if (isset($event['manifest']['background_color'])) {
+			$this->assertMatchesRegularExpression('/^#[0-9a-f]{6}$/i', $event['manifest']['background_color']);
+		}
 	}
 }
