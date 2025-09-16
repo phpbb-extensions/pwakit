@@ -84,7 +84,7 @@ class event_listener_test extends phpbb_test_case
 		], $events);
 	}
 
-	public function header_updates_test_data(): array
+	public static function header_updates_test_data(): array
 	{
 		return [
 			'valid hex colors' => [
@@ -182,7 +182,7 @@ class event_listener_test extends phpbb_test_case
 		$this->assertEquals($configs['pwa_bg_color'], $this->user->style['pwa_bg_color']);
 	}
 
-	public function manifest_updates_test_data(): array
+	public static function manifest_updates_test_data(): array
 	{
 		return [
 			'root path, no color options' => [

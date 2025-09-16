@@ -49,7 +49,7 @@ class upload_test extends phpbb_test_case
 		);
 	}
 
-	public function upload_data(): array
+	public static function upload_data(): array
 	{
 		return [
 			'upload failed' => [false],

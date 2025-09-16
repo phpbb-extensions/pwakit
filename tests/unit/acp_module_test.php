@@ -79,7 +79,7 @@ class acp_module_test extends phpbb_test_case
 		);
 	}
 
-	public function module_auth_test_data(): array
+	public static function module_auth_test_data(): array
 	{
 		return [
 			'invalid auth' => ['ext_foo/bar', false],
@@ -95,7 +95,7 @@ class acp_module_test extends phpbb_test_case
 		$this->assertEquals($expected, p_master::module_auth($module_auth, 0));
 	}
 
-	public function main_module_test_data(): array
+	public static function main_module_test_data(): array
 	{
 		return [
 			'valid mode' => ['settings'],
