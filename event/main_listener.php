@@ -77,6 +77,7 @@ class main_listener implements EventSubscriberInterface
 		// Prepare manifest updates array
 		$manifest_updates = [];
 
+		// TODO This may need to be removed if manifest goes stateless (no user/session)
 		// Add theme and background colors if configured
 		if (!empty($this->user->style['pwa_theme_color']))
 		{
