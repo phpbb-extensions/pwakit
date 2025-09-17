@@ -14,9 +14,6 @@ use Exception;
 use phpbb\db\driver\driver_interface as dbal;
 use phpbb_mock_cache;
 use phpbb_mock_event_dispatcher;
-use PHPUnit\DbUnit\DataSet\DefaultDataSet;
-use PHPUnit\DbUnit\DataSet\IDataSet;
-use PHPUnit\DbUnit\DataSet\XmlDataSet;
 use PHPUnit\Framework\MockObject\MockObject;
 use phpbb\config\config;
 use phpbb\exception\runtime_exception;
@@ -42,13 +39,14 @@ class admin_controller_test extends phpbb_database_test_case
 	protected helper $helper;
 	protected upload $upload;
 	protected string $phpbb_root_path;
+	protected admin_controller $admin_controller;
 
 	protected static function setup_extensions(): array
 	{
 		return ['phpbb/pwakit'];
 	}
 
-	protected function getDataSet(): IDataSet|XmlDataSet|DefaultDataSet
+	protected function getDataSet()
 	{
 		return $this->createXMLDataSet(__DIR__ . '/../fixtures/styles.xml');
 	}
@@ -112,7 +110,7 @@ class admin_controller_test extends phpbb_database_test_case
 		);
 	}
 
-	public function module_access_test_data(): array
+	public static function module_access_test_data(): array
 	{
 		return [
 			'correct mode' => ['settings', true],
@@ -135,7 +133,7 @@ class admin_controller_test extends phpbb_database_test_case
 		$this->call_admin_controller($mode);
 	}
 
-	public function form_checks_data(): array
+	public static function form_checks_data(): array
 	{
 		return [
 			'submit test' => ['submit'],
@@ -159,7 +157,7 @@ class admin_controller_test extends phpbb_database_test_case
 		$this->call_admin_controller();
 	}
 
-	public function display_settings_test_data(): array
+	public static function display_settings_test_data(): array
 	{
 		return [
 			'site name and short name' => [
@@ -260,7 +258,7 @@ class admin_controller_test extends phpbb_database_test_case
 		$this->call_admin_controller();
 	}
 
-	public function submit_test_data(): array
+	public static function submit_test_data(): array
 	{
 		return [
 			'all good inputs' => [
@@ -443,7 +441,7 @@ class admin_controller_test extends phpbb_database_test_case
 		$this->call_admin_controller();
 	}
 
-	public function delete_test_data(): array
+	public static function delete_test_data(): array
 	{
 		return [
 			'not confirmed' => [

@@ -57,9 +57,9 @@ class acp_module_test extends phpbb_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 	}
 
-	public function test_module_info()
+	public function test_module_info(): void
 	{
-		self::assertEquals([
+		$expected = [
 			'\\phpbb\\pwakit\\acp\\pwa_acp_module' => [
 				'filename'	=> '\\phpbb\\pwakit\\acp\\pwa_acp_module',
 				'title'		=> 'ACP_PWA_KIT_TITLE',
@@ -71,10 +71,15 @@ class acp_module_test extends phpbb_test_case
 					],
 				],
 			],
-		], $this->module_manager->get_module_infos('acp', 'pwa_acp_module'));
+		];
+
+		$this->assertSame(
+			$expected,
+			$this->module_manager->get_module_infos('acp', 'pwa_acp_module')
+		);
 	}
 
-	public function module_auth_test_data(): array
+	public static function module_auth_test_data(): array
 	{
 		return [
 			'invalid auth' => ['ext_foo/bar', false],
@@ -85,12 +90,12 @@ class acp_module_test extends phpbb_test_case
 	/**
 	 * @dataProvider module_auth_test_data
 	 */
-	public function test_module_auth($module_auth, $expected)
+	public function test_module_auth(string $module_auth, bool $expected): void
 	{
-		self::assertEquals($expected, p_master::module_auth($module_auth, 0));
+		$this->assertEquals($expected, p_master::module_auth($module_auth, 0));
 	}
 
-	public function main_module_test_data(): array
+	public static function main_module_test_data(): array
 	{
 		return [
 			'valid mode' => ['settings'],
@@ -100,7 +105,7 @@ class acp_module_test extends phpbb_test_case
 	/**
 	 * @dataProvider main_module_test_data
 	 */
-	public function test_main_module($mode)
+	public function test_main_module(string $mode): void
 	{
 		global $phpbb_container, $request, $template;
 
@@ -123,18 +128,56 @@ class acp_module_test extends phpbb_test_case
 			->getMock();
 
 		$phpbb_container
-			->expects(self::once())
+			->expects($this->once())
 			->method('get')
 			->with('phpbb.pwakit.admin.controller')
 			->willReturn($admin_controller);
 
 		$admin_controller
-			->expects(self::once())
+			->expects($this->once())
 			->method('main');
 
 		$p_master = new p_master();
 		$p_master->module_ary[0]['is_duplicate'] = 0;
 		$p_master->module_ary[0]['url_extra'] = '';
 		$p_master->load('acp', pwa_acp_module::class, $mode);
+	}
+
+	public function test_main_module_with_missing_controller(): void
+	{
+		global $phpbb_container, $template, $request;
+
+		$this->expectException(\RuntimeException::class);
+		$this->expectExceptionMessage('Service not found: phpbb.pwakit.admin.controller');
+
+		if (!defined('IN_ADMIN')) {
+			define('IN_ADMIN', true);
+		}
+
+		// Set up template mock
+		$template = $this->getMockBuilder(template::class)
+			->disableOriginalConstructor()
+			->getMock();
+
+		// Set up request mock
+		$request = $this->getMockBuilder(request::class)
+			->disableOriginalConstructor()
+			->getMock();
+
+		// Set up container mock
+		$phpbb_container = $this->getMockBuilder(ContainerInterface::class)
+			->disableOriginalConstructor()
+			->getMock();
+
+		$phpbb_container
+			->expects($this->once())
+			->method('get')
+			->with('phpbb.pwakit.admin.controller')
+			->willThrowException(new \RuntimeException('Service not found: phpbb.pwakit.admin.controller'));
+
+		$p_master = new p_master();
+		$p_master->module_ary[0]['is_duplicate'] = 0;
+		$p_master->module_ary[0]['url_extra'] = '';
+		$p_master->load('acp', pwa_acp_module::class, 'settings');
 	}
 }

@@ -11,9 +11,6 @@
 namespace phpbb\pwakit\tests\unit;
 
 use FastImageSize\FastImageSize;
-use PHPUnit\DbUnit\DataSet\DefaultDataSet;
-use PHPUnit\DbUnit\DataSet\IDataSet;
-use PHPUnit\DbUnit\DataSet\XmlDataSet;
 use PHPUnit\Framework\MockObject\MockObject;
 use phpbb\cache\driver\driver_interface as cache;
 use phpbb\config\config;
@@ -51,7 +48,7 @@ class helper_test extends phpbb_database_test_case
 		return ['phpbb/pwakit'];
 	}
 
-	protected function getDataSet(): IDataSet|XmlDataSet|DefaultDataSet
+	protected function getDataSet()
 	{
 		return $this->createXMLDataSet(self::FIXTURES . 'storage.xml');
 	}
@@ -178,7 +175,7 @@ class helper_test extends phpbb_database_test_case
 		$this->assertCount(0, array_column($this->helper->get_icons(), 'src'));
 	}
 
-	public function delete_icon_test_data(): array
+	public static function delete_icon_test_data(): array
 	{
 		return [
 			'empty icon name' => [

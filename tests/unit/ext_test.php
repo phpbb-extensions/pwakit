@@ -47,7 +47,7 @@ class ext_test extends phpbb_test_case
 	 *
 	 * @return array
 	 */
-	public function ext_test_data(): array
+	public static function ext_test_data(): array
 	{
 		return [
 			'current version' => [
@@ -93,7 +93,7 @@ class ext_test extends phpbb_test_case
 		self::assertSame($expected, $ext->is_enableable());
 	}
 
-	public function enable_test_data(): array
+	public static function enable_test_data(): array
 	{
 		return [
 			'dir exists' => [
