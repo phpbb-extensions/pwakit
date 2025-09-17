@@ -7,7 +7,6 @@ on:
             - master
             - develop
             - dev/*
-            - testing
     pull_request:        # Run tests when pull requests are made on these branches in your repo
         branches:
             - main
@@ -18,7 +17,7 @@ on:
 jobs:
     call-tests:
         name: Extension tests
-        uses: iMattPro/test-framework/.github/workflows/tests.yml@fixes
+        uses: phpbb-extensions/test-framework/.github/workflows/tests.yml@master
         with:
             EXTNAME: phpbb/pwakit   # Your extension vendor/package name
             CODECOV: 1              # Run code coverage via codecov? 1 or 0
