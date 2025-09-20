@@ -352,25 +352,22 @@ class admin_controller_test extends phpbb_database_test_case
 	 */
 	public function test_submit($form_data, $expected, $expected_msg)
 	{
-		if ($expected_msg !== 'CONFIG_UPDATED')
+		$is_success = $expected_msg === 'CONFIG_UPDATED';
+		
+		if ($is_success)
 		{
-			$firstCallDone = false;
+			$this->setExpectedTriggerError(E_USER_NOTICE, 'CONFIG_UPDATED');
+		}
+		else
+		{
+			$call_count = 0;
 			$this->template->method('assign_vars')
-				->willReturnCallback(function ($params) use (&$firstCallDone, $expected_msg) {
-					if (!$firstCallDone)
+				->willReturnCallback(function ($params) use (&$call_count, $expected_msg) {
+					if (++$call_count === 2)
 					{
-						$firstCallDone = true; //skip first call
+						$this->assertEquals(['S_ERROR' => true, 'ERROR_MSG' => $expected_msg], $params);
 					}
-					else
-					{
-						$this->assertEquals([
-							'S_ERROR' => true,
-							'ERROR_MSG' => $expected_msg,
-						], $params);
-					}
-					return null;
-				})
-			;
+				});
 		}
 
 		$this->request->expects($this->exactly(4))
@@ -382,22 +379,25 @@ class admin_controller_test extends phpbb_database_test_case
 				['pwa_theme_color_2', '', false, request_interface::REQUEST, $form_data['pwa_theme_color_2']],
 			]);
 
-		try
+		$this->request_submit('submit');
+		
+		if ($is_success)
 		{
-			$this->request_submit('submit');
 			$this->call_admin_controller();
 		}
-		catch (Exception $e)
+		else
 		{
-			$this->assertEquals($expected_msg, $e->getMessage());
+			try
+			{
+				$this->call_admin_controller();
+			}
+			catch (Exception $e)
+			{
+				$this->assertEquals($expected_msg, $e->getMessage());
+			}
 		}
 
-		$sql = 'SELECT pwa_bg_color, pwa_theme_color
-			FROM ' . STYLES_TABLE . '
-			WHERE style_active = 1
-			ORDER BY style_id';
-		$result = $this->db->sql_query($sql);
-
+		$result = $this->db->sql_query('SELECT pwa_bg_color, pwa_theme_color FROM ' . STYLES_TABLE . ' WHERE style_active = 1 ORDER BY style_id');
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
