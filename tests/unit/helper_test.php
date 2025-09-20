@@ -126,6 +126,7 @@ class helper_test extends phpbb_database_test_case
 				$provider_collection,
 				$adapter_collection
 			),
+			$provider_collection,
 			$phpbb_root_path
 		);
 
@@ -149,6 +150,17 @@ class helper_test extends phpbb_database_test_case
 	public function test_get_tracked_files()
 	{
 		$this->assertEquals(['foo.png'], $this->file_tracker->get_tracked_files());
+	}
+
+	public function test_is_storage_local()
+	{
+		$this->assertTrue($this->helper->is_storage_local());
+	}
+
+	public function test_is_storage_not_local()
+	{
+		$this->config->set('storage\phpbb_pwakit\provider', 'foo');
+		$this->assertFalse($this->helper->is_storage_local());
 	}
 
 	public function test_get_storage_path()

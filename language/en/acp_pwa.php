@@ -54,6 +54,7 @@ $lang = array_merge($lang, [
 	'ACP_PWA_KIT_APP_ICONS_EXPLAIN'	=> 'Used to specify the touch-icon for your web application. This icon will be used when your web application is added to the home screen. Multiple sizes are preferred for compatibility with various devices. Note that when adding or removing icons, you may need to clear your web app/browser cache to see them update.',
 	'ACP_PWA_KIT_ICONS'				=> 'Web application icons',
 	'ACP_PWA_KIT_ICONS_EXPLAIN'		=> 'PNG image files that represent your web application. Multiple sizes are preferred for compatibility with various devices.',
+	'ACP_PWA_STORAGE_INCOMPATIBLE'	=> 'To manage icons you must set <strong>Web app icons storage</strong> to <strong>Local</strong> in <a href="%s">General » Storage settings</a>.',
 	'ACP_PWA_KIT_NO_ICONS'			=> 'No icons are available. Click <strong>Upload</strong> to add new icons or click <strong>Resync</strong> to find existing icons that were previously uploaded. Recommended PNG sizes include 180x180, 192x192 and 512x512.',
 	'ACP_PWA_IMG_UPLOAD'			=> 'Upload web application icons',
 	'ACP_PWA_IMG_UPLOAD_EXPLAIN'	=> 'Upload PNG images. Images are currently being stored in <samp>%1$s</samp>. This can be changed at any time to another location in <a href="%2$s">General » Storage settings</a>.',

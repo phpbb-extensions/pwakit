@@ -11,12 +11,14 @@
 namespace phpbb\pwakit\helper;
 
 use FastImageSize\FastImageSize;
+use phpbb\di\service_collection;
 use phpbb\exception\runtime_exception;
 use phpbb\extension\manager as ext_manager;
 use phpbb\pwakit\storage\file_tracker;
 use phpbb\storage\storage;
 use phpbb\storage\exception\storage_exception;
 use phpbb\storage\helper as storage_helper;
+use RuntimeException;
 
 class helper
 {
@@ -35,6 +37,9 @@ class helper
 	/** @var storage_helper */
 	protected storage_helper $storage_helper;
 
+	/** @var service_collection $provider_collection */
+	protected service_collection $provider_collection;
+
 	/** @var string */
 	protected string $root_path;
 
@@ -46,16 +51,39 @@ class helper
 	 * @param storage $storage
 	 * @param file_tracker $file_tracker
 	 * @param storage_helper $storage_helper
+	 * @param service_collection $provider_collection
 	 * @param string $root_path
 	 */
-	public function __construct(ext_manager $extension_manager, FastImageSize $imagesize, storage $storage, file_tracker $file_tracker, storage_helper $storage_helper, string $root_path)
+	public function __construct(ext_manager $extension_manager, FastImageSize $imagesize, storage $storage, file_tracker $file_tracker, storage_helper $storage_helper, service_collection $provider_collection, string $root_path)
 	{
 		$this->extension_manager = $extension_manager;
 		$this->imagesize = $imagesize;
 		$this->storage = $storage;
 		$this->file_tracker = $file_tracker;
 		$this->storage_helper = $storage_helper;
+		$this->provider_collection = $provider_collection;
 		$this->root_path = $root_path;
+	}
+
+	/**
+	 * Storage compatibility requires the local provider
+	 *
+	 * @return bool
+	 */
+	public function is_storage_local(): bool
+	{
+		try
+		{
+			$storage_name = $this->storage->get_name();
+			$provider_class = $this->storage_helper->get_current_provider($storage_name);
+			$current_provider = $this->provider_collection->get_by_class($provider_class);
+
+			return $current_provider && $current_provider->get_name() === 'local';
+		}
+		catch (RuntimeException)
+		{
+			return false;
+		}
 	}
 
 	/**

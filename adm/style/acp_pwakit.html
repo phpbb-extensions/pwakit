@@ -69,36 +69,40 @@
 	<p>{{ lang('ACP_PWA_KIT_APP_ICONS_EXPLAIN') }}</p>
 	<fieldset>
 		<legend>{{ lang('ACP_PWA_KIT_LEGEND_ICONS') }}</legend>
-		<dl>
-			<dt><label for="pwa_upload">{{ lang('ACP_PWA_IMG_UPLOAD') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_IMG_UPLOAD_EXPLAIN', PWA_IMAGES_DIR, U_STORAGE_SETTINGS) }}</span></dt>
-			<dd>
-				<input type="file" accept="image/*" class="inputbox autowidth" id="pwa_upload" name="pwa_upload">
-				<button class="button2 pwakit-button" id="upload" name="upload" value="{{ lang('ACP_PWA_IMG_UPLOAD_BTN') }}">{{ Icon('font', 'upload', lang('ACP_PWA_IMG_UPLOAD_BTN')) }}</button>
-				<button class="button2 pwakit-button" id="resync" name="resync" value="{{ lang('ACP_PWA_IMG_RESYNC_BTN') }}">{{ Icon('font', 'sync', lang('ACP_PWA_IMG_RESYNC_BTN')) }}</button>
-			</dd>
-		</dl>
-		<dl>
-			<dt><label>{{ lang('ACP_PWA_KIT_ICONS') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_KIT_ICONS_EXPLAIN') }}</span></dt>
-			<dd>
-				{% for icon in PWA_KIT_ICONS %}
-					{% set iconName = icon.src|split('/')|last %}
-					<p style="position: relative;">
-						<span class="pwa-icon-container">
-							<img src="{{ icon.src }}" alt="{{ iconName|e('html') }}">
-							<button class="delete-btn" name="delete" value="{{ icon.src }}" title="{{ lang('ACP_PWA_IMG_DELETE') }}">
-								<span class="fa-stack fa-2x">
-									{{ Icon('font', 'circle', '', true, 'fa-stack-2x fa-inverse') }}
-									{{ Icon('font', 'trash-can', '', true, 'fa-stack-1x') }}
-								</span>
-							</button>
-						</span><br>
-						{{ iconName }}<br>{{ icon.sizes }}
-					</p>
-				{% else %}
-					{{ lang('ACP_PWA_KIT_NO_ICONS') }}
-				{% endfor %}
-			</dd>
-		</dl>
+		{% if S_STORAGE_LOCAL %}
+			<dl>
+				<dt><label for="pwa_upload">{{ lang('ACP_PWA_IMG_UPLOAD') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_IMG_UPLOAD_EXPLAIN', PWA_IMAGES_DIR, U_STORAGE_SETTINGS) }}</span></dt>
+				<dd>
+					<input type="file" accept="image/*" class="inputbox autowidth" id="pwa_upload" name="pwa_upload">
+					<button class="button2 pwakit-button" id="upload" name="upload" value="{{ lang('ACP_PWA_IMG_UPLOAD_BTN') }}">{{ Icon('font', 'upload', lang('ACP_PWA_IMG_UPLOAD_BTN')) }}</button>
+					<button class="button2 pwakit-button" id="resync" name="resync" value="{{ lang('ACP_PWA_IMG_RESYNC_BTN') }}">{{ Icon('font', 'sync', lang('ACP_PWA_IMG_RESYNC_BTN')) }}</button>
+				</dd>
+			</dl>
+			<dl>
+				<dt><label>{{ lang('ACP_PWA_KIT_ICONS') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_KIT_ICONS_EXPLAIN') }}</span></dt>
+				<dd>
+					{% for icon in PWA_KIT_ICONS %}
+						{% set iconName = icon.src|split('/')|last %}
+						<p style="position: relative;">
+							<span class="pwa-icon-container">
+								<img src="{{ icon.src }}" alt="{{ iconName|e('html') }}">
+								<button class="delete-btn" name="delete" value="{{ icon.src }}" title="{{ lang('ACP_PWA_IMG_DELETE') }}">
+									<span class="fa-stack fa-2x">
+										{{ Icon('font', 'circle', '', true, 'fa-stack-2x fa-inverse') }}
+										{{ Icon('font', 'trash-can', '', true, 'fa-stack-1x') }}
+									</span>
+								</button>
+							</span><br>
+							{{ iconName }}<br>{{ icon.sizes }}
+						</p>
+					{% else %}
+						{{ lang('ACP_PWA_KIT_NO_ICONS') }}
+					{% endfor %}
+				</dd>
+			</dl>
+		{% else %}
+			<p>{{ lang('ACP_PWA_STORAGE_INCOMPATIBLE', U_STORAGE_SETTINGS) }}</p>
+		{% endif %}
 	</fieldset>
 </form>
 
