@@ -25,8 +25,8 @@ use phpbb_test_case;
 class ext_test extends phpbb_test_case
 {
 	protected ContainerInterface|MockObject $container;
-	protected finder|MockObject $extension_finder;
-	protected migrator|MockObject $migrator;
+	protected MockObject|finder $extension_finder;
+	protected MockObject|migrator $migrator;
 
 	protected function setUp(): void
 	{
@@ -74,9 +74,9 @@ class ext_test extends phpbb_test_case
 	 *
 	 * @dataProvider ext_test_data
 	 */
-	public function test_ext($version, $expected)
+	public function test_ext($version, $expected): void
 	{
-		// Instantiate config object and set config version
+		// Instantiate a config object and set a config version
 		$config = new config([
 			'version' => $version,
 		]);
@@ -117,7 +117,7 @@ class ext_test extends phpbb_test_case
 	/**
 	 * @dataProvider enable_test_data
 	 */
-	public function test_enable($file_exists, $old_state, $expected)
+	public function test_enable($file_exists, $old_state, $expected): void
 	{
 		$filesystem = $this->getMockBuilder(filesystem::class)
 			->disableOriginalConstructor()
@@ -149,7 +149,7 @@ class ext_test extends phpbb_test_case
 		self::assertSame($expected, $ext->enable_step($old_state));
 	}
 
-	public function test_enable_fails()
+	public function test_enable_fails(): void
 	{
 		$filesystem = $this->getMockBuilder(filesystem::class)
 			->disableOriginalConstructor()
@@ -178,7 +178,7 @@ class ext_test extends phpbb_test_case
 			->method('add')
 			->with('critical', '2', '1.0.0.01', 'LOG_PWA_DIR_FAIL', false, ['images/site_icons', 'Test Error']);
 
-		// Make container return filesystem first
+		// Make the container return filesystem first
 		$this->container->expects($this->exactly(3))
 			->method('get')
 			->willReturnCallback(function ($service) use ($filesystem, $log, $user) {

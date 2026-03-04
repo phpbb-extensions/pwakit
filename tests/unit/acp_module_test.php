@@ -10,6 +10,7 @@
 
 namespace phpbb\pwakit\tests\unit;
 
+use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use p_master;
 use phpbb\cache\driver\dummy;
@@ -147,10 +148,11 @@ class acp_module_test extends phpbb_test_case
 	{
 		global $phpbb_container, $template, $request;
 
-		$this->expectException(\RuntimeException::class);
+		$this->expectException(RuntimeException::class);
 		$this->expectExceptionMessage('Service not found: phpbb.pwakit.admin.controller');
 
-		if (!defined('IN_ADMIN')) {
+		if (!defined('IN_ADMIN'))
+		{
 			define('IN_ADMIN', true);
 		}
 
@@ -173,7 +175,7 @@ class acp_module_test extends phpbb_test_case
 			->expects($this->once())
 			->method('get')
 			->with('phpbb.pwakit.admin.controller')
-			->willThrowException(new \RuntimeException('Service not found: phpbb.pwakit.admin.controller'));
+			->willThrowException(new RuntimeException('Service not found: phpbb.pwakit.admin.controller'));
 
 		$p_master = new p_master();
 		$p_master->module_ary[0]['is_duplicate'] = 0;

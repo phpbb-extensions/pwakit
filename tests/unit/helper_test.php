@@ -11,6 +11,8 @@
 namespace phpbb\pwakit\tests\unit;
 
 use FastImageSize\FastImageSize;
+use PHPUnit\DbUnit\DataSet\DefaultDataSet;
+use PHPUnit\DbUnit\DataSet\XmlDataSet;
 use PHPUnit\Framework\MockObject\MockObject;
 use phpbb\cache\driver\driver_interface as cache;
 use phpbb\config\config;
@@ -36,7 +38,7 @@ class helper_test extends phpbb_database_test_case
 	protected const FIXTURES = __DIR__ . '/../fixtures/';
 
 	protected config $config;
-	protected template|MockObject $template;
+	protected MockObject|template $template;
 	protected helper $helper;
 	protected storage $storage;
 	protected file_tracker $file_tracker;
@@ -48,7 +50,7 @@ class helper_test extends phpbb_database_test_case
 		return ['phpbb/pwakit'];
 	}
 
-	protected function getDataSet()
+	protected function getDataSet(): DefaultDataSet|XmlDataSet
 	{
 		return $this->createXMLDataSet(self::FIXTURES . 'storage.xml');
 	}
@@ -114,7 +116,7 @@ class helper_test extends phpbb_database_test_case
 			'phpbb_pwakit'
 		);
 
-		$this->helper = new \phpbb\pwakit\helper\helper(
+		$this->helper = new helper(
 			$phpbb_extension_manager,
 			new FastImageSize(),
 			$this->storage,
@@ -146,17 +148,17 @@ class helper_test extends phpbb_database_test_case
 		parent::tearDown();
 	}
 
-	public function test_get_tracked_files()
+	public function test_get_tracked_files(): void
 	{
 		$this->assertEquals(['foo.png'], $this->file_tracker->get_tracked_files());
 	}
 
-	public function test_get_storage_path()
+	public function test_get_storage_path(): void
 	{
 		$this->assertEquals($this->storage_path, $this->helper->get_storage_path());
 	}
 
-	public function test_get_icons()
+	public function test_get_icons(): void
 	{
 		$expected[] = [
 			'src' => $this->storage_path . '/foo.png',
@@ -167,7 +169,7 @@ class helper_test extends phpbb_database_test_case
 		$this->assertEquals($expected,  $this->helper->get_icons());
 	}
 
-	public function test_get_icons_empty()
+	public function test_get_icons_empty(): void
 	{
 		// delete physical foo.png file
 		@unlink(self::FIXTURES . 'site_icons/foo.png');
@@ -217,7 +219,7 @@ class helper_test extends phpbb_database_test_case
 	 * @param $expected
 	 * @dataProvider delete_icon_test_data
 	 */
-	public function test_delete_icon($icon, $exception, $expected)
+	public function test_delete_icon($icon, $exception, $expected): void
 	{
 		try
 		{
@@ -232,12 +234,12 @@ class helper_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $this->file_tracker->get_tracked_files());
 	}
 
-	public function test_resync_icons()
+	public function test_resync_icons(): void
 	{
 		// delete physical foo.png file
 		@unlink(self::FIXTURES . 'site_icons/foo.png');
 
-		// add new bar.png file
+		// add a new bar.png file
 		@copy(self::FIXTURES . 'bar.png', self::FIXTURES . 'site_icons/bar.png');
 
 		// assert our storage tracking is currently still tracking the deleted image only

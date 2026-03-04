@@ -60,7 +60,7 @@ class upload_test extends phpbb_test_case
 	/**
 	 * @dataProvider upload_data
 	 */
-	public function test_upload($file_move_success)
+	public function test_upload($file_move_success): void
 	{
 		$upload = $this->get_upload();
 
@@ -118,7 +118,7 @@ class upload_test extends phpbb_test_case
 		}
 	}
 
-	public function test_remove()
+	public function test_remove(): void
 	{
 		$upload = $this->get_upload();
 
