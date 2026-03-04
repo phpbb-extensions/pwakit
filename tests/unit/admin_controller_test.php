@@ -14,6 +14,8 @@ use Exception;
 use phpbb\db\driver\driver_interface as dbal;
 use phpbb_mock_cache;
 use phpbb_mock_event_dispatcher;
+use PHPUnit\DbUnit\DataSet\DefaultDataSet;
+use PHPUnit\DbUnit\DataSet\XmlDataSet;
 use PHPUnit\Framework\MockObject\MockObject;
 use phpbb\config\config;
 use phpbb\exception\runtime_exception;
@@ -25,6 +27,7 @@ use phpbb\request\request;
 use phpbb\request\request_interface;
 use phpbb\template\template;
 use phpbb_database_test_case;
+use phpbb\pwakit\acp\pwa_acp_module;
 
 class admin_controller_test extends phpbb_database_test_case
 {
@@ -34,10 +37,10 @@ class admin_controller_test extends phpbb_database_test_case
 	protected dbal $db;
 	protected config $config;
 	protected language $language;
-	protected request $request;
-	protected template|MockObject $template;
-	protected helper $helper;
-	protected upload $upload;
+	protected MockObject|request $request;
+	protected MockObject|template $template;
+	protected MockObject|helper $helper;
+	protected MockObject|upload $upload;
 	protected string $phpbb_root_path;
 	protected admin_controller $admin_controller;
 
@@ -46,7 +49,7 @@ class admin_controller_test extends phpbb_database_test_case
 		return ['phpbb/pwakit'];
 	}
 
-	protected function getDataSet()
+	protected function getDataSet(): DefaultDataSet|XmlDataSet
 	{
 		return $this->createXMLDataSet(__DIR__ . '/../fixtures/styles.xml');
 	}
@@ -124,11 +127,10 @@ class admin_controller_test extends phpbb_database_test_case
 	 * @return void
 	 * @dataProvider module_access_test_data
 	 */
-	public function test_module_access($mode, $expected)
+	public function test_module_access($mode, $expected): void
 	{
 		$this->request->expects($expected ? $this->atLeastOnce() : $this->never())
 			->method('is_set_post');
-
 
 		$this->call_admin_controller($mode);
 	}
@@ -146,7 +148,7 @@ class admin_controller_test extends phpbb_database_test_case
 	 * @param $action
 	 * @dataProvider form_checks_data
 	 */
-	public function test_form_checks($action)
+	public function test_form_checks($action): void
 	{
 		self::$valid_form = false;
 
@@ -208,7 +210,7 @@ class admin_controller_test extends phpbb_database_test_case
 	 * @param $expected
 	 * @dataProvider display_settings_test_data
 	 */
-	public function test_display_settings($configs, $expected)
+	public function test_display_settings($configs, $expected): void
 	{
 		foreach ($configs as $key => $value)
 		{
@@ -350,10 +352,10 @@ class admin_controller_test extends phpbb_database_test_case
 	 * @param $expected_msg
 	 * @dataProvider submit_test_data
 	 */
-	public function test_submit($form_data, $expected, $expected_msg)
+	public function test_submit($form_data, $expected, $expected_msg): void
 	{
 		$is_success = $expected_msg === 'CONFIG_UPDATED';
-		
+
 		if ($is_success)
 		{
 			$this->setExpectedTriggerError(E_USER_NOTICE, 'CONFIG_UPDATED');
@@ -380,7 +382,7 @@ class admin_controller_test extends phpbb_database_test_case
 			]);
 
 		$this->request_submit('submit');
-		
+
 		if ($is_success)
 		{
 			$this->call_admin_controller();
@@ -404,7 +406,7 @@ class admin_controller_test extends phpbb_database_test_case
 		$this->assertSame($expected, $rows);
 	}
 
-	public function test_upload()
+	public function test_upload(): void
 	{
 		$this->setExpectedTriggerError(E_USER_NOTICE, 'ACP_PWA_IMG_UPLOAD_SUCCESS');
 
@@ -417,7 +419,7 @@ class admin_controller_test extends phpbb_database_test_case
 		$this->call_admin_controller();
 	}
 
-	public function test_upload_error()
+	public function test_upload_error(): void
 	{
 		$this->request_submit('upload');
 
@@ -431,7 +433,7 @@ class admin_controller_test extends phpbb_database_test_case
 		$this->call_admin_controller();
 	}
 
-	public function test_resync()
+	public function test_resync(): void
 	{
 		$this->request_submit('resync');
 
@@ -468,7 +470,7 @@ class admin_controller_test extends phpbb_database_test_case
 	 * @param $error
 	 * @dataProvider delete_test_data
 	 */
-	public function test_delete($image, $confirmed, $error)
+	public function test_delete($image, $confirmed, $error): void
 	{
 		self::$confirm = $confirmed;
 
@@ -510,7 +512,7 @@ class admin_controller_test extends phpbb_database_test_case
 	 */
 	private function call_admin_controller(string $mode = 'settings'): void
 	{
-		$this->admin_controller->main('\\phpbb\\pwakit\\acp\\pwa_acp_module', $mode, '');
+		$this->admin_controller->main(pwa_acp_module::class, $mode, '');
 	}
 
 	/**
@@ -533,7 +535,7 @@ class admin_controller_test extends phpbb_database_test_case
  */
 function check_form_key(): bool
 {
-	return \phpbb\pwakit\controller\admin_controller_test::$valid_form;
+	return admin_controller_test::$valid_form;
 }
 
 /**
@@ -552,7 +554,7 @@ function add_form_key()
  */
 function confirm_box(): bool
 {
-	return \phpbb\pwakit\controller\admin_controller_test::$confirm;
+	return admin_controller_test::$confirm;
 }
 
 /**

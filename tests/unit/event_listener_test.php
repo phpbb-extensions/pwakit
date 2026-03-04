@@ -21,8 +21,8 @@ use phpbb_test_case;
 
 class event_listener_test extends phpbb_test_case
 {
-	protected user|MockObject $user;
-	protected template|MockObject $template;
+	protected MockObject|user $user;
+	protected MockObject|template $template;
 	protected helper $pwa_helper;
 
 	/**
@@ -67,7 +67,7 @@ class event_listener_test extends phpbb_test_case
 	/**
 	 * Test the event listener is constructed correctly
 	 */
-	public function test_construct()
+	public function test_construct(): void
 	{
 		static::assertInstanceOf(EventSubscriberInterface::class, $this->get_listener());
 	}
@@ -75,7 +75,7 @@ class event_listener_test extends phpbb_test_case
 	/**
 	 * Test the event listener is subscribing events
 	 */
-	public function test_getSubscribedEvents()
+	public function test_getSubscribedEvents(): void
 	{
 		$events = main_listener::getSubscribedEvents();
 		static::assertEquals([
@@ -152,7 +152,7 @@ class event_listener_test extends phpbb_test_case
 	 * @return void
 	 * @dataProvider header_updates_test_data
 	 */
-	public function test_header_updates($configs, $icons, $expected)
+	public function test_header_updates($configs, $icons, $expected): void
 	{
 		// Setup expectations
 		$this->pwa_helper->expects(static::once())
@@ -170,7 +170,8 @@ class event_listener_test extends phpbb_test_case
 			->with(static::identicalTo($templateVars));
 
 		// Apply configurations
-		foreach ($configs as $key => $value) {
+		foreach ($configs as $key => $value)
+		{
 			$this->user->style[$key] = $value;
 		}
 
@@ -241,7 +242,7 @@ class event_listener_test extends phpbb_test_case
 	 * @return void
 	 * @dataProvider manifest_updates_test_data
 	 */
-	public function test_manifest_updates($board_path, $configs, $expected)
+	public function test_manifest_updates($board_path, $configs, $expected): void
 	{
 		$initialManifest = [
 			'name' => 'Test Site',
@@ -260,7 +261,8 @@ class event_listener_test extends phpbb_test_case
 		// Set up and verify the initial state
 		$this->assertSame($initialManifest, $event['manifest']);
 
-		foreach ($configs as $key => $value) {
+		foreach ($configs as $key => $value)
+		{
 			$this->user->style[$key] = $value;
 		}
 
@@ -280,18 +282,21 @@ class event_listener_test extends phpbb_test_case
 		$this->assertSame($expected, $event['manifest']);
 
 		// Verify manifest structure
-		if (!empty($event['manifest'])) {
+		if (!empty($event['manifest']))
+		{
 			$this->assertArrayHasKey('name', $event['manifest']);
 			$this->assertArrayHasKey('short_name', $event['manifest']);
 			$this->assertArrayHasKey('display', $event['manifest']);
 			$this->assertArrayHasKey('orientation', $event['manifest']);
 		}
 
-		// Verify color format if present
-		if (isset($event['manifest']['theme_color'])) {
+		// Verify a color format if present
+		if (isset($event['manifest']['theme_color']))
+		{
 			$this->assertMatchesRegularExpression('/^#[0-9a-f]{6}$/i', $event['manifest']['theme_color']);
 		}
-		if (isset($event['manifest']['background_color'])) {
+		if (isset($event['manifest']['background_color']))
+		{
 			$this->assertMatchesRegularExpression('/^#[0-9a-f]{6}$/i', $event['manifest']['background_color']);
 		}
 	}

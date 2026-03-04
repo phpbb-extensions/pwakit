@@ -23,28 +23,28 @@ class acp_settings_test extends \phpbb_functional_test_case
 		return ['phpbb/pwakit'];
 	}
 
-	public function test_extension_enabled()
+	public function test_extension_enabled(): void
 	{
-		$this->login();
-		$this->admin_login();
-		$this->add_lang('acp/extensions');
+		self::login();
+		self::admin_login();
+		self::add_lang('acp/extensions');
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
 
 		$this->assertStringContainsString('Progressive Web App Kit', $crawler->filter('.ext_enabled')->eq(0)->text());
-		$this->assertContainsLang('EXTENSION_DISABLE', $crawler->filter('.ext_enabled')->eq(0)->text());
+		self::assertContainsLang('EXTENSION_DISABLE', $crawler->filter('.ext_enabled')->eq(0)->text());
 	}
 
-	public function test_basic_form()
+	public function test_basic_form(): void
 	{
-		$this->login();
-		$this->admin_login();
+		self::login();
+		self::admin_login();
 
-		$this->add_lang_ext('phpbb/pwakit', 'info_acp_pwa');
+		self::add_lang_ext('phpbb/pwakit', 'info_acp_pwa');
 
 		// Check ACP page loads
 		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
-		$this->assertContainsLang('ACP_PWA_KIT_TITLE', $crawler->filter('div.main > h1')->text());
+		self::assertContainsLang('ACP_PWA_KIT_TITLE', $crawler->filter('div.main > h1')->text());
 
 		// The _1 means these are for prosilver (style id 1)
 		$form_data = [
@@ -61,7 +61,7 @@ class acp_settings_test extends \phpbb_functional_test_case
 		// Submit form
 		$form = $crawler->selectButton('submit')->form($form_data);
 		$crawler = self::submit($form);
-		$this->assertStringContainsString($this->lang('CONFIG_UPDATED'), $crawler->filter('.successbox')->text());
+		$this->assertStringContainsString(self::lang('CONFIG_UPDATED'), $crawler->filter('.successbox')->text());
 
 		// Check saved data now appears in data fields
 		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
