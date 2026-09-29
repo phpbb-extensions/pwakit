@@ -61,7 +61,6 @@ class main_listener implements EventSubscriberInterface
 	{
 		$this->template->assign_vars([
 			'PWA_THEME_COLOR'	=> $this->user->style['pwa_theme_color'],
-			'PWA_BG_COLOR'		=> $this->user->style['pwa_bg_color'],
 			'U_TOUCH_ICONS' 	=> array_column($this->pwa_helper->get_icons(), 'src'),
 		]);
 	}

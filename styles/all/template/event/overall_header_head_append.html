@@ -7,7 +7,5 @@
 
 {% if PWA_THEME_COLOR -%}
 	<meta name="theme-color" content="{{ PWA_THEME_COLOR }}">
+	<style>:root { --pwa-theme-colour: {{ PWA_THEME_COLOR }}; }</style>
 {% endif %}
-{% if PWA_BG_COLOR -%}
-	<meta name="background-color" content="{{ PWA_BG_COLOR }}">
-{%- endif %}

@@ -161,7 +161,6 @@ class event_listener_test extends phpbb_test_case
 
 		$templateVars = [
 			'PWA_THEME_COLOR' => $expected['pwa_theme_color'],
-			'PWA_BG_COLOR' => $expected['pwa_bg_color'],
 			'U_TOUCH_ICONS' => $expected['icons'],
 		];
 
