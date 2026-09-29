@@ -15,6 +15,32 @@ class file_tracker extends \phpbb\storage\file_tracker
 	public const STORAGE_NAME = 'phpbb_pwakit';
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public function track_files(string $storage, array $files): void
+	{
+		parent::track_files($storage, $files);
+
+		if ($storage === self::STORAGE_NAME)
+		{
+			$this->cache->destroy('sql', $this->storage_table);
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function untrack_file(string $storage, $path): void
+	{
+		parent::untrack_file($storage, $path);
+
+		if ($storage === self::STORAGE_NAME)
+		{
+			$this->cache->destroy('sql', $this->storage_table);
+		}
+	}
+
+	/**
 	 * Gets tracked files in the storage table
 	 *
 	 * @return array
@@ -24,7 +50,7 @@ class file_tracker extends \phpbb\storage\file_tracker
 		$sql = 'SELECT file_path FROM ' . $this->storage_table . "
 			WHERE storage = '" . self::STORAGE_NAME . "'
 			ORDER BY file_path";
-		$result = $this->db->sql_query($sql);
+		$result = $this->db->sql_query($sql, 3600);
 		$files = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 

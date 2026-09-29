@@ -110,11 +110,11 @@ class upload_test extends phpbb_test_case
 			$file->expects(self::once())
 				->method('get')
 				->with('realname')
-				->willReturn('abcdef.jpg');
+				->willReturn('abcdef.png');
 
 			$result = $upload->upload();
 
-			self::assertEquals('abcdef.jpg', $result);
+			self::assertEquals('abcdef.png', $result);
 		}
 	}
 

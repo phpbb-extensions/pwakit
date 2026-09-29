@@ -5,7 +5,7 @@
 <a id="maincontent"></a>
 
 <h1>{{ lang('ACP_PWA_KIT_TITLE') }}</h1>
-<p>{{ lang('ACP_PWA_KIT_EXPLAIN', PWA_IMAGES_DIR) }}</p>
+<p>{{ lang('ACP_PWA_EXPLAIN') }}</p>
 
 {% if S_ERROR %}
 <div class="errorbox">
@@ -16,13 +16,13 @@
 
 <form id="acp_pwakit" method="post" action="{{ U_ACTION }}" enctype="multipart/form-data">
 	<fieldset>
-		<legend>{{ lang('ACP_PWA_KIT_LEGEND_IDENTITY') }}</legend>
+		<legend>{{ lang('ACP_PWA_LEGEND_IDENTITY') }}</legend>
 		<dl>
-			<dt><label>{{ lang('SITE_NAME') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_KIT_SITE_NAME_EXPLAIN', U_BOARD_SETTINGS) }}</span></dt>
+			<dt><label>{{ lang('SITE_NAME') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_SITE_NAME_EXPLAIN', U_BOARD_SETTINGS) }}</span></dt>
 			<dd>{{ SITE_NAME }}</dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('SITE_NAME_SHORT') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_KIT_SHORT_NAME_EXPLAIN', U_BOARD_SETTINGS) }}</span></dt>
+			<dt><label>{{ lang('SITE_NAME_SHORT') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_SHORT_NAME_EXPLAIN', U_BOARD_SETTINGS) }}</span></dt>
 			<dd>{{ SITE_NAME_SHORT }}</dd>
 		</dl>
 	</fieldset>
@@ -30,7 +30,7 @@
 	<h1>{{ lang('ACP_PWA_COLORS') }}</h1>
 	<p>{{ lang('ACP_PWA_COLORS_EXPLAIN') }}</p>
 	<fieldset>
-		<legend>{{ lang('ACP_PWA_KIT_LEGEND_PRESENTS') }}</legend>
+		<legend>{{ lang('ACP_PWA_LEGEND_PRESENTS') }}</legend>
 		<dl>
 			<dt><label>{{ lang('ACP_STYLES') ~ lang('COLON') }}</label></dt>
 			<dd>
@@ -75,20 +75,20 @@
 		{{ S_FORM_TOKEN }}
 	</fieldset>
 
-	<h1>{{ lang('ACP_PWA_KIT_APP_ICONS') }}</h1>
-	<p>{{ lang('ACP_PWA_KIT_APP_ICONS_EXPLAIN') }}</p>
+	<h1>{{ lang('ACP_PWA_APP_ICONS') }}</h1>
+	<p>{{ lang('ACP_PWA_APP_ICONS_EXPLAIN') }}</p>
 	<fieldset>
-		<legend>{{ lang('ACP_PWA_KIT_LEGEND_ICONS') }}</legend>
+		<legend>{{ lang('ACP_PWA_LEGEND_ICONS') }}</legend>
 		<dl>
 			<dt><label for="pwa_upload">{{ lang('ACP_PWA_IMG_UPLOAD') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_IMG_UPLOAD_EXPLAIN', PWA_IMAGES_DIR, U_STORAGE_SETTINGS) }}</span></dt>
 			<dd>
-				<input type="file" accept="image/*" class="inputbox autowidth" id="pwa_upload" name="pwa_upload">
+				<input type="file" accept="image/png,.png" class="inputbox autowidth" id="pwa_upload" name="pwa_upload">
 				<button class="button2 pwakit-button" id="upload" name="upload" value="{{ lang('ACP_PWA_IMG_UPLOAD_BTN') }}">{{ Icon('font', 'upload', lang('ACP_PWA_IMG_UPLOAD_BTN')) }}</button>
 				<button class="button2 pwakit-button" id="resync" name="resync" value="{{ lang('ACP_PWA_IMG_RESYNC_BTN') }}">{{ Icon('font', 'sync', lang('ACP_PWA_IMG_RESYNC_BTN')) }}</button>
 			</dd>
 		</dl>
 		<dl>
-			<dt><label>{{ lang('ACP_PWA_KIT_ICONS') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_KIT_ICONS_EXPLAIN') }}</span></dt>
+			<dt><label>{{ lang('ACP_PWA_ICONS') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_PWA_ICONS_EXPLAIN') }}</span></dt>
 			<dd>
 				{% for icon in PWA_KIT_ICONS %}
 					{% set iconName = icon.src|split('/')|last %}
@@ -105,7 +105,7 @@
 						{{ iconName }}<br>{{ icon.sizes }}
 					</p>
 				{% else %}
-					{{ lang('ACP_PWA_KIT_NO_ICONS') }}
+					{{ lang('ACP_PWA_NO_ICONS') }}
 				{% endfor %}
 			</dd>
 		</dl>

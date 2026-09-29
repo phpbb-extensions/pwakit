@@ -13,6 +13,7 @@ namespace phpbb\pwakit\migrations;
 use phpbb\db\migration\container_aware_migration;
 use phpbb\extension\manager;
 use phpbb\pwakit\ext;
+use phpbb\pwakit\storage\file_tracker as pwakit_file_tracker;
 use phpbb\storage\file_tracker;
 use phpbb\storage\provider\local;
 
@@ -23,7 +24,7 @@ class m3_storage extends container_aware_migration
 		return ['\phpbb\pwakit\migrations\m2_data'];
 	}
 
-	public function effectively_installed(): int
+	public function effectively_installed(): bool
 	{
 		return $this->config->offsetExists('storage\\phpbb_pwakit\\provider')
 			&& $this->config->offsetExists('storage\\phpbb_pwakit\\config\\path');
@@ -74,12 +75,15 @@ class m3_storage extends container_aware_migration
 			$pos = strpos($image, $storage_path);
 			return [
 				'file_path' => $pos !== false ? substr($image, $pos + strlen($storage_path)) : $image,
-				'filesize' => filesize($image)
+				'filesize' => (int) filesize($image)
 			];
 		}, $files);
 
 		// Track files
-		$file_tracker->track_files('phpbb_pwakit', $files);
+		if ($files)
+		{
+			$file_tracker->track_files(pwakit_file_tracker::STORAGE_NAME, $files);
+		}
 	}
 
 	/**
@@ -89,6 +93,9 @@ class m3_storage extends container_aware_migration
 	 */
 	public function remove_tracked_files(): void
 	{
-		$this->db->sql_query('DELETE FROM ' . $this->tables['storage'] . " WHERE storage = 'phpbb_pwakit'");
+		$this->db->sql_query('DELETE FROM ' . $this->tables['storage'] . "
+			WHERE storage = '" . $this->db->sql_escape(pwakit_file_tracker::STORAGE_NAME) . "'");
+
+		$this->container->get('cache.driver')->destroy('sql', $this->tables['storage']);
 	}
 }

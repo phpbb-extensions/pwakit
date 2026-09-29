@@ -20,6 +20,7 @@ class ext extends base
 {
 	public const PWA_ICON_DIR = 'images/site_icons';
 	public const PHPBB_MIN_VERSION = '4.0.0-dev';
+	public const LEGACY_EXTENSION = 'phpbb/webpushnotifications';
 
 	/**
 	 * {@inheritdoc}
@@ -27,7 +28,13 @@ class ext extends base
 	public function is_enableable(): array|bool
 	{
 		$config = $this->container->get('config');
-		return $this->version_check($config['version']) && $this->version_check(PHPBB_VERSION);
+		if (!$this->version_check($config['version']) || !$this->version_check(PHPBB_VERSION))
+		{
+			return false;
+		}
+
+		$extension_manager = $this->container->get('ext.manager');
+		return !$extension_manager->is_configured(self::LEGACY_EXTENSION);
 	}
 
 	/**

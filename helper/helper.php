@@ -90,8 +90,9 @@ class helper
 		$path = $this->get_storage_path() . '/';
 		$full_base_path = $this->root_path . $path;
 
-		// Create a single reusable callback function
-		$remove_path = static fn($file) => str_replace($path, '', $file);
+		$remove_path = static fn($file) => str_starts_with($file, $path)
+			? substr($file, strlen($path))
+			: $file;
 
 		// Get and process both arrays using the same callback
 		$untracked_files = array_map($remove_path, $this->get_images());
@@ -101,11 +102,10 @@ class helper
 		$files_to_track = array_diff($untracked_files, $tracked_files);
 		$files_to_untrack = array_diff($tracked_files, $untracked_files);
 
-		// Prepare batch tracking array with array_map instead of foreach
 		$files = !empty($files_to_track) ? array_map(
 			static fn($file) => [
 				'file_path' => $file,
-				'filesize' => filesize($full_base_path . $file)
+				'filesize' => (int) filesize($full_base_path . $file),
 			],
 			$files_to_track
 		) : [];
@@ -138,20 +138,30 @@ class helper
 			throw new runtime_exception('ACP_PWA_IMG_DELETE_PATH_ERR');
 		}
 
-		// Remove any directory traversal attempts
+		// Convert a displayed storage path back to its tracked, storage-relative path.
 		$storage_path = $this->get_storage_path() . '/';
-		$pos = strpos($path, $storage_path);
-		if ($pos !== false)
+		$path = str_replace('\\', '/', $path);
+		$storage_position = strpos($path, $storage_path);
+		if ($storage_position !== false)
 		{
-			$path = substr($path, $pos + strlen($storage_path));
+			$display_prefix = substr($path, 0, $storage_position);
+			if (!preg_match('#^(?:\./|\.\./)*$#D', $display_prefix))
+			{
+				throw new runtime_exception('ACP_PWA_IMG_DELETE_PATH_ERR');
+			}
+
+			$path = substr($path, $storage_position + strlen($storage_path));
 		}
-		else
+
+		$segments = explode('/', $path);
+		if (str_starts_with($path, '/') || in_array('', $segments, true)
+			|| in_array('.', $segments, true) || in_array('..', $segments, true))
 		{
-			$path = basename($path);
+			throw new runtime_exception('ACP_PWA_IMG_DELETE_PATH_ERR');
 		}
 
 		// Check for valid filename characters
-		if (!preg_match('#^[a-zA-Z0-9_\-./]+$#', $path))
+		if (!preg_match('#^[a-zA-Z0-9_./-]+$#D', $path))
 		{
 			throw new runtime_exception('ACP_PWA_IMG_DELETE_NAME_ERR');
 		}
@@ -181,7 +191,7 @@ class helper
 		$result = [];
 		foreach ($images as $image)
 		{
-			if (stripos(strrev($image), 'gnp.') === 0)
+			if (str_ends_with(strtolower($image), '.png'))
 			{
 				$result[] = $path . '/' . $image;
 			}
@@ -197,17 +207,12 @@ class helper
 	 */
 	protected function get_images(): array
 	{
-		static $images = null;
-
-		if ($images === null)
-		{
-			$finder = $this->extension_manager->get_finder();
-			$images = $finder
-				->set_extensions([])
-				->suffix('.png')
-				->core_path($this->get_storage_path() . '/')
-				->find();
-		}
+		$finder = $this->extension_manager->get_finder();
+		$images = $finder
+			->set_extensions([])
+			->suffix('.png')
+			->core_path($this->get_storage_path() . '/')
+			->find();
 
 		return array_keys($images);
 	}
@@ -221,23 +226,23 @@ class helper
 	 */
 	private function prepare_icons(array $images, string $use_path): array
 	{
-		// Use array_reduce instead of foreach for better performance
-		return array_reduce($images, function ($carry, $image) use ($use_path)
+		$icons = [];
+		foreach ($images as $image)
 		{
 			$image_info = $this->imagesize->getImageSize($this->root_path . $image);
 
-			if ($image_info === false)
+			if ($image_info === false || $image_info['type'] !== IMAGETYPE_PNG)
 			{
-				return $carry;
+				continue;
 			}
 
-			$carry[] = [
+			$icons[] = [
 				'src' => $use_path ? $use_path . $image : $image,
 				'sizes' => $image_info['width'] . 'x' . $image_info['height'],
 				'type' => 'image/png'
 			];
+		}
 
-			return $carry;
-		}, []);
+		return $icons;
 	}
 }

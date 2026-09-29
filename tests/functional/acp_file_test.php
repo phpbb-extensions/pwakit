@@ -222,7 +222,7 @@ class acp_file_test extends phpbb_functional_test_case
 	private function assertIconsNotInACP(): Crawler
 	{
 		$crawler = self::request('GET', 'adm/index.php?i=-phpbb-pwakit-acp-pwa_acp_module&mode=settings&sid=' . $this->sid);
-		self::assertContainsLang('ACP_PWA_KIT_NO_ICONS', $crawler->filter('fieldset')->eq(3)->html());
+		self::assertContainsLang('ACP_PWA_NO_ICONS', $crawler->filter('fieldset')->eq(3)->html());
 		return $crawler;
 	}
 

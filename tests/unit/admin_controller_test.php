@@ -310,8 +310,8 @@ class admin_controller_test extends phpbb_database_test_case
 					'pwa_theme_color_2' => '',
 				],
 				[
-					0 => ['pwa_bg_color' => '#000000', 'pwa_theme_color' => '#000fff'],
-					1 => ['pwa_bg_color' => '#ffffff', 'pwa_theme_color' => ''],
+					0 => ['pwa_bg_color' => '#fff000', 'pwa_theme_color' => '#000fff'],
+					1 => ['pwa_bg_color' => '', 'pwa_theme_color' => ''],
 				],
 				'ACP_PWA_INVALID_COLOR',
 			],
@@ -340,6 +340,19 @@ class admin_controller_test extends phpbb_database_test_case
 					1 => ['pwa_bg_color' => '', 'pwa_theme_color' => ''],
 				],
 				'CONFIG_UPDATED'
+			],
+			'inputs with whitespace' => [
+				[
+					'pwa_bg_color_1' => ' #000000 ',
+					'pwa_theme_color_1' => "\t#ffffff\n",
+					'pwa_bg_color_2' => '',
+					'pwa_theme_color_2' => '',
+				],
+				[
+					0 => ['pwa_bg_color' => '#000000', 'pwa_theme_color' => '#ffffff'],
+					1 => ['pwa_bg_color' => '', 'pwa_theme_color' => ''],
+				],
+				'CONFIG_UPDATED',
 			],
 		];
 	}

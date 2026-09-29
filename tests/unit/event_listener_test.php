@@ -18,6 +18,11 @@ use phpbb\pwakit\helper\helper;
 use phpbb\template\template;
 use phpbb\user;
 use phpbb_test_case;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 class event_listener_test extends phpbb_test_case
 {
@@ -81,7 +86,47 @@ class event_listener_test extends phpbb_test_case
 		static::assertEquals([
 			'core.page_header' => 'header_updates',
 			'core.modify_manifest' => 'manifest_updates',
+			KernelEvents::RESPONSE => 'manifest_response',
 		], $events);
+	}
+
+	public function test_manifest_response(): void
+	{
+		$request = new Request();
+		$request->attributes->set('_route', 'phpbb_manifest_controller');
+		$response = new JsonResponse([]);
+		$response->setPublic();
+		$event = new ResponseEvent(
+			$this->createMock(HttpKernelInterface::class),
+			$request,
+			HttpKernelInterface::MAIN_REQUEST,
+			$response
+		);
+
+		$this->get_listener()->manifest_response($event);
+
+		$this->assertSame('application/manifest+json', $response->headers->get('Content-Type'));
+		$this->assertTrue($response->headers->hasCacheControlDirective('private'));
+		$this->assertFalse($response->headers->hasCacheControlDirective('public'));
+		$this->assertSame(['Cookie'], $response->getVary());
+	}
+
+	public function test_manifest_response_ignores_other_routes(): void
+	{
+		$request = new Request();
+		$request->attributes->set('_route', 'phpbb_index_controller');
+		$response = new JsonResponse([]);
+		$event = new ResponseEvent(
+			$this->createMock(HttpKernelInterface::class),
+			$request,
+			HttpKernelInterface::MAIN_REQUEST,
+			$response
+		);
+
+		$this->get_listener()->manifest_response($event);
+
+		$this->assertSame('application/json', $response->headers->get('Content-Type'));
+		$this->assertSame([], $response->getVary());
 	}
 
 	public static function header_updates_test_data(): array
@@ -109,7 +154,7 @@ class event_listener_test extends phpbb_test_case
 				],
 				[],
 				[
-					'pwa_theme_color' => '#gggggg',
+					'pwa_theme_color' => '',
 					'pwa_bg_color' => 'invalid',
 					'icons' => [],
 				],
@@ -161,7 +206,7 @@ class event_listener_test extends phpbb_test_case
 
 		$templateVars = [
 			'PWA_THEME_COLOR' => $expected['pwa_theme_color'],
-			'U_TOUCH_ICONS' => $expected['icons'],
+			'U_TOUCH_ICONS' => $icons,
 		];
 
 		$this->template->expects(static::once())
@@ -226,6 +271,14 @@ class event_listener_test extends phpbb_test_case
 					],
 				],
 			],
+			'invalid color options' => [
+				'/board/',
+				[
+					'pwa_theme_color' => '#gggggg',
+					'pwa_bg_color' => 'not-a-color',
+				],
+				[],
+			],
 			'empty' => [
 				'',
 				[],
@@ -235,26 +288,26 @@ class event_listener_test extends phpbb_test_case
 	}
 
 	/**
-	 * @param $board_path
+	 * @param $scope
 	 * @param $configs
 	 * @param $expected
 	 * @return void
 	 * @dataProvider manifest_updates_test_data
 	 */
-	public function test_manifest_updates($board_path, $configs, $expected): void
+	public function test_manifest_updates($scope, $configs, $expected): void
 	{
 		$initialManifest = [
 			'name' => 'Test Site',
 			'short_name' => 'TestSite',
 			'display' => 'standalone',
 			'orientation' => 'portrait',
-			'start_url' => './',
-			'scope' => './',
+			'start_url' => $scope,
+			'scope' => $scope,
 		];
 
 		$event = new data([
 			'manifest' => $initialManifest,
-			'board_path' => $board_path,
+			'scope' => $scope,
 		]);
 
 		// Set up and verify the initial state
@@ -270,7 +323,7 @@ class event_listener_test extends phpbb_test_case
 		// Verify helper method call
 		$this->pwa_helper->expects(static::once())
 			->method('get_icons')
-			->with($board_path)
+			->with($scope)
 			->willReturn($expected['icons'] ?? []);
 
 		// Execute test

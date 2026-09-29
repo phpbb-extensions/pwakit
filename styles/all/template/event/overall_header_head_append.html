@@ -2,10 +2,11 @@
 	{%- if loop.first -%}
 		<!-- App icon for iOS, a fallback to icons defined in the manifest -->
 	{% endif -%}
-	<link rel="apple-touch-icon" href="{{ ROOT_PATH ~ touchIcon }}">
+	<link rel="apple-touch-icon" sizes="{{ touchIcon.sizes }}" type="{{ touchIcon.type }}" href="{{ ROOT_PATH ~ touchIcon.src }}">
 {% endfor %}
 
 {% if PWA_THEME_COLOR -%}
 	<meta name="theme-color" content="{{ PWA_THEME_COLOR }}">
-	<style>:root { --pwa-theme-colour: {{ PWA_THEME_COLOR }}; }</style>
 {% endif %}
+
+<meta name="apple-mobile-web-app-status-bar-style" content="default">

@@ -21,7 +21,8 @@ class pwa_acp_info
 				'settings'	=> [
 					'title' => 'ACP_PWA_KIT_SETTINGS',
 					'auth' => 'ext_phpbb/pwakit && acl_a_board',
-					'cat' => ['ACP_PWA_KIT_TITLE']
+					'cat' => ['ACP_CLIENT_COMMUNICATION'],
+					'after' => 'ACP_WEBPUSH_SETTINGS',
 				],
 			],
 		];

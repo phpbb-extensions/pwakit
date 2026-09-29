@@ -14,6 +14,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use phpbb\config\config;
 use phpbb\db\migrator;
+use phpbb\extension\manager;
 use phpbb\filesystem\exception\filesystem_exception;
 use phpbb\filesystem\filesystem;
 use phpbb\finder\finder;
@@ -52,14 +53,22 @@ class ext_test extends phpbb_test_case
 		return [
 			'current version' => [
 				ext::PHPBB_MIN_VERSION,
+				false,
 				true
 			],
 			'future version' => [
 				'4.0.0',
+				false,
 				true
+			],
+			'legacy extension not purged' => [
+				ext::PHPBB_MIN_VERSION,
+				true,
+				false
 			],
 			'outdated version' => [
 				'3.3.14',
+				false,
 				false
 			],
 		];
@@ -70,23 +79,30 @@ class ext_test extends phpbb_test_case
 	 * phpBB version requirement is satisfied.
 	 *
 	 * @param $version
-	 * @param $expected
+	 * @param bool $legacy_configured
+	 * @param bool $expected
 	 *
 	 * @dataProvider ext_test_data
 	 */
-	public function test_ext($version, $expected): void
+	public function test_ext($version, bool $legacy_configured, bool $expected): void
 	{
 		// Instantiate a config object and set a config version
 		$config = new config([
 			'version' => $version,
 		]);
 
-		// Mocked container should return the config object
-		// when encountering $this->container->get('config')
-		$this->container->expects(self::once())
+		$extension_manager = $this->createMock(manager::class);
+		$extension_manager->expects($version === '3.3.14' ? self::never() : self::once())
+			->method('is_configured')
+			->with(ext::LEGACY_EXTENSION)
+			->willReturn($legacy_configured);
+
+		$this->container->expects($version === '3.3.14' ? self::once() : self::exactly(2))
 			->method('get')
-			->with('config')
-			->willReturn($config);
+			->willReturnCallback(static fn(string $service) => match ($service) {
+				'config' => $config,
+				'ext.manager' => $extension_manager,
+			});
 
 		$ext = new ext($this->container, $this->extension_finder, $this->migrator, 'phpbb/pwakit', '');
 

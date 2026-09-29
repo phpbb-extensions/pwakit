@@ -16,12 +16,15 @@ class m1_initial extends migration
 {
 	public static function depends_on(): array
 	{
-		return ['\phpbb\db\migration\data\v400\dev'];
+		return ['\phpbb\db\migration\data\v400\add_webpush'];
 	}
 
 	public function effectively_installed(): bool
 	{
-		return $this->db_tools->sql_column_exists($this->table_prefix . 'styles', 'pwa_bg_color');
+		$styles_table = $this->table_prefix . 'styles';
+
+		return $this->db_tools->sql_column_exists($styles_table, 'pwa_bg_color')
+			&& $this->db_tools->sql_column_exists($styles_table, 'pwa_theme_color');
 	}
 
 	public function update_schema(): array
