@@ -183,11 +183,13 @@ class admin_controller
 	 */
 	protected function display_settings(): void
 	{
+		$icons = $this->helper->get_icons($this->phpbb_root_path);
+
 		$this->template->assign_vars([
 			'SITE_NAME'			=> $this->config->offsetGet('sitename'),
 			'SITE_NAME_SHORT'	=> $this->config->offsetGet('sitename_short') ?: $this->trim_name($this->config->offsetGet('sitename'), 0, 12),
 			'PWA_IMAGES_DIR'	=> $this->helper->get_storage_path(),
-			'PWA_KIT_ICONS'		=> $this->helper->get_icons($this->phpbb_root_path),
+			'PWA_KIT_ICONS'		=> $icons,
 			'STYLES'			=> $this->get_styles(),
 			'U_BOARD_SETTINGS'	=> append_sid("{$this->phpbb_admin_path}index.$this->php_ext", 'i=acp_board&amp;mode=settings'),
 			'U_STORAGE_SETTINGS'=> append_sid("{$this->phpbb_admin_path}index.$this->php_ext", 'i=acp_storage&amp;mode=settings'),
@@ -210,8 +212,8 @@ class admin_controller
 		foreach ($styles as $row)
 		{
 			$style_id			= $row['style_id'];
-			$pwa_bg_color		= $this->request->variable('pwa_bg_color_' . $style_id, '');
-			$pwa_theme_color	= $this->request->variable('pwa_theme_color_' . $style_id, '');
+			$pwa_bg_color		= trim($this->request->variable('pwa_bg_color_' . $style_id, ''));
+			$pwa_theme_color	= trim($this->request->variable('pwa_theme_color_' . $style_id, ''));
 
 			$updates[$style_id] = [
 				'pwa_bg_color'		=> $this->validate_hex_color($pwa_bg_color) ? $pwa_bg_color : $row['pwa_bg_color'],
@@ -219,12 +221,12 @@ class admin_controller
 			];
 		}
 
-		$this->set_styles($updates);
-
 		if ($this->has_errors())
 		{
 			return;
 		}
+
+		$this->set_styles($updates);
 
 		$this->success('CONFIG_UPDATED');
 	}

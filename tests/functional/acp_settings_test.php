@@ -70,9 +70,23 @@ class acp_settings_test extends \phpbb_functional_test_case
 			$this->assertEquals($value, $crawler->filter('input[name="' . $name . '"]')->attr('value'));
 		}
 
-		// Check saved data appears in the forum's meta tags as expected
+		// Check saved theme data appears in the document and manifest as expected
 		$crawler = self::request('GET', 'index.php?sid=' . $this->sid);
 		$this->assertEquals($form_data['pwa_theme_color_1'], $crawler->filter('meta[name="theme-color"]')->attr('content'));
-		$this->assertEquals($form_data['pwa_bg_color_1'], $crawler->filter('meta[name="background-color"]')->attr('content'));
+		$this->assertCount(1, $crawler->filter('meta[name="apple-mobile-web-app-capable"]'));
+		$this->assertCount(1, $crawler->filter('meta[name="apple-mobile-web-app-title"]'));
+		$this->assertCount(1, $crawler->filter('meta[name="mobile-web-app-capable"]'));
+		$this->assertCount(1, $crawler->filter('meta[name="apple-mobile-web-app-status-bar-style"][content="default"]'));
+
+		$manifest_url = $crawler->filter('link[rel="manifest"]')->attr('href');
+		self::request('GET', $manifest_url, [], false);
+		$response = self::$client->getResponse();
+		$manifest = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
+		$this->assertEquals($form_data['pwa_theme_color_1'], $manifest['theme_color']);
+		$this->assertEquals($form_data['pwa_bg_color_1'], $manifest['background_color']);
+		$this->assertSame('application/manifest+json', $response->getHeader('Content-Type'));
+		$this->assertStringContainsString('private', $response->getHeader('Cache-Control'));
+		$this->assertStringContainsString('Cookie', $response->getHeader('Vary'));
 	}
 }

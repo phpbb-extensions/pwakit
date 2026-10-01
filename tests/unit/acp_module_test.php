@@ -68,7 +68,8 @@ class acp_module_test extends phpbb_test_case
 					'settings'	=> [
 						'title'	=> 'ACP_PWA_KIT_SETTINGS',
 						'auth'	=> 'ext_phpbb/pwakit && acl_a_board',
-						'cat'	=> ['ACP_PWA_KIT_TITLE']
+						'cat'	=> ['ACP_CLIENT_COMMUNICATION'],
+						'after'	=> 'ACP_WEBPUSH_SETTINGS',
 					],
 				],
 			],

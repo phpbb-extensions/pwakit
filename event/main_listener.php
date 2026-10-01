@@ -15,6 +15,8 @@ use phpbb\pwakit\helper\helper;
 use phpbb\template\template;
 use phpbb\user;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 class main_listener implements EventSubscriberInterface
 {
@@ -49,6 +51,7 @@ class main_listener implements EventSubscriberInterface
 		return [
 			'core.page_header'		=> 'header_updates',
 			'core.modify_manifest'	=> 'manifest_updates',
+			KernelEvents::RESPONSE	=> 'manifest_response',
 		];
 	}
 
@@ -60,9 +63,8 @@ class main_listener implements EventSubscriberInterface
 	public function header_updates(): void
 	{
 		$this->template->assign_vars([
-			'PWA_THEME_COLOR'	=> $this->user->style['pwa_theme_color'],
-			'PWA_BG_COLOR'		=> $this->user->style['pwa_bg_color'],
-			'U_TOUCH_ICONS' 	=> array_column($this->pwa_helper->get_icons(), 'src'),
+			'PWA_THEME_COLOR'	=> $this->get_style_color('pwa_theme_color'),
+			'U_TOUCH_ICONS'		=> $this->pwa_helper->get_icons(),
 		]);
 	}
 
@@ -79,17 +81,20 @@ class main_listener implements EventSubscriberInterface
 
 		// TODO This may need to be removed if manifest goes stateless (no user/session)
 		// Add theme and background colors if configured
-		if (!empty($this->user->style['pwa_theme_color']))
+		$theme_color = $this->get_style_color('pwa_theme_color');
+		if ($theme_color !== '')
 		{
-			$manifest_updates['theme_color'] = $this->user->style['pwa_theme_color'];
+			$manifest_updates['theme_color'] = $theme_color;
 		}
-		if (!empty($this->user->style['pwa_bg_color']))
+
+		$background_color = $this->get_style_color('pwa_bg_color');
+		if ($background_color !== '')
 		{
-			$manifest_updates['background_color'] = $this->user->style['pwa_bg_color'];
+			$manifest_updates['background_color'] = $background_color;
 		}
 
 		// Add icons if available
-		if (!empty($icons = $this->pwa_helper->get_icons($event['board_path'])))
+		if (!empty($icons = $this->pwa_helper->get_icons($event['scope'])))
 		{
 			$manifest_updates['icons'] = $icons;
 		}
@@ -102,5 +107,40 @@ class main_listener implements EventSubscriberInterface
 				$event->update_subarray('manifest', $key, $value);
 			}
 		}
+	}
+
+	/**
+	 * Use the registered manifest media type and prevent shared caches from
+	 * serving one user's style colours to users of another style.
+	 *
+	 * @param ResponseEvent $event
+	 * @return void
+	 */
+	public function manifest_response(ResponseEvent $event): void
+	{
+		if ($event->getRequest()->attributes->get('_route') !== 'phpbb_manifest_controller')
+		{
+			return;
+		}
+
+		$response = $event->getResponse();
+		$response->headers->set('Content-Type', 'application/manifest+json');
+		$response->setPrivate();
+		$response->setVary('Cookie', false);
+	}
+
+	/**
+	 * Return a style colour only when it is safe and valid for HTML and manifest output.
+	 *
+	 * @param string $key Style data key
+	 * @return string
+	 */
+	private function get_style_color(string $key): string
+	{
+		$color = $this->user->style[$key] ?? '';
+
+		return is_string($color) && preg_match('/^#(?:[0-9a-f]{3}){1,2}$/i', $color) === 1
+			? $color
+			: '';
 	}
 }

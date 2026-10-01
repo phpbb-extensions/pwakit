@@ -177,6 +177,18 @@ class helper_test extends phpbb_database_test_case
 		$this->assertCount(0, array_column($this->helper->get_icons(), 'src'));
 	}
 
+	public function test_get_icons_ignores_non_png_content(): void
+	{
+		$disguised_gif = self::FIXTURES . 'site_icons/bar.png';
+		copy(self::FIXTURES . 'foo.gif', $disguised_gif);
+		$this->file_tracker->track_file(file_tracker::STORAGE_NAME, 'bar.png', (int) filesize($disguised_gif));
+
+		$this->assertSame(
+			[$this->storage_path . '/foo.png'],
+			array_column($this->helper->get_icons(), 'src')
+		);
+	}
+
 	public static function delete_icon_test_data(): array
 	{
 		return [
@@ -202,6 +214,11 @@ class helper_test extends phpbb_database_test_case
 			],
 			'icon name with possible path traversal' => [
 				'../foo.png',
+				'ACP_PWA_IMG_DELETE_PATH_ERR',
+				['foo.png'] // nothing gets deleted
+			],
+			'icon with ACP relative path' => [
+				'./../ext/phpbb/pwakit/tests/fixtures/site_icons/foo.png',
 				'',
 				[] // gets deleted
 			],
